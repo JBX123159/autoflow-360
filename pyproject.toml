@@ -1,0 +1,32 @@
+[project]
+name = "autoflow-360"
+authors = [
+    { name = "JBX123159", email = "294367704+JBX123159@users.noreply.github.com" }
+]
+description = "Automotive customer project and supply-chain collaboration platform"
+requires-python = ">=3.14,<3.15"
+readme = "README.md"
+license = "AGPL-3.0-only"
+dynamic = ["version"]
+dependencies = []
+
+[build-system]
+requires = ["flit_core >=3.11,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "autoflow_360"
+
+[tool.bench.frappe-dependencies]
+frappe = ">=16.0.0,<17.0.0"
+
+[tool.ruff]
+line-length = 110
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "RUF"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"

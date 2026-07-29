@@ -6,12 +6,12 @@
 
 **Architecture:** Frappe Framework、ERPNext、Frappe CRM 与独立自定义应用 `autoflow_360` 安装在同一站点。标准销售、采购、库存和财务单据由 ERPNext 承载，汽车客户项目、样品、风险、异常、门户和 AI 能力由自定义应用实现，并通过公开钩子和链接字段集成。
 
-**Tech Stack:** Frappe Framework v16、ERPNext v16、Frappe CRM v1 `main`、Python 3.14+、Node.js 24+、MariaDB、Redis、Docker Engine 23+、Docker Compose v2、Frappe TestCase、Playwright、GitHub Actions。
+**Tech Stack:** Frappe Framework v16、ERPNext v16、Frappe CRM v1 `main`、Python 3.14.x、Node.js 24+、MariaDB、Redis、Docker Engine 23+、Docker Compose v2、Frappe TestCase、Playwright、GitHub Actions。
 
 ## Global Constraints
 
 - Frappe Framework 固定 `version-16`，ERPNext 固定 `version-16`，Frappe CRM 固定 `main` 稳定线。
-- Python 最低版本为 3.14，Node.js 最低主版本为 24，Docker Engine 最低版本为 23，必须使用 Compose v2。
+- Python 固定为 3.14.x（即 `>=3.14,<3.15`），Node.js 最低主版本为 24，Docker Engine 最低版本为 23，必须使用 Compose v2。
 - 自定义应用采用 `AGPL-3.0-only`，保留 ERPNext GPL-3.0 与 Frappe CRM AGPL-3.0 的来源和署名。
 - 不直接修改 Frappe、ERPNext、Frappe CRM 或 frappe_docker 的上游核心源码。
 - 所有业务写入必须通过服务端校验；前端限制不能作为唯一安全措施。
@@ -476,6 +476,7 @@ Expected: 公开仓库存在，默认分支为 `main`，开发分支为 `codex/a
 - Create: `autoflow_360/patches.txt`
 - Create: `autoflow_360/config/__init__.py`
 - Create: `autoflow_360/config/desktop.py`
+- Create: `autoflow_360/public/images/autoflow-360-logo.svg`
 - Create: `autoflow_360/autoflow_360/__init__.py`
 - Create: `autoflow_360/api/__init__.py`
 - Create: `autoflow_360/ai/__init__.py`
@@ -486,10 +487,12 @@ Expected: 公开仓库存在，默认分支为 `main`，开发分支为 `codex/a
 - Create: `autoflow_360/setup/__init__.py`
 - Create: `autoflow_360/tests/__init__.py`
 - Create: `tests/static/test_app_metadata.py`
+- Create: `tests/build/__init__.py`
+- Create: `tests/build/test_wheel_metadata.py`
 
 **Interfaces:**
 
-- Consumes: Python 3.14+ 与 Frappe v16 应用目录约定。
+- Consumes: Python 3.14.x 与 Frappe v16 应用目录约定。
 - Produces: 可被 Bench 安装的包 `autoflow_360`；后续任务依赖 `hooks.py`，安装钩子在 Task 4 增加。
 
 - [ ] **Step 1: 写元数据失败测试**
@@ -500,6 +503,7 @@ from pathlib import Path
 import ast
 import tomllib
 import unittest
+import xml.etree.ElementTree as ElementTree
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -509,13 +513,44 @@ class AppMetadataTest(unittest.TestCase):
         data = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
         project = data["project"]
         self.assertEqual(project["name"], "autoflow-360")
-        self.assertEqual(project["requires-python"], ">=3.14")
+        self.assertEqual(project["requires-python"], ">=3.14,<3.15")
         self.assertEqual(data["tool"]["bench"]["frappe-dependencies"]["frappe"], ">=16.0.0,<17.0.0")
 
     def test_hooks_are_valid_python(self):
-        content = (ROOT / "autoflow_360" / "hooks.py").read_text(encoding="utf-8")
-        ast.parse(content)
-        self.assertIn('required_apps = ["erpnext", "crm"]', content)
+        hooks_path = ROOT / "autoflow_360" / "hooks.py"
+        tree = ast.parse(hooks_path.read_text(encoding="utf-8"))
+        assignments = {
+            target.id: ast.literal_eval(node.value)
+            for node in tree.body
+            if isinstance(node, ast.Assign)
+            for target in node.targets
+            if isinstance(target, ast.Name)
+            and target.id in {"app_license", "required_apps", "add_to_apps_screen"}
+        }
+        self.assertEqual(assignments["app_license"], "AGPL-3.0-only")
+        self.assertEqual(assignments["required_apps"], ["erpnext", "crm"])
+        self.assertEqual(
+            assignments["add_to_apps_screen"],
+            [
+                {
+                    "name": "autoflow_360",
+                    "logo": "/assets/autoflow_360/images/autoflow-360-logo.svg",
+                    "title": "AutoFlow 360",
+                    "route": "/desk",
+                }
+            ],
+        )
+
+        logo_path = (
+            ROOT
+            / "autoflow_360"
+            / "public"
+            / "images"
+            / "autoflow-360-logo.svg"
+        )
+        self.assertTrue(logo_path.is_file())
+        root_element = ElementTree.parse(logo_path).getroot()
+        self.assertEqual(root_element.tag, "{http://www.w3.org/2000/svg}svg")
 
     def test_module_name_is_stable(self):
         modules = (ROOT / "autoflow_360" / "modules.txt").read_text(encoding="utf-8")
@@ -525,6 +560,8 @@ class AppMetadataTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 ```
+
+`tests/build/test_wheel_metadata.py` 必须与离线静态测试分离，使用标准库 `subprocess` 在自动清理的临时目录中执行 `python -m pip wheel . --no-deps`。测试打开真实 wheel，确认包含 `autoflow_360/hooks.py`、`autoflow_360/public/images/autoflow-360-logo.svg` 和 `LICENSE`，并精确校验 METADATA 中的 `Name`、`Version`、`Requires-Python`、`License-Expression` 与 `License-File`；构建失败信息同时输出 stdout 和 stderr。超时诊断必须包含 timeout 值、stdout 和 stderr，兼容进程输出为 `None`、字节串或字符串，并通过异常链保留原始 `TimeoutExpired` 上下文。
 
 - [ ] **Step 2: 运行测试并确认包尚未存在**
 
@@ -546,14 +583,18 @@ authors = [
     { name = "JBX123159", email = "294367704+JBX123159@users.noreply.github.com" }
 ]
 description = "Automotive customer project and supply-chain collaboration platform"
-requires-python = ">=3.14"
+requires-python = ">=3.14,<3.15"
 readme = "README.md"
+license = "AGPL-3.0-only"
 dynamic = ["version"]
 dependencies = []
 
 [build-system]
 requires = ["flit_core >=3.11,<4"]
 build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "autoflow_360"
 
 [tool.bench.frappe-dependencies]
 frappe = ">=16.0.0,<17.0.0"
@@ -587,6 +628,15 @@ app_email = "294367704+JBX123159@users.noreply.github.com"
 app_license = "AGPL-3.0-only"
 required_apps = ["erpnext", "crm"]
 
+add_to_apps_screen = [
+	{
+		"name": "autoflow_360",
+		"logo": "/assets/autoflow_360/images/autoflow-360-logo.svg",
+		"title": "AutoFlow 360",
+		"route": "/desk",
+	}
+]
+
 export_python_type_annotations = True
 require_type_annotated_api_methods = True
 ```
@@ -605,7 +655,9 @@ AutoFlow 360
 [post_model_sync]
 ```
 
-- [ ] **Step 4: 创建桌面入口**
+- [ ] **Step 4: 创建 Frappe v16 应用入口和兼容桌面元数据**
+
+`add_to_apps_screen` 是 Frappe v16 应用页入口，当前指向真实可访问的 `/desk`；Task 17 创建专属工作台后再切换路由。Logo 使用仓库内原创 SVG，不加载字体、图片或其他外部资源。`config/desktop.py` 只保留为兼容元数据，不能作为 v16 唯一入口。
 
 ```python
 # autoflow_360/config/desktop.py
@@ -630,15 +682,18 @@ Run:
 
 ```powershell
 python -m unittest tests.static.test_app_metadata -v
+python -m unittest discover -s tests/static -v
+python -m unittest tests.build.test_wheel_metadata -v
 python -m compileall -q autoflow_360
+git diff --check
 ```
 
-Expected: 全部通过，且无 Python 语法错误。
+Expected: 静态测试与独立构建测试全部通过且无 Python 语法错误；真实 wheel 包含 `hooks.py`、应用 Logo 与 `LICENSE`，METADATA 中的名称、版本、Python 范围、许可证表达式和许可证文件均与 `pyproject.toml` 一致。构建测试使用临时目录并自动清理，不加入离线静态测试发现目录。
 
 - [ ] **Step 6: 提交应用骨架**
 
 ```powershell
-git add pyproject.toml autoflow_360 tests/static/test_app_metadata.py
+git add pyproject.toml autoflow_360 tests/static/test_app_metadata.py tests/build docs/superpowers/plans/2026-07-29-autoflow-360-implementation.md
 git commit -m "feat: scaffold AutoFlow 360 Frappe app"
 ```
 
