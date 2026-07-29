@@ -1,0 +1,7 @@
+# 本地产品设计评审临时文件
+.superpowers/
+
+# 本地敏感配置
+.env
+.env.*
+!.env.example

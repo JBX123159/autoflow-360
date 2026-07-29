@@ -1,0 +1,2 @@
+# 项目统一使用 Linux 行尾，避免 Docker、Shell 脚本和 CI 出现跨平台差异
+* text=auto eol=lf
