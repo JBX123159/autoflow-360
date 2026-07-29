@@ -152,6 +152,7 @@ Task 5 创建 `autoflow_360/tests/factories.py`，后续任务在同一文件中
 - Create: `tests/__init__.py`
 - Create: `tests/static/__init__.py`
 - Create: `tests/static/test_repository_contract.py`
+- Create: `tests/static/test_environment_check.py`
 - Modify: `.gitignore`
 
 **Interfaces:**
@@ -186,10 +187,17 @@ class RepositoryContractTest(unittest.TestCase):
             "AutoFlow 360",
             "Frappe CRM",
             "ERPNext",
-            "自主新增能力",
+            "规划中的自主新增范围",
             "合成数据",
         ):
             self.assertIn(required_text, content)
+
+    def test_unfinished_scope_is_labeled_as_planned(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        notice = (ROOT / "NOTICE.md").read_text(encoding="utf-8")
+        self.assertIn("规划中的自主新增范围", readme)
+        self.assertIn("计划自主实现，当前状态以实际代码和测试为准", readme)
+        self.assertIn("规划中的自主新增范围", notice)
 
     def test_license_is_agpl(self):
         license_text = (ROOT / "LICENSE").read_text(encoding="utf-8")
@@ -200,15 +208,32 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: 运行测试并确认失败原因**
+`tests/static/test_environment_check.py` 仅使用 Python 标准库和临时假命令，不引入第三方测试库。测试先于脚本实现创建，并固定以下 13 个不可退化行为：
+
+1. 支持版本的 Git、Docker、Compose 与 Ubuntu WSL2 全部通过。
+2. Docker/Compose 缺失时列出 `Docker Engine` 与 `Docker Compose`。
+3. Compose 命令不可用时给出明确版本检查错误。
+4. Docker Compose v1 被拒绝。
+5. Docker Compose 异常版本格式被拒绝。
+6. Docker Engine 低于 23 被拒绝。
+7. WSL 缺失时给出明确中文错误。
+8. WSL 中没有 Ubuntu 时被拒绝。
+9. Ubuntu 只有 WSL1 时被拒绝。
+10. 带前导空格和星号的 Ubuntu WSL2 行可以解析。
+11. 无星号的 Ubuntu WSL2 行可以解析。
+12. 多发行版中存在至少一个 Ubuntu WSL2 时通过。
+13. WSL 输出含 NUL 字符时由 `ConvertTo-CleanLines` 清洗后正确解析。
+
+- [ ] **Step 2: 运行仓库与环境行为测试并确认失败原因**
 
 Run:
 
 ```powershell
 python -m unittest tests.static.test_repository_contract -v
+python -m unittest tests.static.test_environment_check -v
 ```
 
-Expected: `README.md`、`NOTICE.md` 或 `LICENSE` 缺失导致失败。
+Expected: 仓库测试因 `README.md`、`NOTICE.md` 或 `LICENSE` 缺失而失败；环境行为测试因 `scripts/check-environment.ps1` 尚未实现而失败。完成 Step 3 和 Step 4 后重新运行，两组测试必须全部通过。
 
 - [ ] **Step 3: 创建许可证、来源说明和项目首页**
 
@@ -234,11 +259,12 @@ AutoFlow 360 是独立自定义应用，不是 Frappe、ERPNext 或 Frappe CRM �
 | Frappe CRM | 线索、组织、联系人、商机 | https://github.com/frappe/crm | AGPL-3.0 |
 | frappe_docker | 容器构建与部署参考 | https://github.com/frappe/frappe_docker | MIT |
 
-本仓库的自主新增能力包括客户项目、样品闭环、风险引擎、异常整改、
+本仓库规划中的自主新增范围包括客户项目、样品闭环、风险引擎、异常整改、
 客户/供应商门户扩展、AI 分析审计、演示数据、自动化测试和求职交付材料。
+以上内容计划自主实现，当前状态以实际代码和测试为准。
 ```
 
-`README.md` 首屏必须包含项目一句话介绍、业务闭环图、三条演示路径、快速开始、测试命令、上游边界、合成数据声明和许可证。
+`README.md` 首屏必须包含项目一句话介绍、业务闭环图、三条演示路径、快速开始、测试命令、上游边界、合成数据声明和许可证；尚未完成的范围必须使用“规划中的自主新增范围”和“计划自主实现，当前状态以实际代码和测试为准”，不得写成完成态。
 
 - [ ] **Step 4: 编写可直接执行的环境体检脚本**
 
@@ -246,10 +272,30 @@ AutoFlow 360 是独立自定义应用，不是 Frappe、ERPNext 或 Frappe CRM �
 # scripts/check-environment.ps1
 $ErrorActionPreference = "Stop"
 
+function ConvertTo-CleanLines {
+    param(
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][object[]]$Output
+    )
+
+    $lines = @()
+    foreach ($item in $Output) {
+        if ($null -eq $item) {
+            continue
+        }
+
+        $line = $item.ToString().Replace(([char]0).ToString(), "").Trim()
+        if (-not [string]::IsNullOrWhiteSpace($line)) {
+            $lines += $line
+        }
+    }
+    return $lines
+}
+
 function Get-CommandVersion {
     param(
         [Parameter(Mandatory = $true)][string]$Command,
-        [Parameter(Mandatory = $true)][string[]]$Arguments
+        [Parameter(Mandatory = $true)][string[]]$Arguments,
+        [Parameter(Mandatory = $true)][string]$DisplayName
     )
 
     $resolved = Get-Command $Command -ErrorAction SilentlyContinue
@@ -258,19 +304,66 @@ function Get-CommandVersion {
     }
 
     $output = & $resolved.Source @Arguments 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        throw "$Command 版本检查失败：$output"
+    $exitCode = $LASTEXITCODE
+    $lines = @(ConvertTo-CleanLines -Output @($output))
+    if ($exitCode -ne 0) {
+        $details = if ($lines.Count -gt 0) { $lines -join " " } else { "未返回错误详情" }
+        throw "$DisplayName 版本检查失败：$details。请按 README.md 快速开始章节检查安装。"
     }
-    return ($output | Select-Object -First 1).ToString().Trim()
+    if ($lines.Count -eq 0) {
+        throw "$DisplayName 版本检查未返回内容。"
+    }
+    return $lines[0]
+}
+
+function Get-UbuntuWsl2Version {
+    $resolved = Get-Command "wsl" -ErrorAction SilentlyContinue
+    if ($null -eq $resolved) {
+        return $null
+    }
+
+    $output = & $resolved.Source --list --verbose 2>&1
+    $exitCode = $LASTEXITCODE
+    $lines = @(ConvertTo-CleanLines -Output @($output))
+    if ($exitCode -ne 0) {
+        $details = if ($lines.Count -gt 0) { $lines -join " " } else { "未返回错误详情" }
+        throw "无法读取 WSL 发行版列表：$details。请按 README.md 快速开始章节安装 Ubuntu WSL2。"
+    }
+
+    $ubuntuVersions = @()
+    foreach ($line in $lines) {
+        $normalized = [regex]::Replace($line, "^\s*\*?\s*", "")
+        $columns = @($normalized -split "\s+")
+        if ($columns.Count -lt 2) {
+            continue
+        }
+        if ($columns[0] -match "^Ubuntu(?:-.+)?$") {
+            $ubuntuVersions += $columns[$columns.Count - 1]
+        }
+    }
+
+    if ($ubuntuVersions.Count -eq 0) {
+        throw "WSL 中未安装 Ubuntu 发行版。请按 README.md 快速开始章节安装 Ubuntu WSL2。"
+    }
+    if ($ubuntuVersions -notcontains "2") {
+        throw "Ubuntu 发行版必须使用 WSL2；当前 VERSION 为：$($ubuntuVersions -join '、')。"
+    }
+    return "VERSION 2"
 }
 
 $results = [ordered]@{
-    git = Get-CommandVersion -Command "git" -Arguments @("--version")
-    docker = Get-CommandVersion -Command "docker" -Arguments @("--version")
-    compose = Get-CommandVersion -Command "docker" -Arguments @("compose", "version")
-    wsl = Get-CommandVersion -Command "wsl" -Arguments @("--version")
+    git = Get-CommandVersion -Command "git" -Arguments @("--version") -DisplayName "Git"
+    docker = Get-CommandVersion -Command "docker" -Arguments @("--version") -DisplayName "Docker Engine"
+    compose = Get-CommandVersion -Command "docker" -Arguments @("compose", "version") -DisplayName "Docker Compose"
+    wsl = Get-CommandVersion -Command "wsl" -Arguments @("--version") -DisplayName "WSL"
 }
 
+$labels = @{
+    git = "Git"
+    docker = "Docker Engine"
+    compose = "Docker Compose"
+    wsl = "WSL"
+}
 $missing = @($results.GetEnumerator() | Where-Object { [string]::IsNullOrWhiteSpace($_.Value) })
 foreach ($item in $results.GetEnumerator()) {
     $value = if ($item.Value) { $item.Value } else { "未安装" }
@@ -278,17 +371,39 @@ foreach ($item in $results.GetEnumerator()) {
 }
 
 if ($missing.Count -gt 0) {
-    $names = ($missing.Name -join "、")
-    throw "缺少运行环境：$names。请按 docs/deployment/local-development.md 安装后重试。"
+    $names = @($missing | ForEach-Object { $labels[$_.Name] }) -join "、"
+    throw "缺少运行环境：$names。请按 README.md 快速开始章节安装后重试。"
 }
 
-$dockerMajor = [int]([regex]::Match($results.docker, "\d+").Value)
+$dockerVersionMatch = [regex]::Match($results.docker, "\d+")
+if (-not $dockerVersionMatch.Success) {
+    throw "无法识别 Docker Engine 版本：$($results.docker)"
+}
+
+$dockerMajor = [int]$dockerVersionMatch.Value
 if ($dockerMajor -lt 23) {
     throw "Docker Engine 需要 23 或更高版本，当前为：$($results.docker)"
 }
 
+$composeVersionMatch = [regex]::Match(
+    $results.compose,
+    "(?i)\bversion\s+v?(\d+)(?:\.\d+)*\b"
+)
+if (-not $composeVersionMatch.Success) {
+    throw "无法识别 Docker Compose 版本：$($results.compose)"
+}
+
+$composeMajor = [int]$composeVersionMatch.Groups[1].Value
+if ($composeMajor -lt 2) {
+    throw "Docker Compose 需要 v2 或更高版本，当前为：$($results.compose)"
+}
+
+$ubuntuWslVersion = Get-UbuntuWsl2Version
+Write-Host ("{0,-10} {1}" -f "ubuntu", $ubuntuWslVersion)
 Write-Host "环境体检通过。" -ForegroundColor Green
 ```
+
+该文件必须以 UTF-8 BOM 保存，确保 Windows PowerShell 5.1 能正确解析中文错误信息。脚本行为以 `tests/static/test_environment_check.py` 的 13 项测试为准；修改后不得降低 Compose v2、Ubuntu WSL2、星号/多发行版和 NUL 清洗契约。
 
 `.gitignore` 增加：
 
@@ -311,7 +426,7 @@ test-results/
 Run:
 
 ```powershell
-python -m unittest tests.static.test_repository_contract -v
+python -m unittest discover -s tests/static -v
 git diff --check
 ```
 
@@ -320,7 +435,7 @@ Expected: 全部测试显示 `OK`，`git diff --check` 无输出。
 - [ ] **Step 6: 提交仓库契约**
 
 ```powershell
-git add README.md NOTICE.md LICENSE docs/research/upstream-baseline.md scripts/check-environment.ps1 tests/__init__.py tests/static/__init__.py tests/static/test_repository_contract.py .gitignore
+git add README.md NOTICE.md LICENSE docs/research/upstream-baseline.md scripts/check-environment.ps1 tests/__init__.py tests/static/__init__.py tests/static/test_repository_contract.py tests/static/test_environment_check.py .gitignore
 git commit -m "docs: establish repository and upstream contract"
 ```
 
@@ -540,6 +655,7 @@ git commit -m "feat: scaffold AutoFlow 360 Frappe app"
 - Create: `scripts/run-tests.ps1`
 - Create: `docs/deployment/local-development.md`
 - Create: `tests/static/test_deployment_contract.py`
+- Modify: `docs/research/upstream-baseline.md`
 
 **Interfaces:**
 
@@ -552,6 +668,7 @@ git commit -m "feat: scaffold AutoFlow 360 Frappe app"
 # tests/static/test_deployment_contract.py
 from pathlib import Path
 import json
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -569,6 +686,33 @@ class DeploymentContractTest(unittest.TestCase):
         self.assertIn("AUTOFLOW_SITE=autoflow.localhost", content)
         self.assertIn("AUTOFLOW_ADMIN_PASSWORD=change-me-locally", content)
         self.assertNotIn("294367704", content)
+
+    def test_upstream_baseline_has_four_immutable_revisions_and_date(self):
+        content = (ROOT / "docs/research/upstream-baseline.md").read_text(encoding="utf-8")
+        expected_projects = {
+            "Frappe Framework",
+            "ERPNext",
+            "Frappe CRM",
+            "frappe_docker",
+        }
+        rows = {}
+        for line in content.splitlines():
+            if not line.lstrip().startswith("|"):
+                continue
+            columns = [column.strip() for column in line.strip().strip("|").split("|")]
+            if columns and columns[0] in expected_projects:
+                self.assertNotIn(columns[0], rows, f"重复上游行：{columns[0]}")
+                rows[columns[0]] = columns
+
+        self.assertEqual(set(rows), expected_projects)
+        for project, columns in rows.items():
+            self.assertGreaterEqual(len(columns), 5, project)
+            revisions = re.findall(r"`([0-9a-f]{40})`", columns[4])
+            self.assertEqual(len(revisions), 1, project)
+
+        dates = re.findall(r"获取日期：(\d{4}-\d{2}-\d{2})", content)
+        self.assertGreaterEqual(len(dates), 1)
+        self.assertEqual(len(set(dates)), 1)
 
 
 if __name__ == "__main__":
@@ -754,10 +898,27 @@ Copy-Item deploy/env.example .env
 
 Expected: 输出包含 `frappe`、`erpnext`、`crm` 和 `autoflow_360`。
 
-- [ ] **Step 7: 提交开发环境**
+- [ ] **Step 7: 回填不可变的上游提交基线**
+
+依赖全部拉取并完成站点安装后，分别在以下仓库执行 `git rev-parse HEAD`：
+
+- `.runtime/frappe_docker`
+- `.runtime/frappe_docker/development/frappe-bench/apps/frappe`
+- `.runtime/frappe_docker/development/frappe-bench/apps/erpnext`
+- `.runtime/frappe_docker/development/frappe-bench/apps/crm`
+
+把得到的四个 40 位提交哈希写入 `docs/research/upstream-baseline.md` 对应表格，同时写入统一的 `获取日期：YYYY-MM-DD`。不得用分支名或短哈希代替实际提交。完成后运行：
 
 ```powershell
-git add deploy scripts/bootstrap-dev.ps1 scripts/bench.ps1 scripts/run-tests.ps1 docs/deployment/local-development.md tests/static/test_deployment_contract.py
+python -m unittest tests.static.test_deployment_contract -v
+```
+
+Expected: 四个上游项目均有不可变提交证据和获取日期。
+
+- [ ] **Step 8: 提交开发环境**
+
+```powershell
+git add deploy scripts/bootstrap-dev.ps1 scripts/bench.ps1 scripts/run-tests.ps1 docs/deployment/local-development.md docs/research/upstream-baseline.md tests/static/test_deployment_contract.py
 git commit -m "build: add reproducible Frappe v16 development environment"
 ```
 

@@ -5,3 +5,16 @@
 .env
 .env.*
 !.env.example
+
+# AutoFlow 360 本地运行与测试产物
+.runtime/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+sites/
+logs/
+*.log
+playwright-report/
+test-results/
