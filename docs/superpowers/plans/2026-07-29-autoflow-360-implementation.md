@@ -2296,16 +2296,22 @@ git commit -m "feat: enforce quotation approval and sales conversion"
 - Create: `autoflow_360/autoflow_360/doctype/project_material_plan/project_material_plan.json`
 - Create: `autoflow_360/autoflow_360/doctype/project_material_plan/project_material_plan.py`
 - Create: `autoflow_360/autoflow_360/doctype/project_material_plan_item/project_material_plan_item.json`
+- Create: `autoflow_360/autoflow_360/doctype/project_material_plan_item/project_material_plan_item.py`
+- Create: `autoflow_360/api/material.py`
 - Create: `autoflow_360/tests/test_material_planning.py`
+- Create: `tests/static/test_material_planning_contract.py`
 - Modify: `autoflow_360/tests/factories.py`
-- Modify: `autoflow_360/hooks.py`
+- Modify: `autoflow_360/setup/custom_fields.py`
+- Modify: `autoflow_360/public/js/sales_order.js`
 
 **Interfaces:**
 
 - Consumes: 已提交 `Sales Order`、`Bin.actual_qty`、保留数量、在途采购和物料安全库存。
 - Produces: `calculate_material_gap(sales_order_name) -> list[MaterialGap]`、`create_material_request(sales_order_name) -> str | None`。
 
-- [ ] **Step 1: 写缺口计算和重复需求测试**
+> 2026-07-31 实施修正：ERPNext 会把当前销售订单的未交数量计入 `Bin.reserved_qty`，因此实际实现先按物料和仓库聚合本单未交库存单位数量，再从总预留量中扣除本单预留，只把其他订单占用计入缺口；负库存不能截断为零。每次计算都会保存 `Project Material Plan` 解释快照，只有缺口大于零才创建采购类 `Material Request`。幂等创建同时使用文件锁、销售订单数据库行锁和来源字段，且不在服务内部提交事务。下方初始草案中直接扣除全部预留量、只返回缺口行和未加锁建单的示例均已废弃，实际代码和测试为准。
+
+- [x] **Step 1: 写缺口计算和重复需求测试**
 
 ```python
 from frappe.tests.utils import FrappeTestCase
@@ -2339,7 +2345,7 @@ class TestMaterialPlanning(FrappeTestCase):
 		self.assertEqual(first, second)
 ```
 
-- [ ] **Step 2: 运行测试并确认规划服务缺失**
+- [x] **Step 2: 运行测试并确认规划服务缺失**
 
 Run:
 
@@ -2349,7 +2355,7 @@ Run:
 
 Expected: `material_planning` 无法导入。
 
-- [ ] **Step 3: 定义可解释物料缺口类型**
+- [x] **Step 3: 定义可解释物料缺口类型**
 
 ```python
 # autoflow_360/services/material_planning.py
@@ -2418,7 +2424,7 @@ def has_approved_closure_request(project_name: str) -> bool:
 	)
 ```
 
-- [ ] **Step 4: 实现物料需求幂等创建**
+- [x] **Step 4: 实现物料需求幂等创建**
 
 ```python
 def create_material_request(sales_order_name: str) -> str | None:
@@ -2461,7 +2467,7 @@ def create_material_request(sales_order_name: str) -> str | None:
 
 `setup/custom_fields.py` 为 `Material Request` 增加只读 `custom_source_sales_order`。
 
-- [ ] **Step 5: 运行规划测试并验证负数边界**
+- [x] **Step 5: 运行规划测试并验证负数边界**
 
 Run:
 
@@ -2470,12 +2476,12 @@ Run:
 .\scripts\bench.ps1 --site autoflow.localhost run-tests --module autoflow_360.tests.test_material_planning
 ```
 
-Expected: 库存充足不建单；库存缺口正确；重复调用返回同一需求。
+Expected: 八项专项集成测试通过，覆盖现货、本单预留去重、其他订单预留、在途采购、安全库存、负库存、无缺口、重复调用、草稿订单和缺少仓库边界；全量结果为 50 项真实集成测试和 87 项静态测试通过。
 
-- [ ] **Step 6: 提交物料规划**
+- [x] **Step 6: 提交物料规划**
 
 ```powershell
-git add autoflow_360/services/material_planning.py autoflow_360/autoflow_360/doctype/project_material_plan autoflow_360/autoflow_360/doctype/project_material_plan_item autoflow_360/tests/test_material_planning.py autoflow_360/tests/factories.py autoflow_360/setup/custom_fields.py autoflow_360/hooks.py
+git add README.md docs/superpowers/plans/2026-07-29-autoflow-360-implementation.md tests/static/test_material_planning_contract.py autoflow_360/services/material_planning.py autoflow_360/api/material.py autoflow_360/autoflow_360/doctype/project_material_plan autoflow_360/autoflow_360/doctype/project_material_plan_item autoflow_360/tests/test_material_planning.py autoflow_360/tests/factories.py autoflow_360/setup/custom_fields.py autoflow_360/public/js/sales_order.js
 git commit -m "feat: plan material gaps from sales orders"
 ```
 

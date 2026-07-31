@@ -18,7 +18,7 @@ PROJECT_LINK_DOCTYPES = (
 
 
 def ensure_custom_fields() -> None:
-	"""Reconcile AutoFlow project, quotation and conversion fields."""
+	"""Reconcile AutoFlow project, quotation, sales and planning fields."""
 	fields = {
 		doctype: [
 			{
@@ -70,6 +70,19 @@ def ensure_custom_fields() -> None:
 			"no_copy": 1,
 			"read_only": 1,
 			"unique": 1,
+		}
+	)
+	fields["Material Request"].append(
+		{
+			"fieldname": "custom_source_sales_order",
+			"label": "Source Sales Order",
+			"fieldtype": "Link",
+			"options": "Sales Order",
+			"insert_after": "custom_customer_project",
+			"module": "AutoFlow 360",
+			"in_standard_filter": 1,
+			"no_copy": 1,
+			"read_only": 1,
 		}
 	)
 	# Task 4 can be migrated before Task 5 introduces Customer Project. A complete

@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import frappe
 from frappe.tests.utils import make_test_records
-from frappe.utils import getdate, nowdate
+from frappe.utils import flt, getdate, nowdate
 
 
 SYNTHETIC_COMPANY = "_Test Company"
@@ -74,7 +74,13 @@ def make_crm_deal(organization_name: str, **overrides):
 	return deal
 
 
-def _make_synthetic_item():
+def _make_synthetic_item(
+	*,
+	is_stock_item: bool = False,
+	safety_stock: float = 0,
+):
+	if safety_stock < 0:
+		frappe.throw("Synthetic Item safety stock cannot be negative")
 	item_group = frappe.db.get_value(
 		"Item Group",
 		{"is_group": 0},
@@ -97,11 +103,101 @@ def _make_synthetic_item():
 			"item_name": item_code,
 			"item_group": item_group,
 			"stock_uom": uom,
-			"is_stock_item": 0,
+			"is_stock_item": int(is_stock_item),
+			"safety_stock": safety_stock,
 		}
 	)
 	item.insert()
 	return item
+
+
+def make_stock_sales_order(
+	*,
+	quantity: float = 10,
+	submit: bool = True,
+	warehouse: str | None = "_Test Warehouse - _TC",
+	customer_project: str | None = None,
+	safety_stock: float = 0,
+):
+	if quantity <= 0:
+		frappe.throw("Synthetic Sales Order quantity must be positive")
+	_ensure_synthetic_master_data()
+	if warehouse and not frappe.db.exists("Warehouse", warehouse):
+		make_test_records("Warehouse")
+	if warehouse and not frappe.db.exists("Warehouse", warehouse):
+		frappe.throw(f"Synthetic fixture is missing: Warehouse {warehouse}")
+	if not customer_project:
+		customer_project = make_customer_project(
+			"SYNTHETIC Material Planning Project"
+		).name
+
+	item = _make_synthetic_item(
+		is_stock_item=True,
+		safety_stock=safety_stock,
+	)
+	today = getdate(nowdate())
+	order = frappe.new_doc("Sales Order")
+	order.company = SYNTHETIC_COMPANY
+	order.customer = SYNTHETIC_CUSTOMER
+	order.order_type = "Sales"
+	order.transaction_date = today
+	order.delivery_date = today + timedelta(days=30)
+	order.currency = (
+		frappe.get_cached_value(
+			"Company",
+			SYNTHETIC_COMPANY,
+			"default_currency",
+		)
+		or "INR"
+	)
+	order.custom_customer_project = customer_project
+	order.append(
+		"items",
+		{
+			"item_code": item.name,
+			"qty": quantity,
+			"uom": item.stock_uom,
+			"warehouse": warehouse,
+			"delivery_date": order.delivery_date,
+			"rate": 100,
+		},
+	)
+	order.insert()
+	if submit:
+		order.submit()
+	return order
+
+
+def set_warehouse_stock(
+	item_code: str,
+	warehouse: str,
+	*,
+	actual_qty: float,
+	incoming_qty: float = 0,
+	extra_reserved_qty: float = 0,
+):
+	if incoming_qty < 0 or extra_reserved_qty < 0:
+		frappe.throw("Synthetic incoming and extra reserved quantities cannot be negative")
+	if not frappe.db.exists("Item", item_code):
+		frappe.throw(f"Synthetic fixture is missing: Item {item_code}")
+	if not frappe.db.exists("Warehouse", warehouse):
+		frappe.throw(f"Synthetic fixture is missing: Warehouse {warehouse}")
+
+	from erpnext.stock.utils import get_bin
+
+	bin_doc = get_bin(item_code, warehouse)
+	bin_doc.reload()
+	frappe.db.set_value(
+		"Bin",
+		bin_doc.name,
+		{
+			"actual_qty": actual_qty,
+			"ordered_qty": incoming_qty,
+			"reserved_qty": flt(bin_doc.reserved_qty) + extra_reserved_qty,
+		},
+		update_modified=False,
+	)
+	return frappe.get_doc("Bin", bin_doc.name)
 
 
 def _make_synthetic_customer_contact():
