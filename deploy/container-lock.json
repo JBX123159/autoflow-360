@@ -1,0 +1,5 @@
+{
+  "frappe_bench": "docker.io/frappe/bench@sha256:c66af151b8b220312c2bb9ea831416299c08af2d7d344bc432252f89c39cc622",
+  "mariadb": "docker.io/mariadb@sha256:efb4959ef2c835cd735dbc388eb9ad6aab0c78dd64febcd51bc17481111890c4",
+  "redis": "docker.io/redis@sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb"
+}

@@ -1,0 +1,22 @@
+{
+  "frappe_docker": {
+    "repository": "https://github.com/frappe/frappe_docker",
+    "branch": "main",
+    "commit": "f137f05d799a6a00d203b4c0d316a8f475e51778"
+  },
+  "frappe": {
+    "repository": "https://github.com/frappe/frappe",
+    "branch": "version-16",
+    "commit": "06613fc60b44d5736007ae3107cdab029b2ae045"
+  },
+  "erpnext": {
+    "repository": "https://github.com/frappe/erpnext",
+    "branch": "version-16",
+    "commit": "8378b6e203841c056925420cc44e6d631c915cf1"
+  },
+  "crm": {
+    "repository": "https://github.com/frappe/crm",
+    "branch": "main",
+    "commit": "966705a95dbc6e66a8c3342bec6e78a3b397b402"
+  }
+}

@@ -704,20 +704,43 @@ git commit -m "feat: scaffold AutoFlow 360 Frappe app"
 **Files:**
 
 - Create: `deploy/apps.dev.json`
+- Create: `deploy/container-lock.json`
 - Create: `deploy/env.example`
+- Create: `deploy/upstream-lock.json`
+- Create: `.gitattributes`
 - Create: `scripts/bootstrap-dev.ps1`
+- Create: `scripts/bootstrap-container.sh`
 - Create: `scripts/bench.ps1`
 - Create: `scripts/run-tests.ps1`
+- Create: `autoflow_360/development.py`
 - Create: `docs/deployment/local-development.md`
 - Create: `tests/static/test_deployment_contract.py`
+- Modify: `README.md`
 - Modify: `docs/research/upstream-baseline.md`
+- Modify: `scripts/check-environment.ps1`
+- Modify: `tests/static/test_environment_check.py`
 
 **Interfaces:**
 
-- Consumes: `scripts/check-environment.ps1`、官方 `frappe_docker` 开发容器、当前仓库绝对路径。
-- Produces: `.runtime/frappe_docker/development/frappe-bench`、站点 `autoflow.localhost`、已安装的 `frappe`、`erpnext`、`crm` 与 `autoflow_360`。
+- Consumes: `scripts/check-environment.ps1`、Windows Docker 或 WSL2 Ubuntu 内的 Docker/Git、官方 `frappe_docker` 开发容器、当前仓库绝对路径。
+- Produces: `deploy/upstream-lock.json`、Docker 原生卷 `autoflow-360-bench-data`、站点 `autoflow.localhost`、已安装并校验精确提交的 `frappe`、`erpnext`、`crm` 与 `autoflow_360`。
 
-- [ ] **Step 1: 写部署配置失败测试**
+**当前官方契约修正（2026-07-30 核验 `frappe_docker/main`）：**
+
+- 官方 `devcontainer-example/docker-compose.yml` 与 `development/installer.py` 的本地 MariaDB root 密码固定为 `123`。该口令仅限本机隔离开发，生产环境禁止复用此开发 Compose 或固定口令。
+- 不提供实际无效的数据库 root 密码环境变量。管理员密码必须从 `.env` 或当前进程环境变量读取，再通过 `docker exec --env` 传入容器，不得硬编码。
+- `.env` 只允许 `AUTOFLOW_SITE`、`AUTOFLOW_ADMIN_PASSWORD`、`AUTOFLOW_RUNTIME`、`AUTOFLOW_WSL_DISTRO` 四个允许名单键；拒绝重复项、未知项、错误格式、换行和 NUL，不使用 `Invoke-Expression`。
+- 站点名只允许小写字母、数字、连字符和点，并且必须以 `.localhost` 结尾；运行目录必须位于当前仓库内。
+- Windows Docker 可用时优先使用；否则安全调用指定 WSL2 Ubuntu 内的 Docker 与 Git，不依赖 Docker Desktop。Windows 路径必须先把反斜杠转换为正斜杠，再作为独立参数交给 `wslpath -a`，以支持中文和空格路径。
+- Frappe/ERPNext 固定为 `version-16`，CRM 固定为 `main`，Python 3.14.x，Node 24。
+- 首次真实部署成功后，四项不可变提交基线必须由实际仓库的 `git rev-parse HEAD` 回填；当前基线已于 2026-07-30 完成回填到文档和 `deploy/upstream-lock.json`。启动脚本必须检出并复核这些精确提交，分支名只用于首次安装和缺失对象的获取，不能充当版本锁。
+- 干净安装必须先把锁定提交获取到本地缓存并建立 `autoflow-lock` 分支，再把本地路径交给官方安装器；不能先执行移动分支 HEAD 的安装代码后再回退。
+- `frappe_docker/.devcontainer` 属于生成目录，每次初始化应从锁定提交的 `devcontainer-example` 刷新；上游仓库存在受跟踪文件改动时拒绝覆盖。首次建站使用一次性随机密码，真实本地密码由仅限 `.localhost` 和 `developer_mode` 的内部方法从进程环境同步，不能出现在 Bench 命令参数或日志中；已有站点每次初始化都同步为 `.env` 当前值并注销旧会话。
+- Bench、虚拟环境、依赖与站点文件使用 Docker 原生卷 `autoflow-360-bench-data`，避免在 OneDrive/Windows 9P 挂载上执行高频小文件操作；检测到旧路径时先停止 Frappe 服务、复制到原生卷并保留旧目录作恢复备份。
+- 容器镜像使用 `deploy/container-lock.json` 的 `sha256` 摘要；原生卷保存项目路径哈希、站点名和格式版本组成的所有权标记，冲突时拒绝复用。基础 Bench 不完整时明确停止并要求先备份，不自动覆盖未知数据。
+- 2026-07-31 已完成真实卷来源哈希核验、错误旧标记修复和连续两次初始化；owner/ready、固定镜像、原生卷挂载、四个应用版本及 8 项真实 Frappe 测试均通过。
+
+- [x] **Step 1: 写部署配置失败测试**
 
 ```python
 # tests/static/test_deployment_contract.py
@@ -774,7 +797,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: 运行测试并确认配置缺失**
+- [x] **Step 2: 运行测试并确认配置缺失**
 
 Run:
 
@@ -784,7 +807,7 @@ python -m unittest tests.static.test_deployment_contract -v
 
 Expected: `deploy/apps.dev.json` 缺失。
 
-- [ ] **Step 3: 固定上游开发分支和本地配置**
+- [x] **Step 3: 固定上游开发分支、精确提交和本地配置**
 
 ```json
 [
@@ -803,28 +826,56 @@ Expected: `deploy/apps.dev.json` 缺失。
 # deploy/env.example
 AUTOFLOW_SITE=autoflow.localhost
 AUTOFLOW_ADMIN_PASSWORD=change-me-locally
-AUTOFLOW_DB_ROOT_PASSWORD=change-me-locally
 AUTOFLOW_RUNTIME=.runtime/frappe_docker
+AUTOFLOW_WSL_DISTRO=Ubuntu
 ```
 
-- [ ] **Step 4: 编写幂等启动脚本**
+`deploy/apps.dev.json` 为官方安装器提供兼容分支；`deploy/upstream-lock.json` 另外保存 `frappe_docker`、`frappe`、`erpnext`、`crm` 的官方仓库地址、兼容分支和 40 位提交哈希。后者是机器可读的不可变版本来源。
+
+- [x] **Step 4: 编写幂等启动脚本**
 
 `scripts/bootstrap-dev.ps1` 必须按以下顺序执行并在每步检查 `$LASTEXITCODE`：
 
 ```powershell
 $ErrorActionPreference = "Stop"
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$runtimeRoot = Join-Path $projectRoot ".runtime\frappe_docker"
+$configuration = Read-AutoFlowConfiguration -ProjectRoot $projectRoot
+$runtimeRoot = Get-RuntimePath -ProjectRoot $projectRoot -ConfiguredPath $configuration["AUTOFLOW_RUNTIME"]
 $runtimeParent = Split-Path $runtimeRoot -Parent
-$siteName = if ($env:AUTOFLOW_SITE) { $env:AUTOFLOW_SITE } else { "autoflow.localhost" }
+$siteName = $configuration["AUTOFLOW_SITE"]
+$adminPassword = $configuration["AUTOFLOW_ADMIN_PASSWORD"]
+$wslDistro = $configuration["AUTOFLOW_WSL_DISTRO"]
 
-& (Join-Path $PSScriptRoot "check-environment.ps1")
+& (Join-Path $PSScriptRoot "check-environment.ps1") -WslDistro $wslDistro
+$dockerBackend = Get-DockerBackend -WslDistro $wslDistro
 
-if (-not (Test-Path $runtimeRoot)) {
+# WSL 后端使用同一发行版内的 Git，并把运行目录转换为 WSL 路径；
+# Windows 后端使用 Windows Git。所有参数都以数组传递。
+$gitCommand, $gitPrefix, $runtimePathForGit = Get-GitBackendArguments `
+    -DockerBackend $dockerBackend `
+    -WindowsRuntimePath $runtimeRoot
+if (-not (Test-Path -LiteralPath $runtimeRoot)) {
     New-Item -ItemType Directory -Force -Path $runtimeParent | Out-Null
-    git clone --depth 1 https://github.com/frappe/frappe_docker $runtimeRoot
-    if ($LASTEXITCODE -ne 0) { throw "克隆 frappe_docker 失败。" }
+    Invoke-NativeCommand `
+        -Command $gitCommand `
+        -Arguments (
+            $gitPrefix +
+            @(
+                "clone", "--branch", $frappeDockerLock.Branch,
+                $frappeDockerLock.Repository, $runtimePathForGit
+            )
+        ) `
+        -FailureMessage "克隆 frappe_docker 失败。"
 }
+
+# 读取 deploy/upstream-lock.json 后检出并校验锁定提交。
+Invoke-NativeCommand `
+    -Command $gitCommand `
+    -Arguments (
+        $gitPrefix +
+        @("-C", $runtimePathForGit, "checkout", "--detach", $frappeDockerLock.Commit)
+    ) `
+    -FailureMessage "切换到锁定的 frappe_docker 提交失败。"
 
 $devcontainerSource = Join-Path $runtimeRoot "devcontainer-example"
 $devcontainerTarget = Join-Path $runtimeRoot ".devcontainer"
@@ -833,63 +884,57 @@ if (-not (Test-Path $devcontainerTarget)) {
 }
 
 $overrideFile = Join-Path $devcontainerTarget "compose.autoflow.yaml"
-$projectRootForYaml = $projectRoot.Replace("\", "/")
-$runtimeRootForYaml = $runtimeRoot.Replace("\", "/")
-@"
+$projectRootForYaml = (
+    Convert-ToDockerPath -WindowsPath $projectRoot -DockerBackend $dockerBackend
+).Replace("'", "''")
+$runtimeRootForYaml = (
+    Convert-ToDockerPath -WindowsPath $runtimeRoot -DockerBackend $dockerBackend
+).Replace("'", "''")
+$overrideContent = @"
 services:
   frappe:
     volumes:
-      - "${projectRootForYaml}:/workspace/autoflow_360"
-      - "${runtimeRootForYaml}:/workspace/frappe_docker"
-"@ | Set-Content -Encoding UTF8 $overrideFile
+      - '${projectRootForYaml}:/workspace/autoflow_360'
+      - '${runtimeRootForYaml}:/workspace/frappe_docker'
+"@
+Set-Content -LiteralPath $overrideFile -Value $overrideContent -Encoding UTF8
 
-$env:AUTOFLOW_PROJECT_ROOT = $projectRoot
-docker compose `
-    -f (Join-Path $devcontainerTarget "docker-compose.yml") `
-    -f $overrideFile `
-    up -d
-if ($LASTEXITCODE -ne 0) { throw "启动 Frappe 开发容器失败。" }
+$composeArguments = @(
+    "compose",
+    "-f", (Convert-ToDockerPath -WindowsPath $composeFile -DockerBackend $dockerBackend),
+    "-f", (Convert-ToDockerPath -WindowsPath $overrideFile -DockerBackend $dockerBackend)
+)
+Invoke-NativeCommand `
+    -Command $dockerBackend.Command `
+    -Arguments ($dockerBackend.Prefix + $composeArguments + @("up", "-d")) `
+    -FailureMessage "启动 Frappe 开发容器失败。"
 
-$frappeContainer = docker compose `
-    -f (Join-Path $devcontainerTarget "docker-compose.yml") `
-    -f $overrideFile `
-    ps -q frappe
+$frappeContainer = Get-FrappeContainer `
+    -DockerBackend $dockerBackend `
+    -ComposeArguments $composeArguments
 if ([string]::IsNullOrWhiteSpace($frappeContainer)) {
     throw "找不到 frappe 开发容器。"
 }
 
-$appsJson = "/workspace/autoflow_360/deploy/apps.dev.json"
-$benchPath = "/workspace/development/frappe-bench"
-$bootstrap = @"
-set -euo pipefail
-cd /workspace/development
-if [ ! -d "$benchPath" ]; then
-  python /workspace/frappe_docker/development/installer.py \
-    --apps-json "$appsJson" \
-    --bench-name frappe-bench \
-    --site-name "$siteName" \
-    --frappe-branch version-16 \
-    --py-version 3.14 \
-    --node-version 24 \
-    --admin-password admin
-fi
-cd "$benchPath"
-if [ ! -e apps/autoflow_360 ]; then
-  ln -s /workspace/autoflow_360 apps/autoflow_360
-fi
-./env/bin/pip install -e apps/autoflow_360
-if ! bench --site "$siteName" list-apps | grep -qx autoflow_360; then
-  bench --site "$siteName" install-app autoflow_360
-fi
-bench --site "$siteName" migrate
-bench --site "$siteName" enable-scheduler
-"@
+Invoke-NativeCommand `
+    -Command $dockerBackend.Command `
+    -Arguments (
+        $dockerBackend.Prefix +
+        @(
+            "exec",
+            "--env", "AUTOFLOW_SITE=$siteName",
+            "--env", "AUTOFLOW_ADMIN_PASSWORD=$adminPassword",
+            $frappeContainer,
+            "bash",
+            "/workspace/autoflow_360/scripts/bootstrap-container.sh"
+        )
+    ) `
+    -FailureMessage "初始化 AutoFlow 360 站点失败。"
 
-docker exec $frappeContainer bash -lc $bootstrap
-if ($LASTEXITCODE -ne 0) { throw "初始化 AutoFlow 360 站点失败。" }
-
-Write-Host "开发环境已就绪：http://$siteName`:8000" -ForegroundColor Green
+Write-Host "开发环境初始化完成；运行 scripts/bench.ps1 start 后访问 http://$siteName`:8000。" -ForegroundColor Green
 ```
+
+容器内逻辑单独保存为 `scripts/bootstrap-container.sh`，并由 `.gitattributes` 强制使用 LF 换行。不得把多行 Bash 作为 `wsl.exe` 的单个命令字符串传递。脚本必须先从官方仓库取得锁定提交，在本地缓存创建 `autoflow-lock` 分支，再通过官方安装器的 `--frappe-repo` 和运行时 apps JSON 从本地锁定源码建 Bench/站点；完成后恢复官方 origin 并再次验证提交。锁定提交发生变化时重装 Python/Node 依赖和重建前端资源。脚本在登记 `autoflow_360` 前还必须检查 `sites/apps.txt` 是否以换行结尾，避免把应用名与上一行拼接；随后再执行 editable 安装、`install-app`、`migrate`、管理员密码同步与 `enable-scheduler`。
 
 实现时必须向 devcontainer compose 增加两个只在本机生效的挂载：
 
@@ -897,13 +942,13 @@ Write-Host "开发环境已就绪：http://$siteName`:8000" -ForegroundColor Gre
 services:
   frappe:
     volumes:
-      - ../../:/workspace/autoflow_360
-      - ../:/workspace/frappe_docker
+      - '<经 wslpath 或 Windows 路径转换后的仓库绝对路径>:/workspace/autoflow_360'
+      - '<经 wslpath 或 Windows 路径转换后的运行目录绝对路径>:/workspace/frappe_docker'
 ```
 
 该覆盖文件保存为 `.runtime/frappe_docker/.devcontainer/compose.autoflow.yaml`，由脚本生成但不提交，主仓库只提交生成逻辑。
 
-- [ ] **Step 5: 编写统一 Bench 和测试入口**
+- [x] **Step 5: 编写统一 Bench 和测试入口**
 
 ```powershell
 # scripts/bench.ps1
@@ -916,53 +961,65 @@ if (-not (Test-Path $composeFile) -or -not (Test-Path $overrideFile)) {
     throw "开发环境未初始化，请先运行 scripts/bootstrap-dev.ps1。"
 }
 
-$frappeContainer = docker compose -f $composeFile -f $overrideFile ps -q frappe
+$dockerBackend = Get-DockerBackend -WslDistro $wslDistro
+$composeFileForDocker = Convert-ToDockerPath -WindowsPath $composeFile -DockerBackend $dockerBackend
+$overrideFileForDocker = Convert-ToDockerPath -WindowsPath $overrideFile -DockerBackend $dockerBackend
+$frappeContainer = Get-FrappeContainer `
+    -DockerBackend $dockerBackend `
+    -ComposeArguments @("compose", "-f", $composeFileForDocker, "-f", $overrideFileForDocker)
 if ([string]::IsNullOrWhiteSpace($frappeContainer)) {
     throw "Frappe 容器未运行，请重新执行 scripts/bootstrap-dev.ps1。"
 }
 
-$escapedArguments = @(
-    $args | ForEach-Object {
-        "'" + $_.Replace("'", "'\''") + "'"
-    }
-) -join " "
-$command = "cd /workspace/development/frappe-bench && bench $escapedArguments"
-docker exec $frappeContainer bash -lc $command
-exit $LASTEXITCODE
+Invoke-DockerCommand `
+    -DockerBackend $dockerBackend `
+    -Arguments @(
+        "exec", "--workdir", "/workspace/development/frappe-bench",
+        $frappeContainer, "bench"
+    ) `
+    -RemainingArguments $args
+if ($LASTEXITCODE -ne 0) {
+    throw "Bench 命令执行失败，退出码：$LASTEXITCODE。"
+}
 ```
 
 ```powershell
 # scripts/run-tests.ps1
 $ErrorActionPreference = "Stop"
+$projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$siteName = Read-SiteSetting -ProjectRoot $projectRoot
 & (Join-Path $PSScriptRoot "bench.ps1") `
-    --site autoflow.localhost run-tests --app autoflow_360
+    --site $siteName set-config allow_tests true
+& (Join-Path $PSScriptRoot "bench.ps1") `
+    --site $siteName run-tests --app autoflow_360
 if ($LASTEXITCODE -ne 0) {
     throw "AutoFlow 360 测试失败。"
 }
 ```
 
-- [ ] **Step 6: 启动环境并验证应用安装**
+- [x] **Step 6: 启动环境并验证应用安装**
 
 Run:
 
 ```powershell
 Copy-Item deploy/env.example .env
+# 编辑 .env，把 AUTOFLOW_ADMIN_PASSWORD 改为本机专用密码。
 .\scripts\bootstrap-dev.ps1
 .\scripts\bench.ps1 --site autoflow.localhost list-apps
 ```
 
 Expected: 输出包含 `frappe`、`erpnext`、`crm` 和 `autoflow_360`。
 
-- [ ] **Step 7: 回填不可变的上游提交基线**
+- [x] **Step 7: 回填不可变的上游提交基线**
 
-依赖全部拉取并完成站点安装后，分别在以下仓库执行 `git rev-parse HEAD`：
+首次成功拉取并安装后，分别在以下仓库执行 `git rev-parse HEAD`：
 
 - `.runtime/frappe_docker`
 - `.runtime/frappe_docker/development/frappe-bench/apps/frappe`
 - `.runtime/frappe_docker/development/frappe-bench/apps/erpnext`
 - `.runtime/frappe_docker/development/frappe-bench/apps/crm`
 
-把得到的四个 40 位提交哈希写入 `docs/research/upstream-baseline.md` 对应表格，同时写入统一的 `获取日期：YYYY-MM-DD`。不得用分支名或短哈希代替实际提交。完成后运行：
+把得到的四个 40 位提交哈希同时写入 `docs/research/upstream-baseline.md` 对应表格和 `deploy/upstream-lock.json`，文档写入统一的 `获取日期：YYYY-MM-DD`。启动脚本必须真实检出并验证锁文件中的提交；不得只记录哈希却继续使用移动分支 HEAD。完成后运行：
 
 ```powershell
 python -m unittest tests.static.test_deployment_contract -v
@@ -973,7 +1030,7 @@ Expected: 四个上游项目均有不可变提交证据和获取日期。
 - [ ] **Step 8: 提交开发环境**
 
 ```powershell
-git add deploy scripts/bootstrap-dev.ps1 scripts/bench.ps1 scripts/run-tests.ps1 docs/deployment/local-development.md docs/research/upstream-baseline.md tests/static/test_deployment_contract.py
+git add .gitattributes deploy autoflow_360/development.py autoflow_360/tests scripts/bootstrap-dev.ps1 scripts/bootstrap-container.sh scripts/bench.ps1 scripts/run-tests.ps1 scripts/check-environment.ps1 README.md docs/deployment/local-development.md docs/research/upstream-baseline.md tests/static/test_deployment_contract.py tests/static/test_environment_check.py
 git commit -m "build: add reproducible Frappe v16 development environment"
 ```
 
@@ -996,7 +1053,7 @@ git commit -m "build: add reproducible Frappe v16 development environment"
 - Consumes: ERPNext 标准 DocType 与 Frappe 安装/迁移钩子。
 - Produces: 七个内部角色、两个门户角色、单例设置对象、标准单据字段 `custom_customer_project`。
 
-- [ ] **Step 1: 写安装契约失败测试**
+- [x] **Step 1: 写安装契约失败测试**
 
 ```python
 from frappe.tests.utils import FrappeTestCase
@@ -1034,7 +1091,7 @@ class TestAutoFlowSettings(FrappeTestCase):
 			self.assertTrue(frappe.get_meta(doctype).has_field("custom_customer_project"), doctype)
 ```
 
-- [ ] **Step 2: 运行测试并确认角色或字段缺失**
+- [x] **Step 2: 运行测试并确认角色或字段缺失**
 
 Run:
 
@@ -1044,7 +1101,7 @@ Run:
 
 Expected: 至少一个角色或 `custom_customer_project` 字段不存在。
 
-- [ ] **Step 3: 实现角色和字段的幂等安装**
+- [x] **Step 3: 实现角色和字段的幂等安装**
 
 ```python
 # autoflow_360/setup/roles.py
@@ -1128,7 +1185,7 @@ after_install = "autoflow_360.install.after_install"
 after_migrate = "autoflow_360.install.after_migrate"
 ```
 
-- [ ] **Step 4: 创建单例设置**
+- [x] **Step 4: 创建单例设置**
 
 设置字段必须包括：
 
@@ -1158,7 +1215,7 @@ after_migrate = "autoflow_360.install.after_migrate"
 
 控制器校验所有天数大于零、风险分数在 1 到 100 之间、启用 AI 时模型名称非空。
 
-- [ ] **Step 5: 迁移并运行安装测试**
+- [x] **Step 5: 迁移并运行安装测试**
 
 Run:
 

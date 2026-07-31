@@ -40,12 +40,19 @@ class EnvironmentCheckTest(unittest.TestCase):
         directory: Path,
         *,
         major: int = 28,
+        daemon_available: bool = True,
         compose_available: bool = True,
         compose_output: str = "Docker Compose version v2.39.1",
     ) -> None:
         lines = [
             f'if "%1"=="--version" echo Docker version {major}.0.0, build synthetic',
             'if "%1"=="--version" exit /b 0',
+            (
+                f'if "%1"=="info" echo {major}.0.0'
+                if daemon_available
+                else 'if "%1"=="info" exit /b 1'
+            ),
+            'if "%1"=="info" exit /b 0',
         ]
         if compose_available:
             lines.extend(
@@ -65,6 +72,9 @@ class EnvironmentCheckTest(unittest.TestCase):
         distro_version: int = 2,
         rows: tuple[str, ...] | None = None,
         nul_characters: bool = False,
+        docker_available: bool = False,
+        docker_major: int = 29,
+        compose_output: str = "Docker Compose version v5.3.1",
     ) -> None:
         distribution_rows = rows or (f"{distro} Stopped {distro_version}",)
         payload_lines = ("NAME STATE VERSION", *distribution_rows)
@@ -79,12 +89,21 @@ class EnvironmentCheckTest(unittest.TestCase):
             payload.extend(b"\r\n")
         (directory / "wsl-list.bin").write_bytes(payload)
 
-        self._write_command(
-            directory,
-            "wsl",
+        command_lines = [
+            'if "%1"=="--version" goto version',
+            'if "%1"=="--list" goto list',
+        ]
+        if docker_available:
+            command_lines.extend(
+                (
+                    'if "%1"=="-d" if "%4"=="git" if "%5"=="--version" goto git_version',
+                    'if "%1"=="-d" if "%4"=="docker" if "%5"=="--version" goto docker_version',
+                    'if "%1"=="-d" if "%4"=="docker" if "%5"=="compose" goto compose_version',
+                    'if "%1"=="-d" if "%4"=="docker" if "%5"=="info" goto docker_info',
+                )
+            )
+        command_lines.extend(
             (
-                'if "%1"=="--version" goto version',
-                'if "%1"=="--list" goto list',
                 "exit /b 1",
                 ":version",
                 "echo WSL version: 2.7.10.0",
@@ -92,13 +111,32 @@ class EnvironmentCheckTest(unittest.TestCase):
                 ":list",
                 'type "%~dp0wsl-list.bin"',
                 "exit /b 0",
-            ),
+            )
         )
+        if docker_available:
+            command_lines.extend(
+                (
+                    ":git_version",
+                    "echo git version 2.54.0.synthetic-wsl",
+                    "exit /b 0",
+                    ":docker_version",
+                    f"echo Docker version {docker_major}.0.0, build synthetic-wsl",
+                    "exit /b 0",
+                    ":docker_info",
+                    f"echo {docker_major}.0.0",
+                    "exit /b 0",
+                    ":compose_version",
+                    f"echo {compose_output}",
+                    "exit /b 0",
+                )
+            )
+        self._write_command(directory, "wsl", command_lines)
 
     def _run_check(
         self,
         *,
         docker_major: int | None = 28,
+        docker_daemon_available: bool = True,
         compose_available: bool = True,
         include_wsl: bool = True,
         distro: str = "Ubuntu-24.04",
@@ -106,6 +144,9 @@ class EnvironmentCheckTest(unittest.TestCase):
         compose_output: str = "Docker Compose version v2.39.1",
         wsl_rows: tuple[str, ...] | None = None,
         nul_characters: bool = False,
+        docker_in_wsl: bool = False,
+        wsl_docker_major: int = 29,
+        wsl_compose_output: str = "Docker Compose version v5.3.1",
     ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory() as temporary_directory:
             fake_bin = Path(temporary_directory)
@@ -114,6 +155,7 @@ class EnvironmentCheckTest(unittest.TestCase):
                 self._write_docker(
                     fake_bin,
                     major=docker_major,
+                    daemon_available=docker_daemon_available,
                     compose_available=compose_available,
                     compose_output=compose_output,
                 )
@@ -124,6 +166,9 @@ class EnvironmentCheckTest(unittest.TestCase):
                     distro_version=distro_version,
                     rows=wsl_rows,
                     nul_characters=nul_characters,
+                    docker_available=docker_in_wsl,
+                    docker_major=wsl_docker_major,
+                    compose_output=wsl_compose_output,
                 )
 
             environment = os.environ.copy()
@@ -150,6 +195,26 @@ class EnvironmentCheckTest(unittest.TestCase):
         result = self._run_check()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("环境体检通过", result.stdout)
+
+    def test_wsl_docker_backend_passes_without_windows_docker(self):
+        result = self._run_check(
+            docker_major=None,
+            docker_in_wsl=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("backend    WSL2", result.stdout)
+        self.assertIn("git version 2.54.0.synthetic-wsl", result.stdout)
+        self.assertIn("Docker version 29.0.0", result.stdout)
+        self.assertIn("Docker Compose version v5.3.1", result.stdout)
+
+    def test_windows_docker_cli_without_daemon_falls_back_to_wsl(self):
+        result = self._run_check(
+            docker_daemon_available=False,
+            docker_in_wsl=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("backend    WSL2", result.stdout)
+        self.assertIn("Docker version 29.0.0", result.stdout)
 
     def test_missing_docker_reports_docker_and_compose(self):
         result = self._run_check(docker_major=None)

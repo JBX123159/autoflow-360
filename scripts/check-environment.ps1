@@ -1,4 +1,8 @@
-﻿$ErrorActionPreference = "Stop"
+﻿param(
+    [string]$WslDistro = $env:AUTOFLOW_WSL_DISTRO
+)
+
+$ErrorActionPreference = "Stop"
 
 function ConvertTo-CleanLines {
     param(
@@ -44,7 +48,11 @@ function Get-CommandVersion {
     return $lines[0]
 }
 
-function Get-UbuntuWsl2Version {
+function Get-UbuntuWsl2Distro {
+    param(
+        [string]$RequestedDistro
+    )
+
     $resolved = Get-Command "wsl" -ErrorAction SilentlyContinue
     if ($null -eq $resolved) {
         return $null
@@ -58,31 +66,159 @@ function Get-UbuntuWsl2Version {
         throw "无法读取 WSL 发行版列表：$details。请按 README.md 快速开始章节安装 Ubuntu WSL2。"
     }
 
-    $ubuntuVersions = @()
+    $ubuntuDistributions = @()
     foreach ($line in $lines) {
         $normalized = [regex]::Replace($line, "^\s*\*?\s*", "")
         $columns = @($normalized -split "\s+")
-        if ($columns.Count -lt 2) {
+        if ($columns.Count -lt 3) {
             continue
         }
         if ($columns[0] -match "^Ubuntu(?:-.+)?$") {
-            $ubuntuVersions += $columns[$columns.Count - 1]
+            $ubuntuDistributions += [pscustomobject]@{
+                Name = $columns[0]
+                Version = $columns[$columns.Count - 1]
+            }
         }
     }
 
-    if ($ubuntuVersions.Count -eq 0) {
+    if ($ubuntuDistributions.Count -eq 0) {
         throw "WSL 中未安装 Ubuntu 发行版。请按 README.md 快速开始章节安装 Ubuntu WSL2。"
     }
-    if ($ubuntuVersions -notcontains "2") {
-        throw "Ubuntu 发行版必须使用 WSL2；当前 VERSION 为：$($ubuntuVersions -join '、')。"
+
+    $selected = $null
+    if (-not [string]::IsNullOrWhiteSpace($RequestedDistro)) {
+        if ($RequestedDistro -notmatch "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$") {
+            throw "AUTOFLOW_WSL_DISTRO 不合法，只允许字母、数字、点、下划线和连字符。"
+        }
+        $selected = $ubuntuDistributions |
+            Where-Object { $_.Name -eq $RequestedDistro } |
+            Select-Object -First 1
+        if ($null -eq $selected) {
+            throw "WSL 中找不到指定的 Ubuntu 发行版：$RequestedDistro。"
+        }
     }
-    return "VERSION 2"
+    else {
+        $selected = $ubuntuDistributions |
+            Where-Object { $_.Version -eq "2" } |
+            Select-Object -First 1
+        if ($null -eq $selected) {
+            $selected = $ubuntuDistributions | Select-Object -First 1
+        }
+    }
+
+    if ($selected.Version -ne "2") {
+        throw "Ubuntu 发行版必须使用 WSL2；$($selected.Name) 当前 VERSION 为：$($selected.Version)。"
+    }
+    return $selected.Name
+}
+
+function Get-WslCommandVersion {
+    param(
+        [Parameter(Mandatory = $true)][string]$Distro,
+        [Parameter(Mandatory = $true)][string]$Command,
+        [Parameter(Mandatory = $true)][string[]]$Arguments
+    )
+
+    $resolved = Get-Command "wsl" -ErrorAction SilentlyContinue
+    if ($null -eq $resolved) {
+        return $null
+    }
+
+    $output = & $resolved.Source -d $Distro -- $Command @Arguments 2>&1
+    $exitCode = $LASTEXITCODE
+    $lines = @(ConvertTo-CleanLines -Output @($output))
+    if ($exitCode -ne 0 -or $lines.Count -eq 0) {
+        return $null
+    }
+    return $lines[0]
+}
+
+function Test-CommandSuccess {
+    param(
+        [Parameter(Mandatory = $true)][string]$Command,
+        [Parameter(Mandatory = $true)][string[]]$Arguments
+    )
+
+    $resolved = Get-Command $Command -ErrorAction SilentlyContinue
+    if ($null -eq $resolved) {
+        return $false
+    }
+
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "Continue"
+        $null = @(& $resolved.Source @Arguments 2>&1)
+        $exitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+    return $exitCode -eq 0
+}
+
+$resolvedWslDistro = Get-UbuntuWsl2Distro -RequestedDistro $WslDistro
+$localDocker = Get-Command "docker" -ErrorAction SilentlyContinue
+$localDockerDaemonAvailable = (
+    $null -ne $localDocker -and
+    (Test-CommandSuccess `
+        -Command $localDocker.Source `
+        -Arguments @("info", "--format", "{{.ServerVersion}}"))
+)
+$wslDockerDaemonAvailable = (
+    -not [string]::IsNullOrWhiteSpace($resolvedWslDistro) -and
+    (Test-CommandSuccess `
+        -Command "wsl" `
+        -Arguments @(
+            "-d",
+            $resolvedWslDistro,
+            "--",
+            "docker",
+            "info",
+            "--format",
+            "{{.ServerVersion}}"
+        ))
+)
+$dockerBackend = if ($localDockerDaemonAvailable) {
+    "Windows"
+}
+elseif ($wslDockerDaemonAvailable) {
+    "WSL2"
+}
+else {
+    $null
 }
 
 $results = [ordered]@{
-    git = Get-CommandVersion -Command "git" -Arguments @("--version") -DisplayName "Git"
-    docker = Get-CommandVersion -Command "docker" -Arguments @("--version") -DisplayName "Docker Engine"
-    compose = Get-CommandVersion -Command "docker" -Arguments @("compose", "version") -DisplayName "Docker Compose"
+    git = if ($dockerBackend -eq "Windows" -or [string]::IsNullOrWhiteSpace($dockerBackend)) {
+        Get-CommandVersion -Command "git" -Arguments @("--version") -DisplayName "Git"
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($resolvedWslDistro)) {
+        Get-WslCommandVersion `
+            -Distro $resolvedWslDistro `
+            -Command "git" `
+            -Arguments @("--version")
+    }
+    else { $null }
+    docker = if ($dockerBackend -eq "Windows") {
+        Get-CommandVersion -Command "docker" -Arguments @("--version") -DisplayName "Docker Engine"
+    }
+    elseif ($dockerBackend -eq "WSL2") {
+        Get-WslCommandVersion `
+            -Distro $resolvedWslDistro `
+            -Command "docker" `
+            -Arguments @("--version")
+    }
+    else { $null }
+    compose = if ($dockerBackend -eq "Windows") {
+        Get-CommandVersion -Command "docker" -Arguments @("compose", "version") -DisplayName "Docker Compose"
+    }
+    elseif ($dockerBackend -eq "WSL2") {
+        Get-WslCommandVersion `
+            -Distro $resolvedWslDistro `
+            -Command "docker" `
+            -Arguments @("compose", "version")
+    }
+    else { $null }
     wsl = Get-CommandVersion -Command "wsl" -Arguments @("--version") -DisplayName "WSL"
 }
 
@@ -126,6 +262,6 @@ if ($composeMajor -lt 2) {
     throw "Docker Compose 需要 v2 或更高版本，当前为：$($results.compose)"
 }
 
-$ubuntuWslVersion = Get-UbuntuWsl2Version
-Write-Host ("{0,-10} {1}" -f "ubuntu", $ubuntuWslVersion)
+Write-Host ("{0,-10} {1} (VERSION 2)" -f "ubuntu", $resolvedWslDistro)
+Write-Host ("{0,-10} {1}" -f "backend", $dockerBackend)
 Write-Host "环境体检通过。" -ForegroundColor Green

@@ -26,19 +26,28 @@ flowchart LR
 
 ## 快速开始
 
-环境要求以 [上游基线](docs/research/upstream-baseline.md) 为准。先在 Windows PowerShell 中执行环境体检：
+环境要求以 [上游基线](docs/research/upstream-baseline.md) 为准；实际启动由 `deploy/upstream-lock.json` 检出并校验四个上游仓库的精确提交，并由 `deploy/container-lock.json` 固定三个容器镜像摘要。先在 Windows PowerShell 中执行环境体检：
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\check-environment.ps1
 ```
 
-完整 Frappe/ERPNext/CRM 容器环境将在后续工程任务中提供；当前可先运行不依赖 Frappe 的仓库静态测试。
+本地开发脚本支持 Windows Docker，也支持直接安装在 WSL2 Ubuntu 内的 Docker Engine，不依赖 Docker Desktop。初始化前复制配置并修改示例管理员密码：
+
+```powershell
+Copy-Item deploy/env.example .env
+# 编辑 .env 后再执行
+.\scripts\bootstrap-dev.ps1
+```
+
+完整操作、数据库口令边界和排错说明见 [本地开发环境](docs/deployment/local-development.md)。本地 Frappe v16 环境已经完成真实安装，四个应用可被站点识别，当前安装级冒烟测试实际通过；后续业务能力仍以对应代码和测试为准。
 
 ## 测试命令
 
 ```powershell
 python -m unittest discover -s tests/static -v
+.\scripts\run-tests.ps1
 git diff --check
 ```
 
