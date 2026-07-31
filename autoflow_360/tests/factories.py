@@ -661,3 +661,88 @@ def make_submitted_delivery_note(**kwargs):
 	delivery.insert()
 	delivery.submit()
 	return delivery
+
+
+def _advance_project_to_closure_ready(project_name: str):
+	from autoflow_360.services.project_status import MAIN_STAGE_SEQUENCE
+
+	project = frappe.get_doc("Customer Project", project_name)
+	target_index = MAIN_STAGE_SEQUENCE.index("待回款")
+	while MAIN_STAGE_SEQUENCE.index(project.stage) < target_index:
+		current_index = MAIN_STAGE_SEQUENCE.index(project.stage)
+		project.stage = MAIN_STAGE_SEQUENCE[current_index + 1]
+		project.save(ignore_permissions=True)
+		project.reload()
+	return project
+
+
+def make_fulfilled_project(
+	*,
+	outstanding_amount: float = 0,
+	confirm_receipt: bool = True,
+):
+	from erpnext.accounts.doctype.payment_entry.payment_entry import (
+		get_payment_entry,
+	)
+	from erpnext.selling.doctype.sales_order.sales_order import (
+		make_delivery_note as make_erpnext_delivery_note,
+	)
+	from erpnext.selling.doctype.sales_order.sales_order import (
+		make_sales_invoice,
+	)
+	from erpnext.stock.doctype.stock_entry.stock_entry_utils import make_stock_entry
+
+	from autoflow_360.services.delivery import confirm_customer_receipt
+
+	if outstanding_amount < 0:
+		frappe.throw("Synthetic outstanding amount cannot be negative")
+	project = make_customer_project("SYNTHETIC Fulfilled Customer Project")
+	order = make_stock_sales_order(
+		quantity=1,
+		customer_project=project.name,
+	)
+	make_stock_entry(
+		item_code=order.items[0].item_code,
+		to_warehouse=order.items[0].warehouse,
+		qty=1,
+		company=order.company,
+		rate=100,
+	)
+	delivery = make_erpnext_delivery_note(order.name)
+	delivery.custom_customer_project = project.name
+	delivery.insert()
+	delivery.submit()
+
+	if confirm_receipt:
+		portal_user = make_customer_portal_user(customer=project.customer)
+		previous_user = frappe.session.user
+		try:
+			frappe.set_user(portal_user.name)
+			confirm_customer_receipt(delivery.name)
+		finally:
+			frappe.set_user(previous_user)
+
+	invoice = make_sales_invoice(order.name)
+	invoice.custom_customer_project = project.name
+	invoice.insert()
+	invoice.submit()
+	invoice.reload()
+	if outstanding_amount > flt(invoice.outstanding_amount):
+		frappe.throw("Synthetic outstanding amount exceeds invoice total")
+
+	amount_to_pay = flt(invoice.outstanding_amount) - outstanding_amount
+	if amount_to_pay > 0:
+		payment = get_payment_entry("Sales Invoice", invoice.name)
+		payment.custom_customer_project = project.name
+		payment.paid_amount = amount_to_pay
+		payment.received_amount = amount_to_pay
+		for reference in payment.references:
+			if (
+				reference.reference_doctype == "Sales Invoice"
+				and reference.reference_name == invoice.name
+			):
+				reference.allocated_amount = amount_to_pay
+		payment.insert()
+		payment.submit()
+
+	return _advance_project_to_closure_ready(project.name)

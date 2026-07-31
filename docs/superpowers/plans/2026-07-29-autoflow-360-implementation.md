@@ -3066,13 +3066,18 @@ git commit -m "feat: enforce stock and customer delivery receipt"
 - Create: `autoflow_360/public/js/customer_project.js`
 - Modify: `autoflow_360/api/project.py`
 - Modify: `autoflow_360/hooks.py`
+- Modify: `autoflow_360/services/sales_conversion.py`
+- Modify: `autoflow_360/autoflow_360/doctype/customer_project/customer_project.py`
+- Create: `tests/static/test_project_closure_contract.py`
 
 **Interfaces:**
 
 - Consumes: 已提交销售订单、交货单、销售发票、付款记录和高风险异常。
 - Produces: `get_closure_gaps(project_name) -> list[ClosureGap]`、`close_project(project_name, summary) -> str`。
 
-- [ ] **Step 1: 写交付、发票、回款和异常门槛测试**
+**实现记录（2026-07-31）：** 实际实现增加了客户签收和真实付款单证据门槛，不能仅把发票余额改为零冒充回款；结项申请、批准和执行均绑定销售订单、交货、签收、发票、付款、高风险异常及项目关键字段组成的不可变快照，证据变化会使旧批准失效。申请与结项使用文件锁和数据库行锁，重复申请复用同一记录，重复结项保持幂等；项目控制器同时阻止直接修改阶段绕过服务，并禁止结项后改写复盘摘要，已结项项目的订单、交货、发票和付款凭证也不能再取消。桌面端先展示逐项缺口，再开放审批或结项操作。全量回归为 81 项集成测试和 110 项静态契约测试。
+
+- [x] **Step 1: 写交付、发票、回款和异常门槛测试**
 
 ```python
 import frappe
@@ -3096,7 +3101,7 @@ class TestProjectClosure(FrappeTestCase):
 		self.assertEqual(frappe.db.get_value("Customer Project", project.name, "stage"), "已结项")
 ```
 
-- [ ] **Step 2: 运行测试并确认结项服务缺失**
+- [x] **Step 2: 运行测试并确认结项服务缺失**
 
 Run:
 
@@ -3106,7 +3111,7 @@ Run:
 
 Expected: `project_closure` 无法导入。
 
-- [ ] **Step 3: 实现逐项可解释的结项缺口**
+- [x] **Step 3: 实现逐项可解释的结项缺口**
 
 ```python
 # autoflow_360/services/project_closure.py
@@ -3169,7 +3174,7 @@ def get_closure_gaps(project_name: str) -> list[ClosureGap]:
 	return gaps
 ```
 
-- [ ] **Step 4: 实现结项接口和审批门槛**
+- [x] **Step 4: 实现结项接口和审批门槛**
 
 ```python
 def close_project(project_name: str, summary: str) -> str:
@@ -3190,7 +3195,7 @@ def close_project(project_name: str, summary: str) -> str:
 
 API 使用 `@frappe.whitelist(methods=["POST"])`，页面先显示 `get_closure_gaps()` 再允许发起审批或结项。
 
-- [ ] **Step 5: 运行结项测试**
+- [x] **Step 5: 运行结项测试**
 
 Run:
 
@@ -3200,7 +3205,7 @@ Run:
 
 Expected: 缺口代码准确；证据齐全且审批通过后才可结项。
 
-- [ ] **Step 6: 提交财务与结项闭环**
+- [x] **Step 6: 提交财务与结项闭环**
 
 ```powershell
 git add autoflow_360/services/project_closure.py autoflow_360/tests/test_project_closure.py autoflow_360/tests/factories.py autoflow_360/public/js/customer_project.js autoflow_360/api/project.py autoflow_360/hooks.py

@@ -22,7 +22,24 @@ class CustomerProject(Document):
 			previous.stage if previous else None,
 			self.stage,
 		)
+		self._validate_closure_guard(previous)
 		self._validate_side_stage_reason()
+
+	def _validate_closure_guard(self, previous) -> None:
+		if not previous:
+			return
+		if (
+			previous.stage != "已结项"
+			and self.stage == "已结项"
+			and not self.flags.from_project_closure_service
+		):
+			frappe.throw(_("Customer Project cannot be closed directly."))
+		if (
+			previous.stage == "已结项"
+			and cstr(self.closure_summary).strip()
+			!= cstr(previous.closure_summary).strip()
+		):
+			frappe.throw(_("Closure summary cannot be changed after closure."))
 
 	def _validate_dates(self) -> None:
 		if not self.target_award_date or not self.customer_delivery_date:

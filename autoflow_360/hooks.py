@@ -26,6 +26,7 @@ after_migrate = "autoflow_360.install.after_migrate"
 
 doctype_js = {
 	"CRM Deal": "public/js/crm_deal.js",
+	"Customer Project": "public/js/customer_project.js",
 	"Material Request": "public/js/material_request.js",
 	"Purchase Order": "public/js/purchase_order.js",
 	"Quotation": "public/js/quotation.js",
@@ -44,14 +45,17 @@ doc_events = {
 		"on_update_after_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
 	},
 	"Sales Order": {
+		"before_cancel": "autoflow_360.services.project_closure.prevent_closed_project_evidence_change",
 		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
 	},
 	"Delivery Note": {
+		"before_cancel": "autoflow_360.services.project_closure.prevent_closed_project_evidence_change",
 		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
 		"before_submit": "autoflow_360.services.delivery.validate_delivery_stock",
 		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
 	},
 	"Sales Invoice": {
+		"before_cancel": "autoflow_360.services.project_closure.prevent_closed_project_evidence_change",
 		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
 		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
 		"on_update_after_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
@@ -63,6 +67,7 @@ doc_events = {
 		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
 	},
 	"Payment Entry": {
+		"before_cancel": "autoflow_360.services.project_closure.prevent_closed_project_evidence_change",
 		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
 		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
 	},

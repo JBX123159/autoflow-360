@@ -129,6 +129,13 @@ def _snapshot_payment_schedule(source) -> list[dict[str, Any]]:
 
 def build_approval_snapshot(source) -> dict[str, Any]:
 	"""Return a stable, decision-relevant snapshot without mutable audit fields."""
+	if source.doctype == "Customer Project":
+		from autoflow_360.services.project_closure import (
+			build_project_closure_snapshot,
+		)
+
+		return build_project_closure_snapshot(source)
+
 	items, maximum_discount, has_floor_breach = _snapshot_items(source)
 	payload: dict[str, Any] = {
 		"document_type": source.doctype,
