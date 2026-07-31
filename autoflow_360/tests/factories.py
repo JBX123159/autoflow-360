@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import frappe
 from frappe.tests.utils import make_test_records
-from frappe.utils import flt, getdate, nowdate
+from frappe.utils import flt, getdate, now_datetime, nowdate
 
 
 SYNTHETIC_COMPANY = "_Test Company"
@@ -746,3 +746,119 @@ def make_fulfilled_project(
 		payment.submit()
 
 	return _advance_project_to_closure_ready(project.name)
+
+
+def make_overdue_project(*, days_overdue: int = 3):
+	if days_overdue <= 0:
+		frappe.throw("Synthetic overdue days must be positive")
+	return make_customer_project(
+		"SYNTHETIC Overdue Milestone Project",
+		milestones=[
+			{
+				"milestone_name": "SYNTHETIC PPAP approval",
+				"planned_date": getdate(nowdate()) - timedelta(days=days_overdue),
+				"owner_user": "Administrator",
+				"status": "进行中",
+			}
+		],
+	)
+
+
+def make_pending_feedback_project(*, days_waiting: int = 5):
+	if days_waiting <= 0:
+		frappe.throw("Synthetic feedback waiting days must be positive")
+	frappe.db.set_single_value("AutoFlow Settings", "feedback_warning_days", 3)
+	sample = make_dispatched_sample()
+	frappe.db.set_value(
+		"Sample Request",
+		sample.name,
+		"dispatch_time",
+		now_datetime() - timedelta(days=days_waiting),
+		update_modified=False,
+	)
+	return frappe.get_doc("Customer Project", sample.customer_project)
+
+
+def make_expiring_quotation_project(*, days_until_expiry: int = 2):
+	if days_until_expiry < 0:
+		frappe.throw("Synthetic quotation expiry days cannot be negative")
+	frappe.db.set_single_value(
+		"AutoFlow Settings",
+		"quotation_expiry_warning_days",
+		7,
+	)
+	project = make_customer_project("SYNTHETIC Expiring Quotation Project")
+	make_customer_approved_sample(project.name)
+	make_approval_rule(role="System Manager", document_type="Quotation")
+	quotation = make_quotation(
+		customer_project=project.name,
+		valid_till=getdate(nowdate()) + timedelta(days=days_until_expiry),
+	)
+	quotation.submit()
+	return frappe.get_doc("Customer Project", project.name)
+
+
+def make_project_with_stock_gap():
+	project = make_customer_project("SYNTHETIC Stock Gap Project")
+	make_stock_sales_order(
+		quantity=10,
+		customer_project=project.name,
+	)
+	return frappe.get_doc("Customer Project", project.name)
+
+
+def make_project_with_supplier_eta_after_delivery():
+	from autoflow_360.services.procurement import update_supplier_eta
+
+	order = make_purchase_order(submit=True)
+	project = frappe.get_doc("Customer Project", order.custom_customer_project)
+	portal_user = frappe.db.get_value(
+		"Portal User",
+		{
+			"parenttype": "Supplier",
+			"parent": order.supplier,
+		},
+		"user",
+	)
+	if not portal_user:
+		frappe.throw("Synthetic supplier portal user is missing")
+	previous_user = frappe.session.user
+	try:
+		frappe.set_user(portal_user)
+		update_supplier_eta(
+			order.name,
+			str(getdate(project.customer_delivery_date) + timedelta(days=5)),
+			"SYNTHETIC supplier capacity delay",
+		)
+	finally:
+		frappe.set_user(previous_user)
+	return frappe.get_doc("Customer Project", project.name)
+
+
+def make_unpaid_project(*, days_overdue: int = 8):
+	if days_overdue <= 0:
+		frappe.throw("Synthetic receivable overdue days must be positive")
+	project = make_fulfilled_project(outstanding_amount=100)
+	invoice_name = frappe.db.get_value(
+		"Sales Invoice",
+		{"custom_customer_project": project.name, "docstatus": 1},
+		"name",
+	)
+	frappe.db.set_value(
+		"Sales Invoice",
+		invoice_name,
+		"due_date",
+		getdate(nowdate()) - timedelta(days=days_overdue),
+		update_modified=False,
+	)
+	return frappe.get_doc("Customer Project", project.name)
+
+
+def make_inactive_project(*, days_inactive: int = 10):
+	if days_inactive <= 0:
+		frappe.throw("Synthetic inactive days must be positive")
+	frappe.db.set_single_value("AutoFlow Settings", "project_inactive_days", 7)
+	return make_customer_project(
+		"SYNTHETIC Inactive Customer Project",
+		last_meaningful_activity=now_datetime() - timedelta(days=days_inactive),
+	)

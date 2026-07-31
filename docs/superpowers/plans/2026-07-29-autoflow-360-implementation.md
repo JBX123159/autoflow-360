@@ -3227,13 +3227,16 @@ git commit -m "feat: close projects only after delivery billing and payment"
 - Create: `autoflow_360/tests/test_risk_engine.py`
 - Modify: `autoflow_360/tests/factories.py`
 - Modify: `autoflow_360/hooks.py`
+- Create: `tests/static/test_risk_engine_contract.py`
 
 **Interfaces:**
 
 - Consumes: 项目、节点、样品、报价、库存、采购订单、异常、发票和活动时间。
 - Produces: `evaluate_project(project_name) -> list[RiskFinding]`、`upsert_risks(project_name, findings) -> list[str]`、小时/每日风险扫描任务。
 
-- [ ] **Step 1: 写延期、库存、回款和去重测试**
+**实现记录（2026-07-31）：** 已实现八条独立、只读且可解释的确定性规则，统一输出来源单据、输入快照、负责人和期限。写入服务在项目文件锁与数据库行锁下按“项目 + 规则 + 来源”生成唯一键；同一风险重复扫描只更新证据，已关闭风险再次出现时重开原记录，已经消失的风险转为待验证而不直接关闭。项目总体风险按未关闭记录的最高等级自动汇总；小时和每日任务只扫描非终态项目，单项目失败使用保存点隔离，不影响其他项目。全量回归为 93 项集成测试和 118 项静态契约测试。
+
+- [x] **Step 1: 写延期、库存、回款和去重测试**
 
 ```python
 from frappe.tests.utils import FrappeTestCase
@@ -3269,7 +3272,7 @@ class TestRiskEngine(FrappeTestCase):
 		self.assertTrue(risk.reference_name)
 ```
 
-- [ ] **Step 2: 运行测试并确认风险引擎缺失**
+- [x] **Step 2: 运行测试并确认风险引擎缺失**
 
 Run:
 
@@ -3279,7 +3282,7 @@ Run:
 
 Expected: `risk_engine.service` 无法导入。
 
-- [ ] **Step 3: 创建风险对象和统一规则结果**
+- [x] **Step 3: 创建风险对象和统一规则结果**
 
 `Project Risk` 字段：
 
@@ -3321,7 +3324,7 @@ class RiskFinding:
 	due_date: date | None = None
 ```
 
-- [ ] **Step 4: 实现八条独立规则**
+- [x] **Step 4: 实现八条独立规则**
 
 `rules.py` 必须导出：
 
@@ -3407,7 +3410,7 @@ def find_open_high_exceptions(project) -> list[RiskFinding]:
 
 其余六条规则必须遵循相同返回结构，不能直接写数据库。
 
-- [ ] **Step 5: 实现去重写入和调度**
+- [x] **Step 5: 实现去重写入和调度**
 
 ```python
 # autoflow_360/risk_engine/service.py
@@ -3531,7 +3534,7 @@ def scan_daily_risks() -> None:
 	_scan_active_projects()
 ```
 
-- [ ] **Step 6: 运行风险测试**
+- [x] **Step 6: 运行风险测试**
 
 Run:
 
@@ -3542,7 +3545,7 @@ Run:
 
 Expected: 风险有来源、输入快照和唯一键；重复扫描不重复建单。
 
-- [ ] **Step 7: 提交风险引擎**
+- [x] **Step 7: 提交风险引擎**
 
 ```powershell
 git add autoflow_360/autoflow_360/doctype/project_risk autoflow_360/risk_engine autoflow_360/tests/test_risk_engine.py autoflow_360/tests/factories.py autoflow_360/hooks.py

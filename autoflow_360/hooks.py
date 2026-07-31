@@ -117,3 +117,8 @@ has_permission = {
 	"Supplier Quotation": "autoflow_360.permissions.portal.supplier_document_has_permission",
 	"Purchase Order": "autoflow_360.permissions.portal.supplier_document_has_permission",
 }
+
+scheduler_events = {
+	"hourly": ["autoflow_360.risk_engine.scheduled.scan_delivery_risks"],
+	"daily": ["autoflow_360.risk_engine.scheduled.scan_daily_risks"],
+}
