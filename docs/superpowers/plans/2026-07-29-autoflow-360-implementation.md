@@ -1507,7 +1507,7 @@ git commit -m "feat: add customer project lifecycle"
 - Consumes: `CRM Deal` 的 `organization`、`deal_owner`、`probability`、`expected_deal_value`、`expected_closure_date`。
 - Produces: `create_project_from_deal(deal_name, company, customer, product_family, delivery_date) -> str`，重复请求返回同一项目名。
 
-- [ ] **Step 1: 写重复转换和权限失败测试**
+- [x] **Step 1: 写重复转换和权限失败测试**
 
 ```python
 from datetime import timedelta
@@ -1544,7 +1544,7 @@ class TestDealConversion(FrappeTestCase):
 		self.assertRaises(frappe.PermissionError, create_project_from_deal, deal.name, "_Test Company", "_Test Customer", "Material", nowdate())
 ```
 
-- [ ] **Step 2: 运行测试并确认服务缺失**
+- [x] **Step 2: 运行测试并确认服务缺失**
 
 Run:
 
@@ -1554,7 +1554,7 @@ Run:
 
 Expected: `autoflow_360.services.deal_conversion` 无法导入。
 
-- [ ] **Step 3: 实现幂等键和转换事务**
+- [x] **Step 3: 实现幂等键和转换事务**
 
 ```python
 # autoflow_360/services/idempotency.py
@@ -1616,7 +1616,7 @@ def create_project_from_deal(
 	return project.name
 ```
 
-- [ ] **Step 4: 暴露受权限保护的接口和 CRM 按钮**
+- [x] **Step 4: 暴露受权限保护的接口和 CRM 按钮**
 
 ```python
 # autoflow_360/api/project.py
@@ -1646,7 +1646,7 @@ doctype_js = {
 
 按钮只负责收集四个必填参数并调用接口；所有重复和权限判断保留在服务端。
 
-- [ ] **Step 5: 运行转换和静态测试**
+- [x] **Step 5: 运行转换和静态测试**
 
 Run:
 
@@ -1657,7 +1657,7 @@ python -m unittest discover -s tests/static -v
 
 Expected: 重复调用仅存在一个项目；Guest 被拒绝。
 
-- [ ] **Step 6: 提交 CRM 转换**
+- [x] **Step 6: 提交 CRM 转换**
 
 ```powershell
 git add autoflow_360/services/idempotency.py autoflow_360/services/deal_conversion.py autoflow_360/api/project.py autoflow_360/public/js/crm_deal.js autoflow_360/autoflow_360/doctype/customer_project/test_deal_conversion.py autoflow_360/tests/factories.py autoflow_360/hooks.py

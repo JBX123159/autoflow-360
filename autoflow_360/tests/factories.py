@@ -25,6 +25,55 @@ def _ensure_synthetic_master_data() -> None:
 			frappe.throw(f"Synthetic fixture is missing: {doctype} {name}")
 
 
+def _get_open_crm_deal_status() -> str:
+	status = frappe.db.get_value(
+		"CRM Deal Status",
+		{"type": ["in", ["Open", "Ongoing"]]},
+		"name",
+		order_by="position asc",
+	)
+	if status:
+		return status
+
+	status_doc = frappe.get_doc(
+		{
+			"doctype": "CRM Deal Status",
+			"deal_status": "SYNTHETIC Qualification",
+			"type": "Open",
+			"probability": 10,
+			"color": "blue",
+		}
+	)
+	status_doc.insert()
+	return status_doc.name
+
+
+def make_crm_deal(organization_name: str, **overrides):
+	_ensure_synthetic_master_data()
+	today = getdate(nowdate())
+	values = {
+		"doctype": "CRM Deal",
+		"naming_series": "CRM-DEAL-.YYYY.-",
+		"organization_name": organization_name,
+		"status": _get_open_crm_deal_status(),
+		"deal_owner": SYNTHETIC_USER,
+		"currency": frappe.get_cached_value(
+			"Company",
+			SYNTHETIC_COMPANY,
+			"default_currency",
+		)
+		or "INR",
+		"probability": 40,
+		"deal_value": 200000,
+		"expected_deal_value": 80000,
+		"expected_closure_date": today + timedelta(days=30),
+	}
+	values.update(overrides)
+	deal = frappe.get_doc(values)
+	deal.insert()
+	return deal
+
+
 def make_customer_project(
 	project_name: str,
 	*,

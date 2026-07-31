@@ -23,3 +23,7 @@ require_type_annotated_api_methods = True
 
 after_install = "autoflow_360.install.after_install"
 after_migrate = "autoflow_360.install.after_migrate"
+
+doctype_js = {
+	"CRM Deal": "public/js/crm_deal.js",
+}
