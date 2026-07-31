@@ -26,12 +26,22 @@ after_migrate = "autoflow_360.install.after_migrate"
 
 doctype_js = {
 	"CRM Deal": "public/js/crm_deal.js",
+	"Quotation": "public/js/quotation.js",
+	"Sales Order": "public/js/sales_order.js",
 }
 
 doc_events = {
 	"Sample Request": {
 		"after_insert": "autoflow_360.services.project_status.refresh_project_stage_from_document",
 		"on_update": "autoflow_360.services.project_status.refresh_project_stage_from_document",
+	},
+	"Quotation": {
+		"before_submit": "autoflow_360.services.sales_conversion.validate_quotation_submission",
+		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
+		"on_update_after_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
+	},
+	"Sales Order": {
+		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
 	},
 }
 

@@ -179,6 +179,30 @@ def make_dispatched_sample():
 	return frappe.get_doc("Sample Request", sample.name)
 
 
+def make_customer_approved_sample(customer_project: str):
+	from autoflow_360.services.sample_workflow import (
+		dispatch_sample,
+		record_customer_feedback,
+	)
+
+	sample = make_sample_request(
+		customer_project=customer_project,
+		status="检验中",
+		inspection_status="通过",
+	)
+	dispatch_sample(
+		sample.name,
+		"SYNTHETIC Carrier",
+		f"SYNTHETIC-TRACK-{frappe.generate_hash(length=12)}",
+	)
+	record_customer_feedback(
+		sample.name,
+		"客户认可",
+		"SYNTHETIC customer accepted the sample",
+	)
+	return frappe.get_doc("Sample Request", sample.name)
+
+
 def make_customer_portal_user(*, link_customer: bool = True):
 	identifier = frappe.generate_hash(length=12).lower()
 	email = f"synthetic-portal-{identifier}@example.invalid"
@@ -199,6 +223,95 @@ def make_customer_portal_user(*, link_customer: bool = True):
 		customer.append("portal_users", {"user": user.name})
 		customer.save()
 	return user
+
+
+def make_internal_user(*roles: str):
+	identifier = frappe.generate_hash(length=12).lower()
+	email = f"synthetic-internal-{identifier}@example.invalid"
+	role_names = list(dict.fromkeys(("Sales User", *roles)))
+	user = frappe.get_doc(
+		{
+			"doctype": "User",
+			"email": email,
+			"first_name": f"SYNTHETIC Internal {identifier}",
+			"enabled": 1,
+			"user_type": "System User",
+			"send_welcome_email": 0,
+			"roles": [{"role": role} for role in role_names],
+		}
+	)
+	user.insert()
+	return user
+
+
+def make_approval_rule(
+	*,
+	role: str = "System Manager",
+	document_type: str = "Quotation",
+	amount_limit: float = 1_000_000,
+	discount_limit: float = 100,
+	risk_level: str = "高",
+):
+	_ensure_synthetic_master_data()
+	rule = frappe.get_doc(
+		{
+			"doctype": "AutoFlow Approval Rule",
+			"company": SYNTHETIC_COMPANY,
+			"document_type": document_type,
+			"role": role,
+			"amount_limit": amount_limit,
+			"discount_limit": discount_limit,
+			"risk_level": risk_level,
+			"active": 1,
+		}
+	)
+	rule.insert()
+	return rule
+
+
+def make_quotation(
+	*,
+	customer_project: str,
+	valid_till=None,
+	customer_confirmed: bool = False,
+	rate: float = 100,
+	floor_rate: float = 0,
+	discount_percentage: float = 0,
+	insert: bool = True,
+):
+	_ensure_synthetic_master_data()
+	item = _make_synthetic_item()
+	today = getdate(nowdate())
+	quotation = frappe.new_doc("Quotation")
+	quotation.company = SYNTHETIC_COMPANY
+	quotation.quotation_to = "Customer"
+	quotation.party_name = SYNTHETIC_CUSTOMER
+	quotation.currency = (
+		frappe.get_cached_value(
+			"Company",
+			SYNTHETIC_COMPANY,
+			"default_currency",
+		)
+		or "INR"
+	)
+	quotation.transaction_date = today
+	quotation.valid_till = valid_till or today + timedelta(days=30)
+	quotation.custom_customer_project = customer_project
+	quotation.custom_customer_confirmed = int(customer_confirmed)
+	quotation.append(
+		"items",
+		{
+			"item_code": item.name,
+			"qty": 10,
+			"uom": item.stock_uom,
+			"rate": rate,
+			"discount_percentage": discount_percentage,
+			"custom_floor_rate": floor_rate,
+		},
+	)
+	if insert:
+		quotation.insert()
+	return quotation
 
 
 def make_customer_project(

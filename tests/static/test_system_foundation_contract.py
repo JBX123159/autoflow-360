@@ -254,23 +254,42 @@ class SystemFoundationContractTest(unittest.TestCase):
         )
         for fields, _, update in custom_field_calls:
             self.assertTrue(update)
-            self.assertEqual(tuple(fields), EXPECTED_PROJECT_LINK_DOCTYPES)
+            self.assertEqual(
+                tuple(fields),
+                (*EXPECTED_PROJECT_LINK_DOCTYPES, "Quotation Item"),
+            )
             for doctype in EXPECTED_PROJECT_LINK_DOCTYPES:
                 self.assertEqual(
-                    fields[doctype],
-                    [
-                        {
-                            "fieldname": "custom_customer_project",
-                            "label": "Customer Project",
-                            "fieldtype": "Link",
-                            "options": "Customer Project",
-                            "insert_after": "company",
-                            "module": "AutoFlow 360",
-                            "in_standard_filter": 1,
-                            "no_copy": 1,
-                        }
-                    ],
+                    fields[doctype][0],
+                    {
+                        "fieldname": "custom_customer_project",
+                        "label": "Customer Project",
+                        "fieldtype": "Link",
+                        "options": "Customer Project",
+                        "insert_after": "company",
+                        "module": "AutoFlow 360",
+                        "in_standard_filter": 1,
+                        "no_copy": 1,
+                    },
                 )
+            self.assertEqual(
+                fields["Quotation"][1]["fieldname"],
+                "custom_customer_confirmed",
+            )
+            self.assertEqual(
+                fields["Quotation"][1]["allow_on_submit"],
+                1,
+            )
+            self.assertEqual(
+                fields["Sales Order"][1]["fieldname"],
+                "custom_source_quotation",
+            )
+            self.assertEqual(fields["Sales Order"][1]["unique"], 1)
+            self.assertEqual(
+                fields["Quotation Item"][0]["fieldname"],
+                "custom_floor_rate",
+            )
+            self.assertEqual(fields["Quotation Item"][0]["non_negative"], 1)
 
     def test_settings_controller_rejects_invalid_boundaries_and_ai_configuration(self):
         class FakeValidationError(Exception):

@@ -18,7 +18,7 @@ PROJECT_LINK_DOCTYPES = (
 
 
 def ensure_custom_fields() -> None:
-	"""Create or reconcile the project Link field on supported ERPNext documents."""
+	"""Reconcile AutoFlow project, quotation and conversion fields."""
 	fields = {
 		doctype: [
 			{
@@ -34,6 +34,44 @@ def ensure_custom_fields() -> None:
 		]
 		for doctype in PROJECT_LINK_DOCTYPES
 	}
+	fields["Quotation"].append(
+		{
+			"fieldname": "custom_customer_confirmed",
+			"label": "Customer Confirmed",
+			"fieldtype": "Check",
+			"insert_after": "custom_customer_project",
+			"module": "AutoFlow 360",
+			"allow_on_submit": 1,
+			"default": "0",
+			"in_standard_filter": 1,
+			"no_copy": 1,
+		}
+	)
+	fields["Quotation Item"] = [
+		{
+			"fieldname": "custom_floor_rate",
+			"label": "Floor Rate",
+			"fieldtype": "Currency",
+			"insert_after": "discount_percentage",
+			"module": "AutoFlow 360",
+			"non_negative": 1,
+			"default": "0",
+		}
+	]
+	fields["Sales Order"].append(
+		{
+			"fieldname": "custom_source_quotation",
+			"label": "Source Quotation",
+			"fieldtype": "Link",
+			"options": "Quotation",
+			"insert_after": "custom_customer_project",
+			"module": "AutoFlow 360",
+			"in_standard_filter": 1,
+			"no_copy": 1,
+			"read_only": 1,
+			"unique": 1,
+		}
+	)
 	# Task 4 can be migrated before Task 5 introduces Customer Project. A complete
 	# fresh install syncs all DocTypes before after_install, so normal validation
 	# remains enabled there.

@@ -1908,11 +1908,15 @@ git commit -m "feat: add sample approval and customer feedback loop"
 - Create: `autoflow_360/autoflow_360/doctype/autoflow_approval_request/autoflow_approval_request.json`
 - Create: `autoflow_360/autoflow_360/doctype/autoflow_approval_request/autoflow_approval_request.py`
 - Create: `autoflow_360/autoflow_360/doctype/autoflow_approval_request/test_autoflow_approval_request.py`
+- Create: `autoflow_360/autoflow_360/doctype/autoflow_approval_request/test_sales_conversion.py`
 - Create: `autoflow_360/setup/workflows.py`
+- Create: `autoflow_360/api/sales.py`
 - Create: `autoflow_360/public/js/quotation.js`
 - Create: `autoflow_360/public/js/sales_order.js`
-- Create: `autoflow_360/tests/test_sales_conversion.py`
+- Create: `tests/static/test_sales_conversion_contract.py`
 - Modify: `autoflow_360/tests/factories.py`
+- Modify: `autoflow_360/autoflow_360/doctype/sample_request/sample_request.json`
+- Modify: `autoflow_360/setup/custom_fields.py`
 - Modify: `autoflow_360/install.py`
 - Modify: `autoflow_360/hooks.py`
 
@@ -1921,7 +1925,9 @@ git commit -m "feat: add sample approval and customer feedback loop"
 - Consumes: 已认可 `Sample Request`、ERPNext `Quotation`、当前用户审批额度。
 - Produces: `validate_quotation_submission(doc)`、`create_sales_order_from_quotation(quotation_name) -> str`、可追溯审批请求。
 
-- [ ] **Step 1: 写样品、有效期、审批和重复转换失败测试**
+> 2026-07-31 实施修正：审批人只能取当前登录会话，不能由请求参数指定；审批使用决策字段指纹，报价变化会使旧审批失效；样品使用独立 `approval_status`，不占用发货/反馈业务 `status`；审批终态均作为已提交审计记录保留。下方初始草案中的 `approve(user)`、样品直接复用 `status`、草稿直接转取消态示例均已废弃，实际代码和测试为准。
+
+- [x] **Step 1: 写样品、有效期、审批和重复转换失败测试**
 
 ```python
 from datetime import timedelta
@@ -1965,7 +1971,7 @@ class TestSalesConversion(FrappeTestCase):
 		self.assertRaises(frappe.PermissionError, request.approve, frappe.session.user)
 ```
 
-- [ ] **Step 2: 运行测试并确认服务和审批对象缺失**
+- [x] **Step 2: 运行测试并确认服务和审批对象缺失**
 
 Run:
 
@@ -1975,7 +1981,7 @@ Run:
 
 Expected: 转换服务或审批 DocType 不存在。
 
-- [ ] **Step 3: 创建审批规则和审批请求**
+- [x] **Step 3: 创建审批规则和审批请求**
 
 `AutoFlow Approval Rule` 字段：
 
@@ -2005,7 +2011,7 @@ decision_reason Small Text
 request_snapshot JSON read-only
 ```
 
-该 DocType 设置 `is_submittable: 1`。控制器方法 `approve(user)` 检查审批角色、公司、额度，且 `user != requested_by`：
+该 DocType 设置 `is_submittable: 1`。以下控制器代码是已废弃的初始草案；实际实现不接受 `user` 参数，并额外校验公司、单一完整额度规则、风险等级、决策快照和禁止自批：
 
 ```python
 import json
@@ -2142,7 +2148,7 @@ def after_migrate() -> None:
 	after_install()
 ```
 
-- [ ] **Step 4: 实现报价校验和幂等转换**
+- [x] **Step 4: 实现报价校验和幂等转换**
 
 ```python
 # autoflow_360/services/sales_conversion.py
@@ -2246,7 +2252,7 @@ def create_sales_order_from_quotation(quotation_name: str) -> str:
 
 同时为 `Quotation` 增加 `custom_customer_confirmed` 勾选字段。`create_sales_order_from_quotation()` 必须校验该字段为真，否则返回“客户尚未确认报价”并停止转换。
 
-- [ ] **Step 5: 注册标准单据钩子并运行测试**
+- [x] **Step 5: 注册标准单据钩子并运行测试**
 
 `hooks.py` 合并为：
 
@@ -2268,12 +2274,12 @@ Run:
 
 ```powershell
 .\scripts\bench.ps1 --site autoflow.localhost migrate
-.\scripts\bench.ps1 --site autoflow.localhost run-tests --module autoflow_360.tests.test_sales_conversion
+.\scripts\bench.ps1 --site autoflow.localhost run-tests --module autoflow_360.autoflow_360.doctype.autoflow_approval_request.test_sales_conversion
 ```
 
-Expected: 四项测试均通过。
+Expected: 十二项专项集成测试均通过；全量结果为 42 项真实集成测试和 82 项静态测试通过。
 
-- [ ] **Step 6: 提交报价和审批闭环**
+- [x] **Step 6: 提交报价和审批闭环**
 
 ```powershell
 git add autoflow_360/services/sales_conversion.py autoflow_360/autoflow_360/doctype/autoflow_approval_rule autoflow_360/autoflow_360/doctype/autoflow_approval_request autoflow_360/public/js/quotation.js autoflow_360/public/js/sales_order.js autoflow_360/tests/test_sales_conversion.py autoflow_360/tests/factories.py autoflow_360/setup/custom_fields.py autoflow_360/setup/workflows.py autoflow_360/install.py autoflow_360/hooks.py

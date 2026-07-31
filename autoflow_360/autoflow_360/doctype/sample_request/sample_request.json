@@ -16,6 +16,7 @@
   "required_date",
   "customer_contact",
   "status_section",
+  "approval_status",
   "status",
   "inspection_status",
   "items_tab",
@@ -92,6 +93,18 @@
    "fieldname": "status_section",
    "fieldtype": "Section Break",
    "label": "Status"
+  },
+  {
+   "default": "草稿",
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Approval Status",
+   "no_copy": 1,
+   "options": "草稿\n待审批\n已通过\n已退回",
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "default": "草稿",
