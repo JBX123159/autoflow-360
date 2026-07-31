@@ -122,6 +122,48 @@ def customer_feedback_has_permission(
 	return doc.customer in get_customer_names_for_user(user)
 
 
+def _customer_query(table_name: str, user: str | None = None) -> str:
+	user = _current_user(user)
+	if not is_customer_portal_user(user):
+		return ""
+	customers = get_customer_names_for_user(user)
+	if not customers:
+		return "1=0"
+	escaped_customers = ", ".join(
+		frappe.db.escape(customer) for customer in customers
+	)
+	return f"`tab{table_name}`.`customer` in ({escaped_customers})"
+
+
+def customer_delivery_query(user: str | None = None) -> str:
+	return _customer_query("Delivery Note", user)
+
+
+def customer_receipt_query(user: str | None = None) -> str:
+	return _customer_query("Customer Receipt", user)
+
+
+def customer_delivery_has_permission(
+	doc,
+	user: str | None = None,
+	ptype: str | None = None,
+):
+	user = _current_user(user)
+	if not is_customer_portal_user(user):
+		return None
+	if ptype != "read":
+		return False
+	return doc.customer in get_customer_names_for_user(user)
+
+
+def customer_receipt_has_permission(
+	doc,
+	user: str | None = None,
+	ptype: str | None = None,
+):
+	return customer_delivery_has_permission(doc, user=user, ptype=ptype)
+
+
 def _supplier_query(table_name: str, user: str | None = None) -> str:
 	user = _current_user(user)
 	if not is_supplier_portal_user(user):

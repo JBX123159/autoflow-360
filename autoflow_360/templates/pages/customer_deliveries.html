@@ -1,0 +1,77 @@
+<section class="autoflow-deliveries">
+  <header class="autoflow-deliveries__header">
+    <p class="autoflow-deliveries__eyebrow">AutoFlow 360</p>
+    <h1>{{ _("My Deliveries") }}</h1>
+    <p>{{ _("Review submitted deliveries and leave an auditable receipt confirmation.") }}</p>
+  </header>
+
+  {% if deliveries %}
+    <div class="autoflow-deliveries__grid">
+      {% for delivery in deliveries %}
+        <article class="autoflow-delivery-card">
+          <div class="autoflow-delivery-card__topline">
+            <span>{{ delivery.name }}</span>
+            <strong>{{ _(delivery.status) }}</strong>
+          </div>
+          <h2>{{ delivery.customer_name }}</h2>
+          <p>{{ delivery.posting_date }} · {{ delivery.currency }} {{ delivery.grand_total }}</p>
+          <ul>
+            {% for item in delivery.items %}
+              <li>{{ item.item_code }} · {{ item.qty }} {{ item.uom }}</li>
+            {% endfor %}
+          </ul>
+
+          {% if delivery.receipt %}
+            <p class="autoflow-delivery-card__received">
+              {{ _("Receipt confirmed") }} · {{ delivery.receipt.received_at }}
+            </p>
+          {% else %}
+            <form class="autoflow-receipt-form" data-delivery-note="{{ delivery.name }}">
+              <p>{{ _("Confirm only after the goods and quantities have been checked.") }}</p>
+              <button type="submit" class="btn btn-primary">{{ _("Confirm Receipt") }}</button>
+            </form>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="autoflow-delivery-card">
+      <h2>{{ _("No deliveries available") }}</h2>
+      <p>{{ _("Submitted deliveries for your customer account will appear here.") }}</p>
+    </div>
+  {% endif %}
+</section>
+
+<style>
+  .autoflow-deliveries { max-width: 1120px; margin: 0 auto; padding: 2.5rem 1rem 4rem; }
+  .autoflow-deliveries__header { margin-bottom: 2rem; }
+  .autoflow-deliveries__eyebrow { color: #0f766e; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .autoflow-deliveries__grid { display: grid; gap: 1rem; }
+  .autoflow-delivery-card { border: 1px solid #dbe4e8; border-radius: 16px; background: #fff; padding: 1.25rem; box-shadow: 0 8px 24px rgba(15, 23, 42, .06); }
+  .autoflow-delivery-card__topline { display: flex; justify-content: space-between; gap: 1rem; color: #475569; font-size: .875rem; }
+  .autoflow-delivery-card__received { color: #047857; font-weight: 700; margin-bottom: 0; }
+  .autoflow-receipt-form { border-top: 1px solid #e2e8f0; margin-top: 1rem; padding-top: 1rem; }
+</style>
+
+<script>
+  document.querySelectorAll(".autoflow-receipt-form").forEach((form) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = form.querySelector("button[type='submit']");
+      button.disabled = true;
+      try {
+        await frappe.call({
+          method: "autoflow_360.api.portal.confirm_delivery_receipt",
+          type: "POST",
+          args: { delivery_note_name: form.dataset.deliveryNote },
+          freeze: true,
+          freeze_message: {{ _("Recording receipt confirmation...") | tojson }},
+        });
+        frappe.show_alert({ message: {{ _("Receipt confirmed") | tojson }}, indicator: "green" });
+        window.location.reload();
+      } finally {
+        button.disabled = false;
+      }
+    });
+  });
+</script>

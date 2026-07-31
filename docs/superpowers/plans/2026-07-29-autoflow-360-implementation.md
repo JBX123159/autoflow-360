@@ -2886,7 +2886,9 @@ git commit -m "feat: add procurement flow and supplier portal"
 - Consumes: `Purchase Receipt`、`Bin`、`Sales Order`、`Delivery Note`、客户门户身份。
 - Produces: `validate_delivery_stock(doc)`、`confirm_customer_receipt(delivery_note, proof_file=None) -> str`。
 
-- [ ] **Step 1: 写库存不足、超发和越权签收测试**
+**实现记录（2026-07-31）：** 实际实现将交付边界收紧为仅允许从已提交销售订单生成项目交付单；提交前按“物料 + 仓库”聚合需求并锁定销售订单行与库存 Bin 行，同时校验历史已交数量，防止库存不足、伪造来源和超交。客户身份只从标准 `Customer.portal_users` 关系推导，交付单与回执在文档权限、行级查询和服务层三重隔离；签收使用文件锁、数据库行锁和唯一字段保证幂等，回执创建后不可修改，附件只能引用当前用户拥有的私有文件。全量回归为 70 项集成测试和 102 项静态契约测试。
+
+- [x] **Step 1: 写库存不足、超发和越权签收测试**
 
 ```python
 import frappe
@@ -2922,7 +2924,7 @@ class TestDelivery(FrappeTestCase):
 		self.assertEqual(first, second)
 ```
 
-- [ ] **Step 2: 运行测试并确认交付服务缺失**
+- [x] **Step 2: 运行测试并确认交付服务缺失**
 
 Run:
 
@@ -2932,7 +2934,7 @@ Run:
 
 Expected: `delivery` 服务或 `Customer Receipt` 不存在。
 
-- [ ] **Step 3: 创建签收模型和库存校验**
+- [x] **Step 3: 创建签收模型和库存校验**
 
 `Customer Receipt` 字段：
 
@@ -3005,7 +3007,7 @@ def confirm_customer_receipt(delivery_note: str, proof_file: str | None = None) 
 	return receipt.name
 ```
 
-- [ ] **Step 4: 注册交付钩子和客户门户**
+- [x] **Step 4: 注册交付钩子和客户门户**
 
 `hooks.py` 增加：
 
@@ -3034,7 +3036,7 @@ doc_events.update(
 
 客户门户列表必须使用 `frappe.get_list()` 和客户过滤，不使用绕过权限的 `frappe.get_all()`。
 
-- [ ] **Step 5: 运行交付测试**
+- [x] **Step 5: 运行交付测试**
 
 Run:
 
@@ -3045,7 +3047,7 @@ Run:
 
 Expected: 库存不足被阻止；跨客户签收被拒绝；重复签收返回同一记录。
 
-- [ ] **Step 6: 提交库存交付闭环**
+- [x] **Step 6: 提交库存交付闭环**
 
 ```powershell
 git add autoflow_360/services/delivery.py autoflow_360/autoflow_360/doctype/customer_receipt autoflow_360/www/customer-deliveries* autoflow_360/templates/pages/customer_deliveries.html autoflow_360/tests/test_delivery.py autoflow_360/tests/factories.py autoflow_360/api/portal.py autoflow_360/hooks.py

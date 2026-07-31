@@ -7,6 +7,7 @@ from autoflow_360.services.procurement import (
 	submit_supplier_quote as submit_quote,
 	update_supplier_eta,
 )
+from autoflow_360.services.delivery import confirm_customer_receipt
 from autoflow_360.services.sample_workflow import record_customer_feedback
 
 
@@ -60,3 +61,11 @@ def confirm_supplier_eta(
 	reason: str,
 ) -> str:
 	return update_supplier_eta(purchase_order_name, eta, reason)
+
+
+@frappe.whitelist(methods=["POST"])
+def confirm_delivery_receipt(
+	delivery_note_name: str,
+	proof_file: str | None = None,
+) -> str:
+	return confirm_customer_receipt(delivery_note_name, proof_file)

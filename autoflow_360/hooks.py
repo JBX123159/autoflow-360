@@ -46,6 +46,16 @@ doc_events = {
 	"Sales Order": {
 		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
 	},
+	"Delivery Note": {
+		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
+		"before_submit": "autoflow_360.services.delivery.validate_delivery_stock",
+		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
+	},
+	"Sales Invoice": {
+		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
+		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
+		"on_update_after_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
+	},
 	"Purchase Receipt": {
 		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
 	},
@@ -54,6 +64,7 @@ doc_events = {
 	},
 	"Payment Entry": {
 		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
+		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
 	},
 }
 
@@ -61,6 +72,11 @@ portal_menu_items = [
 	{
 		"title": "我的样品",
 		"route": "/customer-samples",
+		"role": "AutoFlow Customer Portal",
+	},
+	{
+		"title": "我的交付",
+		"route": "/customer-deliveries",
 		"role": "AutoFlow Customer Portal",
 	},
 	{
@@ -78,6 +94,8 @@ portal_menu_items = [
 permission_query_conditions = {
 	"Account": "autoflow_360.permissions.portal.supplier_account_query",
 	"Customer Feedback": "autoflow_360.permissions.portal.customer_feedback_query",
+	"Customer Receipt": "autoflow_360.permissions.portal.customer_receipt_query",
+	"Delivery Note": "autoflow_360.permissions.portal.customer_delivery_query",
 	"Item": "autoflow_360.permissions.portal.supplier_item_query",
 	"Request for Quotation": "autoflow_360.permissions.portal.request_for_quotation_query",
 	"Supplier Quotation": "autoflow_360.permissions.portal.supplier_quotation_query",
@@ -87,6 +105,8 @@ permission_query_conditions = {
 has_permission = {
 	"Account": "autoflow_360.permissions.portal.supplier_account_has_permission",
 	"Customer Feedback": "autoflow_360.permissions.portal.customer_feedback_has_permission",
+	"Customer Receipt": "autoflow_360.permissions.portal.customer_receipt_has_permission",
+	"Delivery Note": "autoflow_360.permissions.portal.customer_delivery_has_permission",
 	"Item": "autoflow_360.permissions.portal.supplier_item_has_permission",
 	"Request for Quotation": "autoflow_360.permissions.portal.supplier_rfq_has_permission",
 	"Supplier Quotation": "autoflow_360.permissions.portal.supplier_document_has_permission",

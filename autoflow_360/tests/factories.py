@@ -299,7 +299,35 @@ def make_customer_approved_sample(customer_project: str):
 	return frappe.get_doc("Sample Request", sample.name)
 
 
-def make_customer_portal_user(*, link_customer: bool = True):
+def make_foreign_customer():
+	_ensure_synthetic_master_data()
+	identifier = frappe.generate_hash(length=12).lower()
+	customer = frappe.get_doc(
+		{
+			"doctype": "Customer",
+			"customer_name": f"SYNTHETIC Customer {identifier}",
+			"customer_type": "Company",
+			"customer_group": frappe.db.get_value(
+				"Customer",
+				SYNTHETIC_CUSTOMER,
+				"customer_group",
+			),
+			"territory": frappe.db.get_value(
+				"Customer",
+				SYNTHETIC_CUSTOMER,
+				"territory",
+			),
+		}
+	)
+	customer.insert()
+	return customer
+
+
+def make_customer_portal_user(
+	*,
+	link_customer: bool = True,
+	customer: str = SYNTHETIC_CUSTOMER,
+):
 	identifier = frappe.generate_hash(length=12).lower()
 	email = f"synthetic-portal-{identifier}@example.invalid"
 	user = frappe.get_doc(
@@ -315,9 +343,9 @@ def make_customer_portal_user(*, link_customer: bool = True):
 	)
 	user.insert()
 	if link_customer:
-		customer = frappe.get_doc("Customer", SYNTHETIC_CUSTOMER)
-		customer.append("portal_users", {"user": user.name})
-		customer.save()
+		customer_doc = frappe.get_doc("Customer", customer)
+		customer_doc.append("portal_users", {"user": user.name})
+		customer_doc.save()
 	return user
 
 
@@ -598,3 +626,38 @@ def make_purchase_invoice_from_order(purchase_order: str):
 	)
 
 	return make_purchase_invoice(purchase_order)
+
+
+def make_delivery_note(
+	*,
+	quantity: float = 10,
+	available_stock: float = 20,
+):
+	from erpnext.selling.doctype.sales_order.sales_order import (
+		make_delivery_note as make_erpnext_delivery_note,
+	)
+	from erpnext.stock.doctype.stock_entry.stock_entry_utils import make_stock_entry
+
+	order = make_stock_sales_order(quantity=quantity)
+	if available_stock < 0:
+		frappe.throw("Synthetic Delivery Note stock cannot be negative")
+	if available_stock:
+		make_stock_entry(
+			item_code=order.items[0].item_code,
+			to_warehouse=order.items[0].warehouse,
+			qty=available_stock,
+			company=order.company,
+			rate=100,
+		)
+	delivery = make_erpnext_delivery_note(order.name)
+	delivery.custom_customer_project = order.custom_customer_project
+	if not delivery.items:
+		frappe.throw("Synthetic Delivery Note requires at least one item")
+	return delivery
+
+
+def make_submitted_delivery_note(**kwargs):
+	delivery = make_delivery_note(**kwargs)
+	delivery.insert()
+	delivery.submit()
+	return delivery
