@@ -862,3 +862,110 @@ def make_inactive_project(*, days_inactive: int = 10):
 		"SYNTHETIC Inactive Customer Project",
 		last_meaningful_activity=now_datetime() - timedelta(days=days_inactive),
 	)
+
+
+def _save_synthetic_private_file(filename: str, owner: str) -> str:
+	from frappe.utils.file_manager import save_file
+
+	previous_user = frappe.session.user
+	try:
+		frappe.set_user(owner)
+		return save_file(
+			filename,
+			f"SYNTHETIC corrective action evidence: {owner}: {filename}".encode(),
+			None,
+			None,
+			is_private=1,
+		).file_url
+	finally:
+		frappe.set_user(previous_user)
+
+
+def make_business_exception(
+	project_name: str | None = None,
+	*,
+	risk_level: str = "高",
+	status: str = "已发现",
+	raised_by: str | None = None,
+	responsible_user: str | None = None,
+	action_owner: str | None = None,
+	all_actions_complete: bool = True,
+	include_root_cause: bool = True,
+):
+	from autoflow_360.services.exception_workflow import transition_exception
+
+	project = (
+		frappe.get_doc("Customer Project", project_name)
+		if project_name
+		else make_customer_project("SYNTHETIC Business Exception Project")
+	)
+	raised_by = raised_by or frappe.session.user
+	responsible_user = responsible_user or raised_by
+	action_owner = action_owner or responsible_user
+	previous_user = frappe.session.user
+	try:
+		frappe.set_user(raised_by)
+		doc = frappe.get_doc(
+			{
+				"doctype": "Business Exception",
+				"customer_project": project.name,
+				"exception_type": "供应商延期",
+				"risk_level": risk_level,
+				"reference_doctype": "Customer Project",
+				"reference_name": project.name,
+				"description": "SYNTHETIC supplier delivery exception",
+				"impact": "SYNTHETIC customer delivery date may be affected",
+			}
+		).insert()
+		if status == "已发现":
+			return doc
+
+		transition_exception(doc.name, "已分级")
+		doc.reload()
+		doc.responsible_department = "SYNTHETIC Supply Chain"
+		doc.responsible_user = responsible_user
+		doc.target_close_date = getdate(nowdate()) + timedelta(days=7)
+		doc.save()
+		if status == "已分级":
+			return doc
+
+		transition_exception(doc.name, "已分派")
+		if status == "已分派":
+			return frappe.get_doc("Business Exception", doc.name)
+
+		transition_exception(doc.name, "根因分析中")
+		doc.reload()
+		if include_root_cause:
+			doc.root_cause = "SYNTHETIC supplier capacity planning was inaccurate"
+		if status == "根因分析中":
+			doc.save()
+			return doc
+
+		evidence = None
+		action_status = "进行中"
+		if all_actions_complete:
+			evidence = _save_synthetic_private_file(
+				f"SYNTHETIC-action-{frappe.generate_hash(length=10)}.txt",
+				action_owner,
+			)
+			action_status = "已完成"
+		doc.append(
+			"actions",
+			{
+				"action": "SYNTHETIC confirm supplier recovery capacity",
+				"owner_user": action_owner,
+				"due_date": getdate(nowdate()) + timedelta(days=3),
+				"status": action_status,
+				"evidence": evidence,
+				"verification_result": "SYNTHETIC capacity evidence reviewed",
+			},
+		)
+		doc.save()
+		transition_exception(doc.name, "整改中")
+		if status == "整改中":
+			return frappe.get_doc("Business Exception", doc.name)
+
+		transition_exception(doc.name, "待验证")
+		return frappe.get_doc("Business Exception", doc.name)
+	finally:
+		frappe.set_user(previous_user)

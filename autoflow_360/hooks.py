@@ -25,6 +25,7 @@ after_install = "autoflow_360.install.after_install"
 after_migrate = "autoflow_360.install.after_migrate"
 
 doctype_js = {
+	"Business Exception": "public/js/business_exception.js",
 	"CRM Deal": "public/js/crm_deal.js",
 	"Customer Project": "public/js/customer_project.js",
 	"Material Request": "public/js/material_request.js",

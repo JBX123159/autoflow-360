@@ -3559,18 +3559,25 @@ git commit -m "feat: add explainable project risk engine"
 **Files:**
 
 - Create: `autoflow_360/autoflow_360/doctype/corrective_action/corrective_action.json`
+- Create: `autoflow_360/autoflow_360/doctype/corrective_action/corrective_action.py`
 - Create: `autoflow_360/autoflow_360/doctype/business_exception/business_exception.json`
 - Create: `autoflow_360/autoflow_360/doctype/business_exception/business_exception.py`
 - Create: `autoflow_360/services/exception_workflow.py`
+- Create: `autoflow_360/api/exception.py`
+- Create: `autoflow_360/public/js/business_exception.js`
 - Create: `autoflow_360/tests/test_exception_workflow.py`
+- Create: `tests/static/test_exception_workflow_contract.py`
+- Modify: `autoflow_360/hooks.py`
 - Modify: `autoflow_360/tests/factories.py`
 
 **Interfaces:**
 
 - Consumes: 客户项目和任意来源单据。
-- Produces: `transition_exception(exception_name, target_status, evidence=None) -> str`、高风险关闭的独立验证门槛。
+- Produces: `transition_exception(exception_name, target_status, evidence=None, reason=None) -> str`、高风险关闭的独立验证门槛。
 
-- [ ] **Step 1: 写状态跳跃、证据和独立验证失败测试**
+**实现记录（2026-07-31）：** 已实现八状态严格相邻流转，直接改状态、终态修改和删除均被阻止。异常绑定来源单据与客户项目，分派必须指定部门、责任人和期限，进入整改必须填写根因和动作，进入待验证必须由每位动作负责人提交本人私有证据。高风险异常的验证人不能是发起人、责任人或任一动作负责人，关闭证据也必须属于当前验证人；结项门槛和风险引擎会同步识别未关闭高风险异常。接口采用项目文件锁、数据库行锁和幂等终态处理，页面按钮只调用受保护的 POST 接口。全量回归为 105 项集成测试和 126 项静态契约测试。
+
+- [x] **Step 1: 写状态跳跃、证据和独立验证失败测试**
 
 ```python
 import frappe
@@ -3625,7 +3632,7 @@ class TestExceptionWorkflow(FrappeTestCase):
 		self.assertIn("HIGH_EXCEPTION_OPEN", {finding.rule_code for finding in findings})
 ```
 
-- [ ] **Step 2: 运行测试并确认异常服务缺失**
+- [x] **Step 2: 运行测试并确认异常服务缺失**
 
 Run:
 
@@ -3635,7 +3642,7 @@ Run:
 
 Expected: `exception_workflow` 无法导入。
 
-- [ ] **Step 3: 创建异常与整改模型**
+- [x] **Step 3: 创建异常与整改模型**
 
 `Business Exception` 字段：
 
@@ -3673,7 +3680,7 @@ completed_at Datetime
 verification_result Small Text
 ```
 
-- [ ] **Step 4: 实现严格相邻状态转换**
+- [x] **Step 4: 实现严格相邻状态转换**
 
 ```python
 # autoflow_360/services/exception_workflow.py
@@ -3719,7 +3726,7 @@ def transition_exception(
 	return doc.name
 ```
 
-- [ ] **Step 5: 运行异常测试**
+- [x] **Step 5: 运行异常测试**
 
 Run:
 
@@ -3730,7 +3737,7 @@ Run:
 
 Expected: 不能跳步；整改必须有证据；高风险异常由不同人员验证。
 
-- [ ] **Step 6: 提交异常闭环**
+- [x] **Step 6: 提交异常闭环**
 
 ```powershell
 git add autoflow_360/autoflow_360/doctype/corrective_action autoflow_360/autoflow_360/doctype/business_exception autoflow_360/services/exception_workflow.py autoflow_360/tests/test_exception_workflow.py autoflow_360/tests/factories.py
