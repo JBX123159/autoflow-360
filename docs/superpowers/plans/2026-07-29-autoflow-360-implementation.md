@@ -1689,7 +1689,7 @@ git commit -m "feat: convert CRM deals into customer projects"
 - Consumes: `Customer Project`、`Item`、`Contact`、当前门户用户。
 - Produces: `dispatch_sample(sample_name, carrier, tracking_number)`、`record_customer_feedback(sample_name, decision, comments, attachment=None)`、`create_resample(sample_name) -> str`。
 
-- [ ] **Step 1: 写检验门槛、反馈不可覆盖和重新打样测试**
+- [x] **Step 1: 写检验门槛、反馈不可覆盖和重新打样测试**
 
 ```python
 import frappe
@@ -1736,7 +1736,7 @@ class TestSampleRequest(FrappeTestCase):
 		self.assertEqual(resample.status, "草稿")
 ```
 
-- [ ] **Step 2: 运行测试并确认样品对象缺失**
+- [x] **Step 2: 运行测试并确认样品对象缺失**
 
 Run:
 
@@ -1746,7 +1746,7 @@ Run:
 
 Expected: `Sample Request` 不存在。
 
-- [ ] **Step 3: 创建样品和反馈模型**
+- [x] **Step 3: 创建样品和反馈模型**
 
 `Sample Request` 稳定字段：
 
@@ -1791,7 +1791,7 @@ submitted_by Link User read-only
 submitted_at Datetime read-only
 ```
 
-- [ ] **Step 4: 实现服务端状态与门户权限**
+- [x] **Step 4: 实现服务端状态与门户权限**
 
 ```python
 # autoflow_360/services/sample_workflow.py
@@ -1870,7 +1870,7 @@ def create_resample(sample_name: str) -> str:
 
 门户接口先通过 `autoflow_360.permissions.portal.can_access_customer_project()` 校验用户所属客户，再调用 `record_customer_feedback()`。
 
-- [ ] **Step 5: 配置门户入口并运行测试**
+- [x] **Step 5: 配置门户入口并运行测试**
 
 `hooks.py` 增加：
 
@@ -1889,7 +1889,7 @@ Run:
 
 Expected: 未检验样品被阻止；反馈不能覆盖；重新打样轮次正确。
 
-- [ ] **Step 6: 提交样品闭环**
+- [x] **Step 6: 提交样品闭环**
 
 ```powershell
 git add autoflow_360/autoflow_360/doctype/sample_item autoflow_360/autoflow_360/doctype/sample_request autoflow_360/autoflow_360/doctype/customer_feedback autoflow_360/services/sample_workflow.py autoflow_360/api/portal.py autoflow_360/www autoflow_360/templates/pages/customer_samples.html autoflow_360/tests/factories.py autoflow_360/hooks.py

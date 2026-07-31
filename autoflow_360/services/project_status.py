@@ -168,7 +168,11 @@ def _next_stage_toward(current: str, derived: str) -> str:
 
 
 def refresh_project_stage_from_document(doc, method: str | None = None) -> None:
-	project_name = getattr(doc, "custom_customer_project", None)
+	project_name = getattr(doc, "custom_customer_project", None) or getattr(
+		doc,
+		"customer_project",
+		None,
+	)
 	if not project_name:
 		return
 	project = frappe.get_doc("Customer Project", project_name)

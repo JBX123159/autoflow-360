@@ -1,0 +1,105 @@
+<section class="autoflow-samples">
+  <header class="autoflow-samples__header">
+    <p class="autoflow-samples__eyebrow">AutoFlow 360</p>
+    <h1>{{ _("My Samples") }}</h1>
+    <p>{{ _("Track sample inspection, dispatch and customer decisions in one place.") }}</p>
+  </header>
+
+  {% if samples %}
+    <div class="autoflow-samples__grid">
+      {% for sample in samples %}
+        <article class="autoflow-sample-card">
+          <div class="autoflow-sample-card__topline">
+            <span>{{ sample.name }}</span>
+            <strong>{{ _(sample.status) }}</strong>
+          </div>
+          <h2>{{ sample.project_title }}</h2>
+          <dl>
+            <div><dt>{{ _("Purpose") }}</dt><dd>{{ sample.purpose }}</dd></div>
+            <div><dt>{{ _("Round") }}</dt><dd>{{ sample.round_number }}</dd></div>
+            <div><dt>{{ _("Required Date") }}</dt><dd>{{ sample.required_date }}</dd></div>
+            <div><dt>{{ _("Inspection") }}</dt><dd>{{ _(sample.inspection_status) }}</dd></div>
+            {% if sample.tracking_number %}
+              <div><dt>{{ _("Tracking") }}</dt><dd>{{ sample.carrier }} · {{ sample.tracking_number }}</dd></div>
+            {% endif %}
+          </dl>
+
+          {% if sample.status in ["已发出", "等待反馈"] and not sample.feedback %}
+            <form class="autoflow-feedback-form" data-sample-name="{{ sample.name }}">
+              <label>
+                <span>{{ _("Decision") }}</span>
+                <select name="decision" required>
+                  <option value="">{{ _("Select a decision") }}</option>
+                  <option value="客户认可">{{ _("Accepted") }}</option>
+                  <option value="重新打样">{{ _("Resample") }}</option>
+                  <option value="拒绝">{{ _("Rejected") }}</option>
+                </select>
+              </label>
+              <label>
+                <span>{{ _("Comments") }}</span>
+                <textarea name="comments" rows="3" maxlength="500" required></textarea>
+              </label>
+              <button type="submit" class="btn btn-primary">
+                {{ _("Submit Feedback") }}
+              </button>
+            </form>
+          {% elif sample.feedback %}
+            <p class="autoflow-sample-card__complete">{{ _("Feedback submitted") }}</p>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="autoflow-samples__empty">
+      <h2>{{ _("No samples yet") }}</h2>
+      <p>{{ _("Samples linked to your customer account will appear here.") }}</p>
+    </div>
+  {% endif %}
+</section>
+
+<style>
+  .autoflow-samples { max-width: 1120px; margin: 0 auto; padding: 2.5rem 1rem 4rem; }
+  .autoflow-samples__header { margin-bottom: 2rem; }
+  .autoflow-samples__eyebrow { color: #0f766e; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .autoflow-samples__grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .autoflow-sample-card, .autoflow-samples__empty { border: 1px solid #dbe4e8; border-radius: 16px; background: #fff; padding: 1.25rem; box-shadow: 0 8px 24px rgba(15, 23, 42, .06); }
+  .autoflow-sample-card__topline { display: flex; justify-content: space-between; gap: 1rem; color: #475569; font-size: .875rem; }
+  .autoflow-sample-card h2 { margin: .75rem 0 1rem; font-size: 1.2rem; }
+  .autoflow-sample-card dl { display: grid; gap: .55rem; margin: 0 0 1.25rem; }
+  .autoflow-sample-card dl div { display: grid; grid-template-columns: 110px 1fr; gap: .75rem; }
+  .autoflow-sample-card dt { color: #64748b; font-weight: 500; }
+  .autoflow-sample-card dd { margin: 0; overflow-wrap: anywhere; }
+  .autoflow-feedback-form { display: grid; gap: .85rem; border-top: 1px solid #e2e8f0; padding-top: 1rem; }
+  .autoflow-feedback-form label { display: grid; gap: .35rem; font-weight: 600; }
+  .autoflow-feedback-form select, .autoflow-feedback-form textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: .65rem; background: #fff; }
+  .autoflow-sample-card__complete { color: #047857; font-weight: 700; margin-bottom: 0; }
+  @media (max-width: 540px) { .autoflow-sample-card dl div { grid-template-columns: 1fr; gap: .15rem; } }
+</style>
+
+<script>
+  document.querySelectorAll(".autoflow-feedback-form").forEach((form) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = form.querySelector("button[type='submit']");
+      const values = new FormData(form);
+      button.disabled = true;
+      try {
+        await frappe.call({
+          method: "autoflow_360.api.portal.submit_sample_feedback",
+          type: "POST",
+          args: {
+            sample_name: form.dataset.sampleName,
+            decision: values.get("decision"),
+            comments: values.get("comments"),
+          },
+          freeze: true,
+          freeze_message: {{ _("Submitting feedback...") | tojson }},
+        });
+        frappe.show_alert({ message: {{ _("Feedback submitted") | tojson }}, indicator: "green" });
+        window.location.reload();
+      } finally {
+        button.disabled = false;
+      }
+    });
+  });
+</script>

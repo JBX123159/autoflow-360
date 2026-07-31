@@ -27,3 +27,26 @@ after_migrate = "autoflow_360.install.after_migrate"
 doctype_js = {
 	"CRM Deal": "public/js/crm_deal.js",
 }
+
+doc_events = {
+	"Sample Request": {
+		"after_insert": "autoflow_360.services.project_status.refresh_project_stage_from_document",
+		"on_update": "autoflow_360.services.project_status.refresh_project_stage_from_document",
+	},
+}
+
+portal_menu_items = [
+	{
+		"title": "我的样品",
+		"route": "/customer-samples",
+		"role": "AutoFlow Customer Portal",
+	},
+]
+
+permission_query_conditions = {
+	"Customer Feedback": "autoflow_360.permissions.portal.customer_feedback_query",
+}
+
+has_permission = {
+	"Customer Feedback": "autoflow_360.permissions.portal.customer_feedback_has_permission",
+}
