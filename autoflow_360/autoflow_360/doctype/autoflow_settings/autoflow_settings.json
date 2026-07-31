@@ -1,0 +1,98 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-07-30 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "feedback_warning_days",
+  "quotation_expiry_warning_days",
+  "project_inactive_days",
+  "high_risk_score",
+  "ai_enabled",
+  "ai_provider",
+  "ai_base_url",
+  "ai_model",
+  "ai_api_key"
+ ],
+ "fields": [
+  {
+   "default": "3",
+   "fieldname": "feedback_warning_days",
+   "fieldtype": "Int",
+   "label": "Feedback Warning Days",
+   "reqd": 1
+  },
+  {
+   "default": "7",
+   "fieldname": "quotation_expiry_warning_days",
+   "fieldtype": "Int",
+   "label": "Quotation Expiry Warning Days",
+   "reqd": 1
+  },
+  {
+   "default": "7",
+   "fieldname": "project_inactive_days",
+   "fieldtype": "Int",
+   "label": "Project Inactive Days",
+   "reqd": 1
+  },
+  {
+   "default": "70",
+   "fieldname": "high_risk_score",
+   "fieldtype": "Int",
+   "label": "High Risk Score",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "ai_enabled",
+   "fieldtype": "Check",
+   "label": "AI Enabled"
+  },
+  {
+   "default": "Disabled",
+   "fieldname": "ai_provider",
+   "fieldtype": "Select",
+   "label": "AI Provider",
+   "options": "Disabled\nOpenAI Compatible"
+  },
+  {
+   "fieldname": "ai_base_url",
+   "fieldtype": "Data",
+   "label": "AI Base URL"
+  },
+  {
+   "fieldname": "ai_model",
+   "fieldtype": "Data",
+   "label": "AI Model"
+  },
+  {
+   "fieldname": "ai_api_key",
+   "fieldtype": "Password",
+   "label": "AI API Key"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-07-30 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AutoFlow 360",
+ "name": "AutoFlow Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "role": "AutoFlow Administrator",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

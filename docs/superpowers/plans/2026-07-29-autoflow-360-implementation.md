@@ -1027,7 +1027,7 @@ python -m unittest tests.static.test_deployment_contract -v
 
 Expected: 四个上游项目均有不可变提交证据和获取日期。
 
-- [ ] **Step 8: 提交开发环境**
+- [x] **Step 8: 提交开发环境**
 
 ```powershell
 git add .gitattributes deploy autoflow_360/development.py autoflow_360/tests scripts/bootstrap-dev.ps1 scripts/bootstrap-container.sh scripts/bench.ps1 scripts/run-tests.ps1 scripts/check-environment.ps1 README.md docs/deployment/local-development.md docs/research/upstream-baseline.md tests/static/test_deployment_contract.py tests/static/test_environment_check.py
@@ -1226,7 +1226,7 @@ Run:
 
 Expected: 测试通过；重复执行 `migrate` 不新增重复角色或字段。
 
-- [ ] **Step 6: 提交系统基础数据**
+- [x] **Step 6: 提交系统基础数据**
 
 ```powershell
 git add autoflow_360/setup autoflow_360/autoflow_360/doctype/autoflow_settings autoflow_360/hooks.py
