@@ -1,10 +1,10 @@
 import frappe
-from frappe.tests.utils import FrappeTestCase
+from frappe.tests import IntegrationTestCase
 
 from autoflow_360 import __version__
 
 
-class TestInstallation(FrappeTestCase):
+class TestInstallation(IntegrationTestCase):
 	def test_required_apps_are_installed(self):
 		installed_apps = set(frappe.get_installed_apps())
 

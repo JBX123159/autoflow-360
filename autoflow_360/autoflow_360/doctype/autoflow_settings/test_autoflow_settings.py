@@ -1,5 +1,5 @@
 import frappe
-from frappe.tests.utils import FrappeTestCase
+from frappe.tests import IntegrationTestCase
 
 from autoflow_360.autoflow_360.doctype.autoflow_settings.autoflow_settings import (
 	AutoFlowSettings,
@@ -25,7 +25,7 @@ def make_settings(**overrides) -> AutoFlowSettings:
 	return AutoFlowSettings(values)
 
 
-class TestAutoFlowSettings(FrappeTestCase):
+class TestAutoFlowSettings(IntegrationTestCase):
 	def test_required_roles_and_custom_fields_exist(self):
 		for role in ROLES:
 			self.assertTrue(frappe.db.exists("Role", role), role)

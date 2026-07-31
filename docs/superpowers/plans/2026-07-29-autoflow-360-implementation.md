@@ -1253,7 +1253,7 @@ git commit -m "feat: add AutoFlow roles settings and ERP links"
 - Consumes: `Customer`、`CRM Deal`、`Company`、`User`。
 - Produces: `Customer Project`、`set_project_stage(project_name, target_stage, reason=None)`、`derive_project_stage(project_name)`。
 
-- [ ] **Step 1: 写状态和日期校验失败测试**
+- [x] **Step 1: 写状态和日期校验失败测试**
 
 ```python
 from datetime import timedelta
@@ -1293,7 +1293,7 @@ class TestCustomerProject(FrappeTestCase):
 
 测试辅助函数 `make_customer_project()` 固定创建合成客户、公司和负责人，不读取真实数据。
 
-- [ ] **Step 2: 运行测试并确认 DocType 尚不存在**
+- [x] **Step 2: 运行测试并确认 DocType 尚不存在**
 
 Run:
 
@@ -1303,7 +1303,7 @@ Run:
 
 Expected: `Customer Project` 不存在。
 
-- [ ] **Step 3: 创建子表和客户项目字段**
+- [x] **Step 3: 创建子表和客户项目字段**
 
 `Customer Project` 必须具有以下稳定字段名：
 
@@ -1339,7 +1339,7 @@ data_classification Data read-only
 
 命名规则使用 `AF-.YYYY.-.#####`，开启 `track_changes`，列表展示项目名称、客户、阶段、负责人、客户交期和风险等级。
 
-- [ ] **Step 4: 实现状态机和控制器校验**
+- [x] **Step 4: 实现状态机和控制器校验**
 
 ```python
 # autoflow_360/services/project_status.py
@@ -1470,7 +1470,7 @@ class CustomerProject(Document):
 			frappe.throw(_("A reason is required for stage {0}.").format(self.stage))
 ```
 
-- [ ] **Step 5: 迁移并运行状态测试**
+- [x] **Step 5: 迁移并运行状态测试**
 
 Run:
 
@@ -1481,7 +1481,7 @@ Run:
 
 Expected: 日期、成员和跳级测试通过。
 
-- [ ] **Step 6: 提交客户项目核心**
+- [x] **Step 6: 提交客户项目核心**
 
 ```powershell
 git add autoflow_360/autoflow_360/doctype/project_member autoflow_360/autoflow_360/doctype/project_milestone autoflow_360/autoflow_360/doctype/customer_project autoflow_360/services/project_status.py autoflow_360/tests/factories.py

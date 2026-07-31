@@ -1,0 +1,368 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 0,
+ "autoname": "naming_series:",
+ "creation": "2026-07-31 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "overview_tab",
+  "naming_series",
+  "project_name",
+  "company",
+  "customer",
+  "crm_deal",
+  "product_family",
+  "commercial_section",
+  "currency",
+  "expected_amount",
+  "probability",
+  "ownership_tab",
+  "project_manager",
+  "project_members",
+  "milestones",
+  "timeline_tab",
+  "target_award_date",
+  "customer_delivery_date",
+  "last_meaningful_activity",
+  "stage",
+  "overall_risk_level",
+  "next_action_section",
+  "next_action",
+  "next_action_owner",
+  "next_action_due_date",
+  "outcome_tab",
+  "pause_reason",
+  "resume_date",
+  "failure_reason",
+  "cancellation_reason",
+  "closure_summary",
+  "audit_tab",
+  "is_demo",
+  "demo_key",
+  "data_classification"
+ ],
+ "fields": [
+  {
+   "fieldname": "overview_tab",
+   "fieldtype": "Tab Break",
+   "label": "Overview"
+  },
+  {
+   "default": "AF-.YYYY.-.#####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "AF-.YYYY.-.#####",
+   "reqd": 1
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Project Name",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "crm_deal",
+   "fieldtype": "Link",
+   "label": "CRM Deal",
+   "no_copy": 1,
+   "options": "CRM Deal",
+   "unique": 1
+  },
+  {
+   "fieldname": "product_family",
+   "fieldtype": "Data",
+   "label": "Product Family",
+   "reqd": 1
+  },
+  {
+   "fieldname": "commercial_section",
+   "fieldtype": "Section Break",
+   "label": "Commercial"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "expected_amount",
+   "fieldtype": "Currency",
+   "label": "Expected Amount",
+   "non_negative": 1,
+   "options": "currency"
+  },
+  {
+   "default": "0",
+   "fieldname": "probability",
+   "fieldtype": "Percent",
+   "label": "Probability"
+  },
+  {
+   "fieldname": "ownership_tab",
+   "fieldtype": "Tab Break",
+   "label": "Team"
+  },
+  {
+   "fieldname": "project_manager",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Project Manager",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "project_members",
+   "fieldtype": "Table",
+   "label": "Project Members",
+   "options": "Project Member",
+   "reqd": 1
+  },
+  {
+   "fieldname": "milestones",
+   "fieldtype": "Table",
+   "label": "Milestones",
+   "options": "Project Milestone"
+  },
+  {
+   "fieldname": "timeline_tab",
+   "fieldtype": "Tab Break",
+   "label": "Timeline and Status"
+  },
+  {
+   "fieldname": "target_award_date",
+   "fieldtype": "Date",
+   "label": "Target Award Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_delivery_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Customer Delivery Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "last_meaningful_activity",
+   "fieldtype": "Datetime",
+   "label": "Last Meaningful Activity",
+   "read_only": 1
+  },
+  {
+   "default": "潜在项目",
+   "fieldname": "stage",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Stage",
+   "options": "潜在项目\n样品阶段\n报价阶段\n已定点\n订单履约\n已交付\n待回款\n已结项\n暂停\n失败\n取消",
+   "reqd": 1
+  },
+  {
+   "default": "低",
+   "fieldname": "overall_risk_level",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Overall Risk Level",
+   "options": "低\n中\n高",
+   "read_only": 1
+  },
+  {
+   "fieldname": "next_action_section",
+   "fieldtype": "Section Break",
+   "label": "Next Action"
+  },
+  {
+   "fieldname": "next_action",
+   "fieldtype": "Data",
+   "label": "Next Action"
+  },
+  {
+   "fieldname": "next_action_owner",
+   "fieldtype": "Link",
+   "label": "Next Action Owner",
+   "options": "User"
+  },
+  {
+   "fieldname": "next_action_due_date",
+   "fieldtype": "Date",
+   "label": "Next Action Due Date"
+  },
+  {
+   "fieldname": "outcome_tab",
+   "fieldtype": "Tab Break",
+   "label": "Outcome"
+  },
+  {
+   "fieldname": "pause_reason",
+   "fieldtype": "Small Text",
+   "label": "Pause Reason"
+  },
+  {
+   "fieldname": "resume_date",
+   "fieldtype": "Date",
+   "label": "Resume Date"
+  },
+  {
+   "fieldname": "failure_reason",
+   "fieldtype": "Small Text",
+   "label": "Failure Reason"
+  },
+  {
+   "fieldname": "cancellation_reason",
+   "fieldtype": "Small Text",
+   "label": "Cancellation Reason"
+  },
+  {
+   "fieldname": "closure_summary",
+   "fieldtype": "Long Text",
+   "label": "Closure Summary"
+  },
+  {
+   "fieldname": "audit_tab",
+   "fieldtype": "Tab Break",
+   "label": "Data Classification"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_demo",
+   "fieldtype": "Check",
+   "label": "Demo Data",
+   "read_only": 1
+  },
+  {
+   "fieldname": "demo_key",
+   "fieldtype": "Data",
+   "label": "Demo Key",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "default": "内部",
+   "fieldname": "data_classification",
+   "fieldtype": "Data",
+   "label": "Data Classification",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-07-31 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AutoFlow 360",
+ "name": "Customer Project",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Administrator",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Sales Operations",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Project Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Procurement"
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Warehouse"
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Finance"
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Executive"
+  }
+ ],
+ "search_fields": "project_name,customer,crm_deal,product_family",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "project_name",
+ "track_changes": 1
+}
