@@ -1,0 +1,85 @@
+<section class="autoflow-portal">
+  <header class="autoflow-portal__header">
+    <p class="autoflow-portal__eyebrow">AutoFlow 360</p>
+    <h1>{{ _("Supplier Purchase Orders") }}</h1>
+    <p>{{ _("Review confirmed orders and keep delivery commitments auditable.") }}</p>
+  </header>
+
+  {% if orders %}
+    <div class="autoflow-portal__grid">
+      {% for order in orders %}
+        <article class="autoflow-card">
+          <div class="autoflow-card__topline">
+            <span>{{ order.name }}</span>
+            <strong>{{ _(order.status) }}</strong>
+          </div>
+          <h2>{{ order.supplier_name }}</h2>
+          <p>{{ order.currency }} {{ order.grand_total }}</p>
+          <ul>
+            {% for item in order.items %}
+              <li>{{ item.item_code }} · {{ item.qty }} {{ item.uom }} · {{ item.schedule_date }}</li>
+            {% endfor %}
+          </ul>
+          <p>{{ _("Current Supplier ETA") }}: {{ order.custom_supplier_eta or order.schedule_date }}</p>
+
+          {% if order.status not in ["Closed", "Completed", "Cancelled"] %}
+            <form class="autoflow-eta-form" data-purchase-order="{{ order.name }}">
+              <label>
+                <span>{{ _("New Supplier ETA") }}</span>
+                <input name="eta" type="date" value="{{ order.custom_supplier_eta or order.schedule_date }}" required>
+              </label>
+              <label>
+                <span>{{ _("Change Reason") }}</span>
+                <textarea name="reason" rows="2" maxlength="500" required></textarea>
+              </label>
+              <button type="submit" class="btn btn-primary">{{ _("Confirm ETA") }}</button>
+            </form>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="autoflow-card">
+      <h2>{{ _("No purchase orders available") }}</h2>
+      <p>{{ _("Submitted orders for your supplier account will appear here.") }}</p>
+    </div>
+  {% endif %}
+</section>
+
+<style>
+  .autoflow-portal { max-width: 1120px; margin: 0 auto; padding: 2.5rem 1rem 4rem; }
+  .autoflow-portal__header { margin-bottom: 2rem; }
+  .autoflow-portal__eyebrow { color: #0f766e; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .autoflow-portal__grid { display: grid; gap: 1rem; }
+  .autoflow-card { border: 1px solid #dbe4e8; border-radius: 16px; background: #fff; padding: 1.25rem; box-shadow: 0 8px 24px rgba(15, 23, 42, .06); }
+  .autoflow-card__topline { display: flex; justify-content: space-between; gap: 1rem; color: #475569; font-size: .875rem; }
+  .autoflow-eta-form { display: grid; gap: .8rem; border-top: 1px solid #e2e8f0; padding-top: 1rem; }
+  .autoflow-eta-form label { display: grid; gap: .35rem; font-weight: 600; }
+  .autoflow-eta-form input, .autoflow-eta-form textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: .65rem; }
+</style>
+
+<script>
+  document.querySelectorAll(".autoflow-eta-form").forEach((form) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = form.querySelector("button[type='submit']");
+      button.disabled = true;
+      try {
+        await frappe.call({
+          method: "autoflow_360.api.portal.confirm_supplier_eta",
+          type: "POST",
+          args: {
+            purchase_order_name: form.dataset.purchaseOrder,
+            eta: form.querySelector("[name='eta']").value,
+            reason: form.querySelector("[name='reason']").value,
+          },
+          freeze: true,
+          freeze_message: {{ _("Recording supplier ETA...") | tojson }},
+        });
+        window.location.reload();
+      } finally {
+        button.disabled = false;
+      }
+    });
+  });
+</script>

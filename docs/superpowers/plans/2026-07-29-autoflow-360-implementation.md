@@ -2508,10 +2508,12 @@ git commit -m "feat: plan material gaps from sales orders"
 
 **Interfaces:**
 
-- Consumes: `Material Request`、`Request for Quotation`、`Supplier Quotation`、`Purchase Order`、Portal User → Contact → Supplier。
+- Consumes: `Material Request`、`Request for Quotation`、`Supplier Quotation`、`Purchase Order`、Supplier 标准 `portal_users` 关联。
 - Produces: `make_project_rfq(material_request_name, suppliers) -> str`、`submit_supplier_quote(...) -> str`、`update_supplier_eta(purchase_order, eta) -> str`。
 
-- [ ] **Step 1: 写供应商隔离、采购关联和交期测试**
+**实现记录（2026-07-31）：** 实际实现比初始草案收紧了安全边界：询价单和供应商报价均提交后才进入下一步；供应商身份只从当前登录用户与 Supplier 标准 `portal_users` 关系推导；报价行使用 RFQ 子表行名而不是可重复的物料编码；RFQ、报价、采购单、受邀物料及应付科目使用文档类型权限与行级钩子双重隔离；报价、采购单和交期更新均带文件锁、数据库行锁与幂等复用；交期历史不可修改，并保留操作者、时间、项目与原因。全量回归为 63 项集成测试和 95 项静态契约测试。
+
+- [x] **Step 1: 写供应商隔离、采购关联和交期测试**
 
 ```python
 import frappe
@@ -2568,7 +2570,7 @@ class TestProcurement(FrappeTestCase):
 			self.assertEqual(doc.custom_customer_project, order.custom_customer_project)
 ```
 
-- [ ] **Step 2: 运行测试并确认采购扩展缺失**
+- [x] **Step 2: 运行测试并确认采购扩展缺失**
 
 Run:
 
@@ -2579,7 +2581,7 @@ Run:
 
 Expected: 采购服务或 `Supplier ETA History` 不存在。
 
-- [ ] **Step 3: 创建采购来源与交期历史字段**
+- [x] **Step 3: 创建采购来源与交期历史字段**
 
 新增 `Supplier ETA History`：
 
@@ -2601,7 +2603,7 @@ Purchase Order.custom_source_supplier_quotation Link Supplier Quotation read-onl
 Purchase Order.custom_supplier_eta Date
 ```
 
-- [ ] **Step 4: 实现采购服务和门户服务端校验**
+- [x] **Step 4: 实现采购服务和门户服务端校验**
 
 ```python
 # autoflow_360/permissions/portal.py
@@ -2810,7 +2812,7 @@ def propagate_project_link(doc, method: str | None = None) -> None:
 		doc.custom_customer_project = projects.pop()
 ```
 
-- [ ] **Step 5: 配置门户入口和权限钩子**
+- [x] **Step 5: 配置门户入口和权限钩子**
 
 `hooks.py` 增加：
 
@@ -2843,7 +2845,7 @@ doc_events.update(
 
 内部用户返回 `None`，继续使用 ERPNext 标准权限；门户用户返回严格布尔结果。
 
-- [ ] **Step 6: 运行采购和门户测试**
+- [x] **Step 6: 运行采购和门户测试**
 
 Run:
 
@@ -2855,7 +2857,7 @@ Run:
 
 Expected: 供应商不能查看竞争对手报价；来源关系和交期历史正确。
 
-- [ ] **Step 7: 提交采购协同**
+- [x] **Step 7: 提交采购协同**
 
 ```powershell
 git add autoflow_360/services/procurement.py autoflow_360/services/project_linking.py autoflow_360/permissions/portal.py autoflow_360/www/supplier-rfqs* autoflow_360/www/supplier-orders* autoflow_360/templates/pages/supplier_* autoflow_360/tests/test_procurement.py autoflow_360/tests/test_supplier_portal.py autoflow_360/tests/factories.py autoflow_360/api/portal.py autoflow_360/hooks.py autoflow_360/setup/custom_fields.py

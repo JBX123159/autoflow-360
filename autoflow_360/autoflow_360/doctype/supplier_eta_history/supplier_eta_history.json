@@ -1,0 +1,165 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:ETA-{YYYY}-{#####}",
+ "creation": "2026-07-31 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "overview_tab",
+  "purchase_order",
+  "company",
+  "supplier",
+  "customer_project",
+  "eta_section",
+  "previous_eta",
+  "new_eta",
+  "change_reason",
+  "audit_section",
+  "changed_by",
+  "changed_at"
+ ],
+ "fields": [
+  {
+   "fieldname": "overview_tab",
+   "fieldtype": "Tab Break",
+   "label": "Overview"
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Purchase Order",
+   "no_copy": 1,
+   "options": "Purchase Order",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Supplier",
+   "options": "Supplier",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_project",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Customer Project",
+   "options": "Customer Project",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "eta_section",
+   "fieldtype": "Section Break",
+   "label": "ETA Change"
+  },
+  {
+   "fieldname": "previous_eta",
+   "fieldtype": "Date",
+   "label": "Previous ETA",
+   "read_only": 1
+  },
+  {
+   "fieldname": "new_eta",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "New ETA",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "change_reason",
+   "fieldtype": "Small Text",
+   "label": "Change Reason",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "audit_section",
+   "fieldtype": "Section Break",
+   "label": "Audit"
+  },
+  {
+   "fieldname": "changed_by",
+   "fieldtype": "Link",
+   "label": "Changed By",
+   "options": "User",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "changed_at",
+   "fieldtype": "Datetime",
+   "label": "Changed At",
+   "read_only": 1,
+   "reqd": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-07-31 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AutoFlow 360",
+ "name": "Supplier ETA History",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Administrator",
+   "share": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Procurement"
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Project Manager"
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Executive"
+  }
+ ],
+ "search_fields": "purchase_order,supplier,customer_project",
+ "sort_field": "changed_at",
+ "sort_order": "DESC",
+ "states": []
+}

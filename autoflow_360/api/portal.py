@@ -3,6 +3,10 @@ from frappe import _
 from frappe.utils import cstr
 
 from autoflow_360.permissions.portal import can_access_customer_project
+from autoflow_360.services.procurement import (
+	submit_supplier_quote as submit_quote,
+	update_supplier_eta,
+)
 from autoflow_360.services.sample_workflow import record_customer_feedback
 
 
@@ -37,3 +41,22 @@ def submit_sample_feedback(
 		comments,
 		_validate_owned_attachment(attachment),
 	)
+
+
+@frappe.whitelist(methods=["POST"])
+def submit_supplier_quote(
+	rfq_name: str,
+	items: list[dict] | str,
+	valid_till: str,
+) -> str:
+	parsed_items = frappe.parse_json(items) if isinstance(items, str) else items
+	return submit_quote(rfq_name, parsed_items, valid_till)
+
+
+@frappe.whitelist(methods=["POST"])
+def confirm_supplier_eta(
+	purchase_order_name: str,
+	eta: str,
+	reason: str,
+) -> str:
+	return update_supplier_eta(purchase_order_name, eta, reason)

@@ -1,0 +1,102 @@
+<section class="autoflow-portal">
+  <header class="autoflow-portal__header">
+    <p class="autoflow-portal__eyebrow">AutoFlow 360</p>
+    <h1>{{ _("Supplier RFQs") }}</h1>
+    <p>{{ _("Review invited requests and submit one auditable quotation per RFQ.") }}</p>
+  </header>
+
+  {% if rfqs %}
+    <div class="autoflow-portal__grid">
+      {% for rfq in rfqs %}
+        <article class="autoflow-card">
+          <div class="autoflow-card__topline">
+            <span>{{ rfq.name }}</span>
+            <strong>{{ rfq.schedule_date }}</strong>
+          </div>
+          <h2>{{ _("Request for Quotation") }}</h2>
+          <p>{{ _("Company") }}: {{ rfq.company }}</p>
+
+          {% if rfq.current_quote %}
+            <p class="autoflow-card__complete">
+              {{ _("Quotation submitted") }} · {{ rfq.current_quote.name }}
+            </p>
+          {% else %}
+            <form class="autoflow-quote-form" data-rfq-name="{{ rfq.name }}">
+              <div class="autoflow-items">
+                {% for item in rfq.items %}
+                  <fieldset data-rfq-item="{{ item.name }}">
+                    <legend>{{ item.item_code }} · {{ item.item_name }}</legend>
+                    <p>{{ item.qty }} {{ item.uom }} · {{ _("Required") }} {{ item.schedule_date }}</p>
+                    <label>
+                      <span>{{ _("Unit Rate") }}</span>
+                      <input name="rate" type="number" min="0.000001" step="any" required>
+                    </label>
+                    <label>
+                      <span>{{ _("Expected Delivery") }}</span>
+                      <input name="expected_delivery_date" type="date" value="{{ item.schedule_date }}" required>
+                    </label>
+                  </fieldset>
+                {% endfor %}
+              </div>
+              <label>
+                <span>{{ _("Quotation Valid Till") }}</span>
+                <input name="valid_till" type="date" min="{{ today }}" required>
+              </label>
+              <button type="submit" class="btn btn-primary">{{ _("Submit Quotation") }}</button>
+            </form>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="autoflow-card">
+      <h2>{{ _("No RFQs available") }}</h2>
+      <p>{{ _("Submitted RFQs invited to your supplier account will appear here.") }}</p>
+    </div>
+  {% endif %}
+</section>
+
+<style>
+  .autoflow-portal { max-width: 1120px; margin: 0 auto; padding: 2.5rem 1rem 4rem; }
+  .autoflow-portal__header { margin-bottom: 2rem; }
+  .autoflow-portal__eyebrow { color: #0f766e; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .autoflow-portal__grid { display: grid; gap: 1rem; }
+  .autoflow-card { border: 1px solid #dbe4e8; border-radius: 16px; background: #fff; padding: 1.25rem; box-shadow: 0 8px 24px rgba(15, 23, 42, .06); }
+  .autoflow-card__topline { display: flex; justify-content: space-between; gap: 1rem; color: #475569; font-size: .875rem; }
+  .autoflow-quote-form, .autoflow-items { display: grid; gap: 1rem; }
+  .autoflow-quote-form fieldset { border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; }
+  .autoflow-quote-form label { display: grid; gap: .35rem; margin-top: .7rem; font-weight: 600; }
+  .autoflow-quote-form input { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: .65rem; }
+  .autoflow-card__complete { color: #047857; font-weight: 700; }
+</style>
+
+<script>
+  document.querySelectorAll(".autoflow-quote-form").forEach((form) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = form.querySelector("button[type='submit']");
+      const items = Array.from(form.querySelectorAll("[data-rfq-item]")).map((row) => ({
+        rfq_item: row.dataset.rfqItem,
+        rate: row.querySelector("[name='rate']").value,
+        expected_delivery_date: row.querySelector("[name='expected_delivery_date']").value,
+      }));
+      button.disabled = true;
+      try {
+        await frappe.call({
+          method: "autoflow_360.api.portal.submit_supplier_quote",
+          type: "POST",
+          args: {
+            rfq_name: form.dataset.rfqName,
+            items,
+            valid_till: form.querySelector("[name='valid_till']").value,
+          },
+          freeze: true,
+          freeze_message: {{ _("Submitting quotation...") | tojson }},
+        });
+        window.location.reload();
+      } finally {
+        button.disabled = false;
+      }
+    });
+  });
+</script>

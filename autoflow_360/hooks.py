@@ -26,8 +26,11 @@ after_migrate = "autoflow_360.install.after_migrate"
 
 doctype_js = {
 	"CRM Deal": "public/js/crm_deal.js",
+	"Material Request": "public/js/material_request.js",
+	"Purchase Order": "public/js/purchase_order.js",
 	"Quotation": "public/js/quotation.js",
 	"Sales Order": "public/js/sales_order.js",
+	"Supplier Quotation": "public/js/supplier_quotation.js",
 }
 
 doc_events = {
@@ -43,6 +46,15 @@ doc_events = {
 	"Sales Order": {
 		"on_submit": "autoflow_360.services.project_status.refresh_project_stage_from_document",
 	},
+	"Purchase Receipt": {
+		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
+	},
+	"Purchase Invoice": {
+		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
+	},
+	"Payment Entry": {
+		"before_validate": "autoflow_360.services.project_linking.propagate_project_link",
+	},
 }
 
 portal_menu_items = [
@@ -51,12 +63,32 @@ portal_menu_items = [
 		"route": "/customer-samples",
 		"role": "AutoFlow Customer Portal",
 	},
+	{
+		"title": "询价",
+		"route": "/supplier-rfqs",
+		"role": "AutoFlow Supplier Portal",
+	},
+	{
+		"title": "采购订单",
+		"route": "/supplier-orders",
+		"role": "AutoFlow Supplier Portal",
+	},
 ]
 
 permission_query_conditions = {
+	"Account": "autoflow_360.permissions.portal.supplier_account_query",
 	"Customer Feedback": "autoflow_360.permissions.portal.customer_feedback_query",
+	"Item": "autoflow_360.permissions.portal.supplier_item_query",
+	"Request for Quotation": "autoflow_360.permissions.portal.request_for_quotation_query",
+	"Supplier Quotation": "autoflow_360.permissions.portal.supplier_quotation_query",
+	"Purchase Order": "autoflow_360.permissions.portal.purchase_order_query",
 }
 
 has_permission = {
+	"Account": "autoflow_360.permissions.portal.supplier_account_has_permission",
 	"Customer Feedback": "autoflow_360.permissions.portal.customer_feedback_has_permission",
+	"Item": "autoflow_360.permissions.portal.supplier_item_has_permission",
+	"Request for Quotation": "autoflow_360.permissions.portal.supplier_rfq_has_permission",
+	"Supplier Quotation": "autoflow_360.permissions.portal.supplier_document_has_permission",
+	"Purchase Order": "autoflow_360.permissions.portal.supplier_document_has_permission",
 }

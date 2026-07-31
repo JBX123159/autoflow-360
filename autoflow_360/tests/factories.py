@@ -451,3 +451,150 @@ def make_customer_project(
 	if insert:
 		project.insert()
 	return project
+
+
+def make_supplier_portal_account():
+	supplier_group = frappe.db.get_value(
+		"Supplier Group",
+		{"is_group": 0},
+		"name",
+		order_by="lft asc",
+	)
+	if not supplier_group:
+		make_test_records("Supplier")
+		supplier_group = frappe.db.get_value(
+			"Supplier Group",
+			{"is_group": 0},
+			"name",
+			order_by="lft asc",
+		)
+	if not supplier_group:
+		frappe.throw("Synthetic Supplier requires a leaf Supplier Group")
+
+	identifier = frappe.generate_hash(length=12).lower()
+	supplier = frappe.get_doc(
+		{
+			"doctype": "Supplier",
+			"supplier_name": f"SYNTHETIC Supplier {identifier}",
+			"supplier_group": supplier_group,
+			"supplier_type": "Company",
+		}
+	)
+	supplier.insert()
+
+	email = f"synthetic-supplier-{identifier}@example.invalid"
+	portal_user = frappe.get_doc(
+		{
+			"doctype": "User",
+			"email": email,
+			"first_name": f"SYNTHETIC Supplier {identifier}",
+			"enabled": 1,
+			"user_type": "Website User",
+			"send_welcome_email": 0,
+			"roles": [
+				{"role": "Supplier"},
+				{"role": "AutoFlow Supplier Portal"},
+			],
+		}
+	)
+	portal_user.insert()
+	supplier.append("portal_users", {"user": portal_user.name})
+	supplier.save()
+	return frappe._dict(
+		{
+			"name": supplier.name,
+			"portal_user": portal_user.name,
+		}
+	)
+
+
+def make_two_suppliers_with_portal_users():
+	return make_supplier_portal_account(), make_supplier_portal_account()
+
+
+def make_project_material_request():
+	from autoflow_360.services.material_planning import create_material_request
+
+	order = make_stock_sales_order()
+	set_warehouse_stock(
+		order.items[0].item_code,
+		order.items[0].warehouse,
+		actual_qty=0,
+	)
+	request_name = create_material_request(order.name)
+	if not request_name:
+		frappe.throw("Synthetic Material Request was not created")
+	request = frappe.get_doc("Material Request", request_name)
+	request.submit()
+	return request
+
+
+def make_project_request_for_quotation(suppliers: list[str]):
+	from autoflow_360.services.procurement import make_project_rfq
+
+	request = make_project_material_request()
+	rfq_name = make_project_rfq(request.name, suppliers)
+	return frappe.get_doc("Request for Quotation", rfq_name)
+
+
+def make_supplier_quotation(
+	supplier_account=None,
+	*,
+	rate: float = 25,
+):
+	from autoflow_360.services.procurement import submit_supplier_quote
+
+	supplier_account = supplier_account or make_supplier_portal_account()
+	rfq = make_project_request_for_quotation([supplier_account.name])
+	quote_items = [
+		{
+			"rfq_item": row.name,
+			"rate": rate,
+			"expected_delivery_date": row.schedule_date,
+		}
+		for row in rfq.items
+	]
+	previous_user = frappe.session.user
+	try:
+		frappe.set_user(supplier_account.portal_user)
+		quote_name = submit_supplier_quote(
+			rfq.name,
+			quote_items,
+			str(getdate(nowdate()) + timedelta(days=30)),
+		)
+	finally:
+		frappe.set_user(previous_user)
+	return frappe.get_doc("Supplier Quotation", quote_name)
+
+
+def make_purchase_order(*, submit: bool = False):
+	from autoflow_360.services.procurement import (
+		make_purchase_order_from_supplier_quote,
+	)
+
+	quote = make_supplier_quotation()
+	order_name = make_purchase_order_from_supplier_quote(quote.name)
+	order = frappe.get_doc("Purchase Order", order_name)
+	if submit:
+		order.submit()
+	return order
+
+
+def make_submitted_project_purchase_order():
+	return make_purchase_order(submit=True)
+
+
+def make_purchase_receipt_from_order(purchase_order: str):
+	from erpnext.buying.doctype.purchase_order.purchase_order import (
+		make_purchase_receipt,
+	)
+
+	return make_purchase_receipt(purchase_order)
+
+
+def make_purchase_invoice_from_order(purchase_order: str):
+	from erpnext.buying.doctype.purchase_order.purchase_order import (
+		make_purchase_invoice,
+	)
+
+	return make_purchase_invoice(purchase_order)

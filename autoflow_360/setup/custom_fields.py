@@ -18,7 +18,7 @@ PROJECT_LINK_DOCTYPES = (
 
 
 def ensure_custom_fields() -> None:
-	"""Reconcile AutoFlow project, quotation, sales and planning fields."""
+	"""Reconcile AutoFlow project, sales, planning and procurement fields."""
 	fields = {
 		doctype: [
 			{
@@ -84,6 +84,58 @@ def ensure_custom_fields() -> None:
 			"no_copy": 1,
 			"read_only": 1,
 		}
+	)
+	fields["Request for Quotation"].append(
+		{
+			"fieldname": "custom_source_material_request",
+			"label": "Source Material Request",
+			"fieldtype": "Link",
+			"options": "Material Request",
+			"insert_after": "custom_customer_project",
+			"module": "AutoFlow 360",
+			"in_standard_filter": 1,
+			"no_copy": 1,
+			"read_only": 1,
+		}
+	)
+	fields["Supplier Quotation"].append(
+		{
+			"fieldname": "custom_source_rfq",
+			"label": "Source Request for Quotation",
+			"fieldtype": "Link",
+			"options": "Request for Quotation",
+			"insert_after": "custom_customer_project",
+			"module": "AutoFlow 360",
+			"in_standard_filter": 1,
+			"no_copy": 1,
+			"read_only": 1,
+		}
+	)
+	fields["Purchase Order"].extend(
+		[
+			{
+				"fieldname": "custom_source_supplier_quotation",
+				"label": "Source Supplier Quotation",
+				"fieldtype": "Link",
+				"options": "Supplier Quotation",
+				"insert_after": "custom_customer_project",
+				"module": "AutoFlow 360",
+				"in_standard_filter": 1,
+				"no_copy": 1,
+				"read_only": 1,
+			},
+			{
+				"fieldname": "custom_supplier_eta",
+				"label": "Supplier ETA",
+				"fieldtype": "Date",
+				"insert_after": "custom_source_supplier_quotation",
+				"module": "AutoFlow 360",
+				"allow_on_submit": 1,
+				"in_standard_filter": 1,
+				"no_copy": 1,
+				"read_only": 1,
+			},
+		]
 	)
 	# Task 4 can be migrated before Task 5 introduces Customer Project. A complete
 	# fresh install syncs all DocTypes before after_install, so normal validation
