@@ -446,15 +446,16 @@ def make_customer_project(
 ):
 	_ensure_synthetic_master_data()
 	today = getdate(nowdate())
+	company = overrides.get("company", SYNTHETIC_COMPANY)
 	values = {
 		"doctype": "Customer Project",
 		"project_name": project_name,
-		"company": SYNTHETIC_COMPANY,
+		"company": company,
 		"customer": SYNTHETIC_CUSTOMER,
 		"product_family": "SYNTHETIC Automotive Material",
 		"currency": frappe.get_cached_value(
 			"Company",
-			SYNTHETIC_COMPANY,
+			company,
 			"default_currency",
 		)
 		or "INR",
@@ -479,6 +480,146 @@ def make_customer_project(
 	if insert:
 		project.insert()
 	return project
+
+
+def make_customer_project_with_member(user: str, *, company: str = SYNTHETIC_COMPANY):
+	user = getattr(user, "name", user)
+	if not frappe.db.exists("User", user):
+		frappe.throw(f"Synthetic project member does not exist: {user}")
+	return make_customer_project(
+		f"SYNTHETIC Member Project {frappe.generate_hash(length=10)}",
+		company=company,
+		project_manager=SYNTHETIC_USER,
+		project_members=[
+			{
+				"user": SYNTHETIC_USER,
+				"responsibility": "SYNTHETIC project owner",
+			},
+			{
+				"user": user,
+				"responsibility": "SYNTHETIC assigned project member",
+			},
+		],
+	)
+
+
+def add_project_member(
+	project_name: str,
+	user: str,
+	*,
+	responsibility: str = "SYNTHETIC assigned project member",
+):
+	user = getattr(user, "name", user)
+	if not frappe.db.exists("User", user):
+		frappe.throw(f"Synthetic project member does not exist: {user}")
+	previous_user = frappe.session.user
+	try:
+		frappe.set_user("Administrator")
+		project = frappe.get_doc("Customer Project", project_name)
+		if any(member.user == user for member in project.project_members):
+			return project
+		project.append(
+			"project_members",
+			{
+				"user": user,
+				"responsibility": responsibility,
+			},
+		)
+		project.save()
+		return project
+	finally:
+		frappe.set_user(previous_user)
+
+
+def get_foreign_company() -> str:
+	_ensure_synthetic_master_data()
+	company = frappe.db.get_value(
+		"Company",
+		{"name": ["!=", SYNTHETIC_COMPANY]},
+		"name",
+		order_by="creation asc",
+	)
+	if not company:
+		make_test_records("Company")
+		company = frappe.db.get_value(
+			"Company",
+			{"name": ["!=", SYNTHETIC_COMPANY]},
+			"name",
+			order_by="creation asc",
+		)
+	if not company:
+		frappe.throw("Synthetic multi-company tests require a second Company")
+	return company
+
+
+def make_project_for_company(company: str):
+	if not frappe.db.exists("Company", company):
+		frappe.throw(f"Synthetic company does not exist: {company}")
+	return make_customer_project(
+		f"SYNTHETIC Company Project {frappe.generate_hash(length=10)}",
+		company=company,
+	)
+
+
+def add_company_user_permission(user: str, company: str):
+	user = getattr(user, "name", user)
+	if not frappe.db.exists("User", user):
+		frappe.throw(f"Synthetic permission user does not exist: {user}")
+	if not frappe.db.exists("Company", company):
+		frappe.throw(f"Synthetic permission company does not exist: {company}")
+	existing = frappe.db.exists(
+		"User Permission",
+		{
+			"user": user,
+			"allow": "Company",
+			"for_value": company,
+			"applicable_for": ["in", ["", "Customer Project"]],
+		},
+	)
+	if existing:
+		return frappe.get_doc("User Permission", existing)
+	permission = frappe.get_doc(
+		{
+			"doctype": "User Permission",
+			"user": user,
+			"allow": "Company",
+			"for_value": company,
+			"apply_to_all_doctypes": 1,
+		}
+	)
+	permission.insert()
+	frappe.clear_cache(user=user)
+	return permission
+
+
+def make_over_limit_approval_request(requested_by: str):
+	from autoflow_360.services.sales_conversion import (
+		create_quotation_approval_request,
+	)
+
+	requested_by = getattr(requested_by, "name", requested_by)
+	project = make_customer_project(
+		f"SYNTHETIC Approval Project {frappe.generate_hash(length=10)}",
+		project_manager=requested_by,
+		project_members=[
+			{
+				"user": requested_by,
+				"responsibility": "SYNTHETIC approval requester",
+			}
+		],
+	)
+	make_customer_approved_sample(project.name)
+	quotation = make_quotation(
+		customer_project=project.name,
+		floor_rate=200,
+	)
+	previous_user = frappe.session.user
+	try:
+		frappe.set_user(requested_by)
+		request_name = create_quotation_approval_request(quotation.name)
+		return frappe.get_doc("AutoFlow Approval Request", request_name)
+	finally:
+		frappe.set_user(previous_user)
 
 
 def make_supplier_portal_account():
@@ -789,12 +930,18 @@ def make_expiring_quotation_project(*, days_until_expiry: int = 2):
 	)
 	project = make_customer_project("SYNTHETIC Expiring Quotation Project")
 	make_customer_approved_sample(project.name)
-	make_approval_rule(role="System Manager", document_type="Quotation")
+	authority = make_internal_user("AutoFlow Executive")
+	make_approval_rule(role="AutoFlow Executive", document_type="Quotation")
 	quotation = make_quotation(
 		customer_project=project.name,
 		valid_till=getdate(nowdate()) + timedelta(days=days_until_expiry),
 	)
-	quotation.submit()
+	previous_user = frappe.session.user
+	try:
+		frappe.set_user(authority.name)
+		quotation.submit()
+	finally:
+		frappe.set_user(previous_user)
 	return frappe.get_doc("Customer Project", project.name)
 
 
@@ -894,14 +1041,17 @@ def make_business_exception(
 ):
 	from autoflow_360.services.exception_workflow import transition_exception
 
+	raised_by = raised_by or frappe.session.user
+	responsible_user = responsible_user or raised_by
+	action_owner = action_owner or responsible_user
 	project = (
 		frappe.get_doc("Customer Project", project_name)
 		if project_name
 		else make_customer_project("SYNTHETIC Business Exception Project")
 	)
-	raised_by = raised_by or frappe.session.user
-	responsible_user = responsible_user or raised_by
-	action_owner = action_owner or responsible_user
+	for member_user in {raised_by, responsible_user, action_owner}:
+		add_project_member(project.name, member_user)
+	project.reload()
 	previous_user = frappe.session.user
 	try:
 		frappe.set_user(raised_by)

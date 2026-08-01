@@ -116,7 +116,7 @@ def customer_feedback_has_permission(
 ):
 	user = _current_user(user)
 	if not is_customer_portal_user(user):
-		return None
+		return True
 	if ptype == "create":
 		return True
 	return doc.customer in get_customer_names_for_user(user)
@@ -150,7 +150,7 @@ def customer_delivery_has_permission(
 ):
 	user = _current_user(user)
 	if not is_customer_portal_user(user):
-		return None
+		return True
 	if ptype != "read":
 		return False
 	return doc.customer in get_customer_names_for_user(user)
@@ -265,7 +265,7 @@ def supplier_rfq_has_permission(
 ):
 	user = _current_user(user)
 	if not is_supplier_portal_user(user):
-		return None
+		return True
 	if ptype != "read":
 		return False
 	suppliers = get_supplier_names_for_user(user)
@@ -290,7 +290,7 @@ def supplier_item_has_permission(
 ):
 	user = _current_user(user)
 	if not is_supplier_portal_user(user):
-		return None
+		return True
 	if ptype != "read":
 		return False
 	suppliers = get_supplier_names_for_user(user)
@@ -321,7 +321,7 @@ def supplier_account_has_permission(
 ):
 	user = _current_user(user)
 	if not is_supplier_portal_user(user):
-		return None
+		return True
 	if ptype not in {"read", "select"}:
 		return False
 	return bool(
@@ -337,7 +337,7 @@ def supplier_document_has_permission(
 ):
 	user = _current_user(user)
 	if not is_supplier_portal_user(user):
-		return None
+		return True
 	if ptype == "read":
 		return doc.supplier in get_supplier_names_for_user(user)
 	return False

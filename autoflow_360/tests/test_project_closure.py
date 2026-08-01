@@ -7,6 +7,7 @@ from autoflow_360.services.project_closure import (
 	get_closure_gaps,
 )
 from autoflow_360.tests.factories import (
+	add_project_member,
 	make_approval_rule,
 	make_customer_project,
 	make_fulfilled_project,
@@ -30,6 +31,7 @@ class TestProjectClosure(IntegrationTestCase):
 		)
 		requester = make_internal_user("AutoFlow Project Manager")
 		approver = make_internal_user("AutoFlow Executive")
+		add_project_member(project.name, requester.name)
 
 		frappe.set_user(requester.name)
 		request_name = create_project_closure_request(project.name)
@@ -95,6 +97,7 @@ class TestProjectClosure(IntegrationTestCase):
 	def test_repeated_closure_request_reuses_pending_snapshot(self):
 		project = make_fulfilled_project()
 		requester = make_internal_user("AutoFlow Project Manager")
+		add_project_member(project.name, requester.name)
 		frappe.set_user(requester.name)
 
 		first = create_project_closure_request(project.name)

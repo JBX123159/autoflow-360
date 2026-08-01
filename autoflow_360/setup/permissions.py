@@ -12,6 +12,7 @@ SUPPLIER_PORTAL_READ_DOCTYPES = (
 SUPPLIER_PORTAL_SELECT_DOCTYPES = ("Account",)
 CUSTOMER_PORTAL_ROLE = "AutoFlow Customer Portal"
 CUSTOMER_PORTAL_READ_DOCTYPES = (
+	"Customer Project",
 	"Delivery Note",
 	"Customer Receipt",
 )

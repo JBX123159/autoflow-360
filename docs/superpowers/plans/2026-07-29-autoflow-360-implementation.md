@@ -3752,16 +3752,24 @@ git commit -m "feat: add auditable exception corrective-action loop"
 
 - Create: `autoflow_360/permissions/project.py`
 - Create: `autoflow_360/tests/test_permissions.py`
+- Create: `tests/static/test_permissions_contract.py`
 - Modify: `autoflow_360/tests/factories.py`
 - Modify: `autoflow_360/permissions/portal.py`
+- Modify: `autoflow_360/setup/permissions.py`
+- Modify: `autoflow_360/autoflow_360/doctype/customer_project/customer_project.json`
+- Modify: `autoflow_360/services/sales_conversion.py`
+- Modify: `autoflow_360/autoflow_360/doctype/autoflow_approval_request/test_sales_conversion.py`
+- Modify: `autoflow_360/tests/test_project_closure.py`
 - Modify: `autoflow_360/hooks.py`
 
 **Interfaces:**
 
 - Consumes: 项目负责人、`Project Member`、Frappe User Permission、客户/供应商动态链接。
-- Produces: `customer_project_query(user) -> str`、`customer_project_has_permission(doc, user, permission_type) -> bool | None`、统一门户对象校验。
+- Produces: `customer_project_query(user) -> str`、`customer_project_has_permission(doc, user, ptype) -> bool | None`、统一门户对象校验。
 
-- [ ] **Step 1: 写七角色、跨公司和门户隔离测试**
+**实现记录（2026-08-01）：** 已实现客户项目的列表条件和单记录双重守卫。`AutoFlow Administrator` 与 `AutoFlow Executive` 可在公司授权范围内全局读取；销售运营、项目经理、采购、仓库和财务只读取本人负责或参与的项目，且对象守卫不会把只读角色提升为写入角色。客户门户只能读取绑定客户的项目，供应商门户和访客不能读取客户项目；Frappe `User Permission` 的公司限制优先于业务全局角色。门户钩子对非门户用户返回放行，再由原始角色权限判断，避免误伤内部业务权限。审批规则只匹配用户表中显式分配的角色，`Administrator` 或 `System Manager` 不会因技术权限自动获得业务审批权。全量回归为 114 项集成测试和 133 项静态契约测试。
+
+- [x] **Step 1: 写七角色、跨公司和门户隔离测试**
 
 ```python
 import frappe
@@ -3806,7 +3814,7 @@ class TestPermissions(FrappeTestCase):
 		self.assertRaises(frappe.PermissionError, request.approve, "Administrator")
 ```
 
-- [ ] **Step 2: 运行测试并确认隔离尚未生效**
+- [x] **Step 2: 运行测试并确认隔离尚未生效**
 
 Run:
 
@@ -3816,7 +3824,7 @@ Run:
 
 Expected: 至少一个跨项目或跨公司读取测试失败。
 
-- [ ] **Step 3: 实现列表查询条件**
+- [x] **Step 3: 实现列表查询条件**
 
 ```python
 # autoflow_360/permissions/project.py
@@ -3848,7 +3856,7 @@ def customer_project_query(user: str | None = None) -> str:
 	)
 ```
 
-- [ ] **Step 4: 实现单记录与门户权限**
+- [x] **Step 4: 实现单记录与门户权限**
 
 ```python
 def customer_project_has_permission(
@@ -3887,7 +3895,7 @@ def customer_project_has_permission(
 
 公司隔离依赖 Frappe `User Permission`，测试中不能通过 `ignore_permissions=True` 绕过实际读取。
 
-- [ ] **Step 5: 注册权限钩子并运行矩阵测试**
+- [x] **Step 5: 注册权限钩子并运行矩阵测试**
 
 `hooks.py` 增加：
 
@@ -3911,7 +3919,7 @@ Run:
 
 Expected: 七个内部角色、两个门户角色和公司限制全部符合矩阵。
 
-- [ ] **Step 6: 提交权限隔离**
+- [x] **Step 6: 提交权限隔离**
 
 ```powershell
 git add autoflow_360/permissions autoflow_360/tests/test_permissions.py autoflow_360/tests/factories.py autoflow_360/hooks.py

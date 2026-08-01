@@ -194,7 +194,14 @@ def _read_snapshot(request) -> dict[str, Any]:
 
 
 def _get_user_rules(company: str, document_type: str, user: str) -> list[dict]:
-	roles = frappe.get_roles(user)
+	roles = frappe.get_all(
+		"Has Role",
+		filters={
+			"parent": user,
+			"parenttype": "User",
+		},
+		pluck="role",
+	)
 	if not roles:
 		return []
 	return frappe.get_all(

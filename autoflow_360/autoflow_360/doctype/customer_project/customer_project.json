@@ -356,6 +356,10 @@
    "read": 1,
    "report": 1,
    "role": "AutoFlow Executive"
+  },
+  {
+   "read": 1,
+   "role": "AutoFlow Customer Portal"
   }
  ],
  "search_fields": "project_name,customer,crm_deal,product_family",

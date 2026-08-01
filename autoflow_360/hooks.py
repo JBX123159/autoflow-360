@@ -100,6 +100,7 @@ portal_menu_items = [
 permission_query_conditions = {
 	"Account": "autoflow_360.permissions.portal.supplier_account_query",
 	"Customer Feedback": "autoflow_360.permissions.portal.customer_feedback_query",
+	"Customer Project": "autoflow_360.permissions.project.customer_project_query",
 	"Customer Receipt": "autoflow_360.permissions.portal.customer_receipt_query",
 	"Delivery Note": "autoflow_360.permissions.portal.customer_delivery_query",
 	"Item": "autoflow_360.permissions.portal.supplier_item_query",
@@ -111,6 +112,7 @@ permission_query_conditions = {
 has_permission = {
 	"Account": "autoflow_360.permissions.portal.supplier_account_has_permission",
 	"Customer Feedback": "autoflow_360.permissions.portal.customer_feedback_has_permission",
+	"Customer Project": "autoflow_360.permissions.project.customer_project_has_permission",
 	"Customer Receipt": "autoflow_360.permissions.portal.customer_receipt_has_permission",
 	"Delivery Note": "autoflow_360.permissions.portal.customer_delivery_has_permission",
 	"Item": "autoflow_360.permissions.portal.supplier_item_has_permission",

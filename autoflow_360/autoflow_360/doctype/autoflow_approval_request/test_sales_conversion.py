@@ -54,12 +54,17 @@ class TestSalesConversion(IntegrationTestCase):
 	):
 		project = self._make_project(suffix)
 		make_customer_approved_sample(project.name)
-		make_approval_rule(role="System Manager")
+		authority = make_internal_user("AutoFlow Executive")
+		make_approval_rule(role="AutoFlow Executive")
 		quotation = make_quotation(
 			customer_project=project.name,
 			customer_confirmed=customer_confirmed,
 		)
-		quotation.submit()
+		frappe.set_user(authority.name)
+		try:
+			quotation.submit()
+		finally:
+			frappe.set_user("Administrator")
 		return quotation
 
 	def test_unapproved_sample_blocks_quotation_submission(self):
