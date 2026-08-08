@@ -11,7 +11,7 @@ Oracle 的免费层政策、区域库存和账号资格可能变化，项目不�
 - 一台 64 位 ARM Linux 主机，或把 `AUTOFLOW_PLATFORM` 明确改成 `linux/amd64` 的兼容主机。
 - Docker Engine 23 及以上、Docker Compose v2、Git、Python 3。
 - 一个指向该主机公网 IP 的域名；防火墙仅开放 SSH、HTTP 80 和 HTTPS 443。
-- 已发布的 `ghcr.io/jbx123159/autoflow-360:<标签>` 多架构镜像。仓库尚未发布前，镜像工作流不会成功，这是预期状态。
+- 已发布的 `ghcr.io/jbx123159/autoflow-360:<标签>` 多架构镜像；当前已验收标签为 `v1.0.0-rc2`，支持 `linux/amd64` 和 `linux/arm64`。
 - 生产环境只放合成演示数据；真实客户、供应商、价格和联系人数据不属于当前免费演示范围。
 
 官方镜像构建方式和 BuildKit 密钥用法见 [frappe_docker 自定义镜像文档](https://github.com/frappe/frappe_docker/blob/main/docs/02-setup/02-build-setup.md)。

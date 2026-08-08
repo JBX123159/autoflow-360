@@ -120,7 +120,8 @@ class RepositoryContractTest(unittest.TestCase):
             "公开仓库 [完整集成验收]",
             "Frappe 148/148",
             "RESTORE_CHECK_PASSED",
-            "多架构 GHCR 镜像将在",
+            "v1.0.0-rc2` 多架构镜像构建",
+            "公开镜像为 `ghcr.io/jbx123159/autoflow-360:v1.0.0-rc2`",
             "当前没有长期公网业务站点",
         ):
             self.assertIn(required_text, readme)

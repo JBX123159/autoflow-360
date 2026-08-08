@@ -6,8 +6,8 @@
 | 本人设计 | 汽车客户项目主线、三条演示故事、九类角色矩阵、状态门槛、确定性风险、异常闭环、AI 只读边界、验收和诚实披露规则 | 规格、实施计划、架构与威胁模型 |
 | 本人实现 | 自定义 DocType、服务/API、权限钩子、工作台/全景/驾驶舱、CNY 合成种子、静态/集成/E2E/性能、CI、镜像、部署/恢复和求职文档 | `autoflow_360/`、`tests/`、`.github/`、`deploy/`、`docs/` |
 | 工具辅助 | Codex 等工具用于官方资料检索、代码草稿、批量测试、浏览器验收、安全复核和文档组织；最终取舍与结果核对由本人承担 | Git 提交、测试输出和验收报告 |
-| 已完成验收 | 171/171 静态契约、148/148 完整集成回归、3/3 浏览器闭环已在公开 GitHub 全新环境通过；另完成隔离恢复演练、9 张桌面/移动端截图，以及获人工确认并通过视听验收的 162.633 秒高质量 MP4 | GitHub Actions、`docs/test-report/acceptance.md`、`docs/images/`、`videos/autoflow-360-launch/RENDER-REPORT.md` |
-| 尚未完成 | 多架构镜像发布、Oracle/隧道外网验证，以及 GitHub Release 附件发布 | `docs/test-report/acceptance.md` |
+| 已完成验收 | 171/171 静态契约、148/148 完整集成回归、3/3 浏览器闭环已在公开 GitHub 全新环境通过；另完成隔离恢复演练、9 张桌面/移动端截图、amd64/arm64 公开镜像，以及获人工确认并通过视听验收和 Release 公开下载复核的 162.633 秒高质量 MP4 | GitHub Actions、GitHub Release、`docs/test-report/acceptance.md`、`docs/images/`、`videos/autoflow-360-launch/RENDER-REPORT.md` |
+| 尚未完成 | Oracle/隧道真实云主机外网验证，以及长期公网业务站点 | `docs/test-report/acceptance.md` |
 
 ## 可以负责地说
 
@@ -21,4 +21,4 @@
 - 不能把上游 ERPNext/Frappe CRM 功能说成从零开发。
 - 不能说项目已被真实车企、供应商或公司采用，不能编造用户量、营收、效率提升或故障率。
 - 不能把生成代码工具描述为本人手写全部实现，也不能把工具当成需求和验收责任人。
-- 不能把尚未实跑的远端 CI、镜像和 Oracle 说成已经上线成功；恢复演练只能描述为本机隔离站点验证通过。
+- 不能把尚未实跑的 Oracle 云主机部署说成已经上线成功；远端 CI 和镜像只能按公开运行记录描述，恢复演练只能描述为隔离站点验证通过。
