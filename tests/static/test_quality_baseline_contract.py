@@ -23,6 +23,13 @@ class QualityBaselineContractTest(unittest.TestCase):
 		)
 		self.assertIn("AUTOFLOW_E2E_PASSWORD", all_source)
 		self.assertNotIn("admin", all_source.lower().replace("administrator", ""))
+		helper_source = (E2E_ROOT / "e2e-helpers.js").read_text(encoding="utf-8")
+		self.assertIn("page.waitForURL(", helper_source)
+		self.assertNotIn("noWaitAfter: true", helper_source)
+		self.assertLess(
+			helper_source.index("page.waitForURL("),
+			helper_source.index('page.goto("/app/autoflow-workbench"'),
+		)
 
 	def test_three_browser_scenarios_assert_business_evidence(self):
 		expectations = {

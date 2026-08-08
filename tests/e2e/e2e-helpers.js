@@ -12,8 +12,12 @@ async function login(page) {
   const loginResponse = page.waitForResponse((response) => {
     return response.url().includes("/api/method/login") && response.request().method() === "POST";
   });
-  await page.locator(".btn-login:not(.btn-login-with-email-link)").click({ noWaitAfter: true });
-  const response = await loginResponse;
+  const postLoginNavigation = page.waitForURL(
+    (url) => url.pathname !== "/login",
+    { waitUntil: "domcontentloaded" },
+  );
+  await page.locator(".btn-login:not(.btn-login-with-email-link)").click();
+  const [response] = await Promise.all([loginResponse, postLoginNavigation]);
   expect(response.ok()).toBeTruthy();
   await page.goto("/app/autoflow-workbench", { waitUntil: "domcontentloaded" });
 }
