@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01 11:54:44.529660",
+  "generated_at": "2026-08-08 13:37:56.900498",
   "classification": "合成性能数据；结果仅代表本次本机容器环境。",
   "measurement_policy": {
     "warmup_runs": 1,
@@ -15,9 +15,9 @@
     "erpnext": "16.30.0",
     "crm": "1.80.0",
     "database": "11.8.8-MariaDB-ubu2404",
-    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.36",
-    "cpu_count": 16,
-    "memory_total_mb": 7810
+    "platform": "Linux-6.17.0-1020-azure-x86_64-with-glibc2.36",
+    "cpu_count": 4,
+    "memory_total_mb": 15989
   },
   "record_counts": {
     "customer_projects": 200,
@@ -33,30 +33,30 @@
   "operations": {
     "workbench_project_list": {
       "runs": 10,
-      "p50_ms": 37.027,
-      "p95_ms": 42.9,
-      "max_ms": 42.9,
+      "p50_ms": 27.776,
+      "p95_ms": 38.229,
+      "max_ms": 38.229,
       "last_result": 50
     },
     "project_panorama_detail": {
       "runs": 10,
-      "p50_ms": 16.623,
-      "p95_ms": 17.683,
-      "max_ms": 17.683,
+      "p50_ms": 14.242,
+      "p95_ms": 18.098,
+      "max_ms": 18.098,
       "last_result": "PERF-PROJECT-0001"
     },
     "daily_risk_scan": {
       "runs": 10,
-      "p50_ms": 4556.394,
-      "p95_ms": 5888.688,
-      "max_ms": 5888.688,
+      "p50_ms": 3818.708,
+      "p95_ms": 3904.756,
+      "max_ms": 3904.756,
       "last_result": "completed"
     },
     "weekly_draft_scheduler": {
       "runs": 10,
-      "p50_ms": 0.457,
-      "p95_ms": 0.6,
-      "max_ms": 0.6,
+      "p50_ms": 0.264,
+      "p95_ms": 0.406,
+      "max_ms": 0.406,
       "last_result": 0
     }
   }

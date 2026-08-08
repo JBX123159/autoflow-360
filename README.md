@@ -83,7 +83,7 @@ Set-Location videos\autoflow-360-launch
 npm.cmd run dev
 ```
 
-最终 MP4 位于本地 `videos/autoflow-360-launch/renders/video.mp4`，时长 162.633 秒、大小 62.498 MB。为避免把大型二进制文件写进 Git 历史，`renders/` 保持忽略；取得公开发布授权后，成片将作为 GitHub Release 附件上传，仓库保留可复现的视频工程和 [成片报告](videos/autoflow-360-launch/RENDER-REPORT.md)。
+最终 MP4 位于本地 `videos/autoflow-360-launch/renders/video.mp4`，时长 162.633 秒、大小 62.498 MB。为避免把大型二进制文件写进 Git 历史，`renders/` 保持忽略；成片将在 `v1.0.0-rc1` GitHub Release 中作为附件发布，仓库保留可复现的视频工程和 [成片报告](videos/autoflow-360-launch/RENDER-REPORT.md)。
 
 ## 本地运行
 
@@ -118,13 +118,13 @@ Set-Location ..\..
 git diff --check
 ```
 
-截至 2026-08-01 的实际证据：
+截至 2026-08-08 的实际证据：
 
-- 静态契约：170/170。
-- 当前完整 Frappe 集成回归：148/148。
-- Playwright：3/3；曾检出性能数据挤出演示项目的真实回归，修复后复测通过。
+- 静态契约：171/171；公开仓库 [静态质量门禁](https://github.com/JBX123159/autoflow-360/actions/runs/31247379529) 通过。
+- 公开仓库 [完整集成验收](https://github.com/JBX123159/autoflow-360/actions/runs/31247387142) 通过：Frappe 148/148、Playwright 3/3、性能证据成功生成并上传。
+- Playwright 曾检出性能数据挤出演示项目和登录跳转竞态两项真实回归，修复后均在全新 GitHub 环境复测通过。
 - 合成规模：200 项目、1000 样品、1000 反馈、500 销售订单、500 采购订单、5000 风险/异常/版本记录。
-- 工作台列表 P50/P95：37.027/42.9 ms；项目全景：16.623/17.683 ms；每日风险扫描：4556.394/5888.688 ms。
+- GitHub 托管环境性能：工作台列表 P50/P95 27.776/38.229 ms；项目全景 14.242/18.098 ms；每日风险扫描 3818.708/3904.756 ms。
 - 恢复演练：数据库、公有附件、私有附件和站点配置完成 SHA-256 校验，恢复到一次性隔离站点并取得 `RESTORE_CHECK_PASSED`。
 
 原始口径与发布门禁见 [验收报告](docs/test-report/acceptance.md) 和 [性能 JSON](docs/test-report/performance.json)。
@@ -138,7 +138,7 @@ git diff --check
 - [Cloudflare Quick Tunnel](docs/deployment/cloudflare-tunnel.md)：只用于临时面试演示，无 SLA。
 - [备份与恢复](docs/deployment/backup-and-restore.md)：数据库/附件、SHA-256、一次性站点恢复。
 
-尚未公开推送前，GitHub Actions、GHCR 镜像和在线演示都不会存在；仓库不把配置完成描述成远端已运行。
+公开仓库的静态与完整集成 GitHub Actions 已实际通过。多架构 GHCR 镜像将在 `v1.0.0-rc1` 标签触发后独立验收；当前没有长期公网业务站点，不把代码发布描述成真实企业生产上线。
 
 ## 文档入口
 

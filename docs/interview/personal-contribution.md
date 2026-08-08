@@ -6,13 +6,13 @@
 | 本人设计 | 汽车客户项目主线、三条演示故事、九类角色矩阵、状态门槛、确定性风险、异常闭环、AI 只读边界、验收和诚实披露规则 | 规格、实施计划、架构与威胁模型 |
 | 本人实现 | 自定义 DocType、服务/API、权限钩子、工作台/全景/驾驶舱、CNY 合成种子、静态/集成/E2E/性能、CI、镜像、部署/恢复和求职文档 | `autoflow_360/`、`tests/`、`.github/`、`deploy/`、`docs/` |
 | 工具辅助 | Codex 等工具用于官方资料检索、代码草稿、批量测试、浏览器验收、安全复核和文档组织；最终取舍与结果核对由本人承担 | Git 提交、测试输出和验收报告 |
-| 已完成本地验收 | 170/170 静态契约、148/148 完整集成回归、3/3 浏览器闭环、隔离恢复演练、9 张桌面/移动端截图，以及获人工确认并通过视听验收的 162.633 秒高质量 MP4 | `docs/test-report/acceptance.md`、`docs/images/`、`videos/autoflow-360-launch/RENDER-REPORT.md` |
-| 尚未完成 | 远端 GitHub Actions、多架构镜像发布、Oracle/隧道外网验证，以及 GitHub 发布 | `docs/test-report/acceptance.md` |
+| 已完成验收 | 171/171 静态契约、148/148 完整集成回归、3/3 浏览器闭环已在公开 GitHub 全新环境通过；另完成隔离恢复演练、9 张桌面/移动端截图，以及获人工确认并通过视听验收的 162.633 秒高质量 MP4 | GitHub Actions、`docs/test-report/acceptance.md`、`docs/images/`、`videos/autoflow-360-launch/RENDER-REPORT.md` |
+| 尚未完成 | 多架构镜像发布、Oracle/隧道外网验证，以及 GitHub Release 附件发布 | `docs/test-report/acceptance.md` |
 
 ## 可以负责地说
 
 - “我基于 Frappe CRM 和 ERPNext 完成了独立扩展应用，并能解释上游与新增边界。”
-- “我用合成数据跑通完整业务流程，测试和性能数字来自实际本机运行。”
+- “我用合成数据跑通完整业务流程，测试和性能数字来自本机与公开 GitHub 托管环境的实际运行。”
 - “我设计了服务端权限、幂等、并发锁、审计、AI 降级、CI 和恢复门禁。”
 - “我能现场打开代码、测试、性能 JSON、威胁模型和已知限制回答追问。”
 

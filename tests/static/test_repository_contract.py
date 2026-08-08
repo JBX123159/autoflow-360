@@ -117,9 +117,11 @@ class RepositoryContractTest(unittest.TestCase):
         for required_text in (
             "已实现的自主扩展",
             "未上线真实企业",
-            "当前完整 Frappe 集成回归：148/148",
+            "公开仓库 [完整集成验收]",
+            "Frappe 148/148",
             "RESTORE_CHECK_PASSED",
-            "尚未公开推送前",
+            "多架构 GHCR 镜像将在",
+            "当前没有长期公网业务站点",
         ):
             self.assertIn(required_text, readme)
 
