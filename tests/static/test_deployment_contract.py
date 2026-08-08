@@ -19,6 +19,22 @@ POWERSHELL = (
 
 
 class DeploymentContractTest(unittest.TestCase):
+    def test_integration_workflow_prepares_writable_bench_workspace(self):
+        workflow = (
+            ROOT / ".github" / "workflows" / "integration.yml"
+        ).read_text(encoding="utf-8")
+        required_text = (
+            "exec -T --user root frappe sh -ceu",
+            "mkdir -p /workspace/development",
+            "chown -R frappe:frappe /workspace/development",
+        )
+        for text in required_text:
+            self.assertIn(text, workflow)
+
+        prepare_index = workflow.index("Prepare writable development workspace")
+        bootstrap_index = workflow.index("Bootstrap the locked application stack")
+        self.assertLess(prepare_index, bootstrap_index)
+
     def test_required_development_files_exist(self):
         for relative_path in (
             "deploy/apps.dev.json",

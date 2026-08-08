@@ -55,6 +55,17 @@ jobs:
             -f deploy/ci/compose.autoflow.yaml \
             up -d
 
+      - name: Prepare writable development workspace
+        shell: bash
+        run: |
+          docker compose \
+            -f .runtime/frappe_docker/devcontainer-example/docker-compose.yml \
+            -f deploy/ci/compose.autoflow.yaml \
+            exec -T --user root frappe sh -ceu '
+              mkdir -p /workspace/development
+              chown -R frappe:frappe /workspace/development
+            '
+
       - name: Bootstrap the locked application stack
         shell: bash
         run: |
