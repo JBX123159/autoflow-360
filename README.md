@@ -1,77 +1,159 @@
 # AutoFlow 360
 
-> 规划中的汽车零部件客户项目与供应链协同智能平台，目标是把 CRM 商机、样品、报价、采购、交付、回款、风险和异常整改串成可审计的完整闭环。
+> 基于 Frappe CRM 与 ERPNext 的汽车零部件客户项目及供应链协同平台，把商机、样品、报价、采购、交付、回款、风险和异常整改串成可审计闭环。
 
-## 当前已验证里程碑
+## 一分钟了解
 
-截至 2026-08-01，仓库已经完成基础权限与跨单据项目字段、CRM 商机转客户项目、项目阶段机、样品检验/发货/客户反馈/重新打样、报价门槛、不可冒用身份的额度审批、报价转销售订单、销售订单驱动的可解释物料缺口、采购询价、供应商隔离报价、采购订单、交期审计和采购下游项目关联、销售订单来源校验、实时库存拦截、超交防护、客户门户隔离签收和不可篡改回执、交付/开票/付款凭证逐项核验、严格项目结项、可解释风险引擎、带来源审计和独立验证的业务异常闭环，以及七类内部角色、两类门户、项目成员和多公司的数据隔离。当前本地真实 Frappe/ERPNext/CRM 环境通过 **114 项集成测试**与 **133 项静态契约测试**；AI 助手、驾驶舱和演示交付材料仍按实施计划继续开发。
+AutoFlow 360 不是重写一套 ERP。Frappe CRM 继续负责组织、联系人和商机，ERPNext 继续负责标准销售、采购、库存与财务单据；本项目用 `Customer Project` 建立跨单据主线，并新增汽车样品、额度审批、可解释物料缺口、客户/供应商门户、确定性风险、异常整改、严格结项、角色工作台、项目全景和只读 AI 建议。
 
-## 规划中的业务闭环
+当前全部使用 CNY 合成数据，未上线真实企业，也没有真实用户量、营收或客户采用结果。代码、测试、性能和限制均可从仓库核对。
 
 ```mermaid
 flowchart LR
-    A["CRM 线索/商机"] --> B["客户项目"]
-    B --> C["样品与客户反馈"]
-    C --> D["报价与审批"]
-    D --> E["销售订单"]
-    E --> F["物料需求与采购"]
-    F --> G["收货与库存"]
-    G --> H["交付与签收"]
-    H --> I["开票与回款"]
-    I --> J["风险、异常整改与结项"]
-    J -. "复盘与审计" .-> B
+  A["CRM 商机"] --> B["客户项目"]
+  B --> C["样品与客户反馈"]
+  C --> D["报价与审批"]
+  D --> E["销售订单"]
+  E --> F["物料需求与采购"]
+  F --> G["收货与库存"]
+  G --> H["交付与签收"]
+  H --> I["开票与回款"]
+  I --> J["风险 异常 结项"]
+  J --> B
 ```
 
-## 规划中的三条演示路径
+## 已实现的自主扩展
 
-1. **正常交付：** 商机转项目 → 打样通过 → 报价审批 → 订单 → 采购/库存 → 交付签收 → 开票回款 → 结项。
-2. **供应商延期：** 采购交期偏离 → 确定性风险预警 → 创建业务异常 → 根因与整改 → 验证关闭。
-3. **重新打样：** 客户反馈不通过 → 生成下一轮样品 → 保留前序证据 → 新一轮确认后继续报价。
+| 上游能力 | AutoFlow 360 新增 |
+| --- | --- |
+| Frappe CRM 商机 | 幂等转客户项目、来源回写、公司/日期校验 |
+| ERPNext 报价与销售订单 | 客户认可样品门槛、额度审批快照、幂等转单 |
+| ERPNext 库存与采购 | 可解释物料缺口、RFQ、供应商隔离报价、ETA 审计 |
+| ERPNext 交付与财务 | 订单来源、实时库存、超交拦截、客户签收、严格结项 |
+| Frappe 账号与权限 | 七类内部角色、两类门户、项目成员、公司行级隔离 |
+| Frappe 队列与 DocType | 八类确定性风险、异常根因/整改/独立验证 |
+| 外部 AI API | 获权上下文、结构/来源校验、审计和失败安全降级 |
+| frappe_docker | 锁定上游、多架构镜像、免费部署、备份恢复演练 |
 
-## 快速开始
+## 三条可复现演示
 
-环境要求以 [上游基线](docs/research/upstream-baseline.md) 为准；实际启动由 `deploy/upstream-lock.json` 检出并校验四个上游仓库的精确提交，并由 `deploy/container-lock.json` 固定三个容器镜像摘要。先在 Windows PowerShell 中执行环境体检：
+| 场景 | 演示键 | 关键证据 |
+| --- | --- | --- |
+| 正常交付 | `DEMO-NORMAL-001` | 样品认可→报价审批→订单采购→签收→开票回款→结项 |
+| 供应商延期 | `DEMO-DELAY-001` | ETA 偏离→确定性风险→根因整改→独立验证关闭 |
+| 重新打样 | `DEMO-RESAMPLE-001` | 第一轮反馈→第二轮回链→新一轮认可 |
+
+种子同时创建以下演示用户，密码由部署者单独设置，永不写入仓库：
+
+- `autoflow-demo-executive@example.invalid`
+- `autoflow-demo-procurement@example.invalid`
+- `autoflow-demo-customer@example.invalid`
+- `autoflow-demo-supplier@example.invalid`
+
+完整讲解顺序见 [演示脚本](docs/demo-script.md)。以下截图于 2026-08-01 从本机真实站点自动采集并逐张验收，只包含 CNY 合成数据。演示视频包含 14 个动画分镜、14 段配音、62 组字幕和 13 个转场；完整预览获人工确认后，已于 2026-08-08 渲染为 1920×1080、30fps 的高质量 MP4，并通过完整解码、黑帧、长静音、响度、抽帧总览和尾帧检查。详细参数与 SHA-256 见 [成片报告](videos/autoflow-360-launch/RENDER-REPORT.md)。
+
+## 产品截图
+
+| 角色工作台 | 三场景项目组合 |
+| --- | --- |
+| ![AutoFlow 360 角色工作台](docs/images/01-workbench-overview.png) | ![AutoFlow 360 三场景项目组合](docs/images/07-project-portfolio.png) |
+
+| 正常交付闭环 | 供应商延期闭环 |
+| --- | --- |
+| ![正常交付项目全景](docs/images/02-normal-project.png) | ![供应商延期项目全景](docs/images/03-supplier-delay.png) |
+
+| 财务结项证据 | 延期整改证据 |
+| --- | --- |
+| ![正常项目开票回款与零异常结项证据](docs/images/08-normal-finance-closure.png) | ![供应商延期项目风险、整改关闭与审计证据](docs/images/09-delay-remediation.png) |
+
+| 重新打样证据链 | 管理驾驶舱 |
+| --- | --- |
+| ![客户退样与重新打样项目全景](docs/images/04-resample.png) | ![AutoFlow 360 管理驾驶舱](docs/images/05-management-cockpit.png) |
+
+移动端同样经过 390×844 视口验收：
+
+![AutoFlow 360 移动端工作台](docs/images/06-mobile-workbench.png)
+
+## 演示视频
+
+视频工程位于 `videos/autoflow-360-launch/`，分镜、旁白、素材审计、字幕时间、离线动画依赖和完整时间线均保留在仓库中，可复核而不是只交付一个不可解释的成片。
+
+```powershell
+Set-Location videos\autoflow-360-launch
+npm.cmd run dev
+```
+
+最终 MP4 位于本地 `videos/autoflow-360-launch/renders/video.mp4`，时长 162.633 秒、大小 62.498 MB。为避免把大型二进制文件写进 Git 历史，`renders/` 保持忽略；取得公开发布授权后，成片将作为 GitHub Release 附件上传，仓库保留可复现的视频工程和 [成片报告](videos/autoflow-360-launch/RENDER-REPORT.md)。
+
+## 本地运行
+
+要求：Windows 11 + WSL2 Ubuntu 或 Windows Docker、Docker Engine 23+、Docker Compose v2；具体上游提交见 `deploy/upstream-lock.json`，容器摘要见 `deploy/container-lock.json`。
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\check-environment.ps1
+Copy-Item deploy/env.example .env
+# 编辑 .env，把示例管理员密码改成独立随机密码
+.\scripts\bootstrap-dev.ps1
+.\scripts\bench.ps1 start
 ```
 
-本地开发脚本支持 Windows Docker，也支持直接安装在 WSL2 Ubuntu 内的 Docker Engine，不依赖 Docker Desktop。初始化前复制配置并修改示例管理员密码：
+另开 PowerShell 生成合成演示数据：
 
 ```powershell
-Copy-Item deploy/env.example .env
-# 编辑 .env 后再执行
-.\scripts\bootstrap-dev.ps1
+.\scripts\seed-demo.ps1
 ```
 
-完整操作、数据库口令边界和排错说明见 [本地开发环境](docs/deployment/local-development.md)。本地 Frappe v16 环境已经完成真实安装，四个应用可被站点识别，当前安装级冒烟测试实际通过；后续业务能力仍以对应代码和测试为准。
+详细边界和排错见 [本地开发环境](docs/deployment/local-development.md)。
 
-## 测试命令
+## 验证
 
 ```powershell
 python -m unittest discover -s tests/static -v
 .\scripts\run-tests.ps1
+Set-Location tests\e2e
+npx.cmd playwright test
+Set-Location ..\..
+.\scripts\verify-backup.ps1
 git diff --check
 ```
 
-所有业务实现遵守测试先行：先建立会失败的测试，再写最小实现并复测。性能、用户量和业务收益只记录实际测量结果，不使用推测数据。
+截至 2026-08-01 的实际证据：
 
-## 上游边界
+- 静态契约：170/170。
+- 当前完整 Frappe 集成回归：148/148。
+- Playwright：3/3；曾检出性能数据挤出演示项目的真实回归，修复后复测通过。
+- 合成规模：200 项目、1000 样品、1000 反馈、500 销售订单、500 采购订单、5000 风险/异常/版本记录。
+- 工作台列表 P50/P95：37.027/42.9 ms；项目全景：16.623/17.683 ms；每日风险扫描：4556.394/5888.688 ms。
+- 恢复演练：数据库、公有附件、私有附件和站点配置完成 SHA-256 校验，恢复到一次性隔离站点并取得 `RESTORE_CHECK_PASSED`。
 
-AutoFlow 360 是独立自定义应用，不是 Frappe、ERPNext 或 Frappe CRM 的官方产品，也不直接修改它们或 `frappe_docker` 的核心源码。
+原始口径与发布门禁见 [验收报告](docs/test-report/acceptance.md) 和 [性能 JSON](docs/test-report/performance.json)。
 
-- **上游能力：** Frappe Framework 提供应用框架；Frappe CRM 提供线索、组织、联系人和商机；ERPNext 提供标准销售、采购、库存与财务单据；`frappe_docker` 提供容器工程参考。
-- **已验证的本仓库新增范围：** 汽车客户项目、样品闭环、不可冒用身份的报价审批、报价转销售订单、可解释物料缺口、采购需求、供应商询报价与交期协同、供应商门户、库存交付与客户签收、项目结项、确定性风险引擎、异常整改闭环，以及项目/公司/门户三层数据隔离；完成状态以本页里程碑与测试结果为准。
-- **规划中的自主新增范围：** 可审计 AI 辅助、角色工作台、演示数据和完整交付材料。上述范围计划自主实现，当前状态以实际代码和测试为准。
-- **规划中的 AI 安全边界：** AI 只生成摘要、建议和草稿，不提交或取消业务单据，不改库存、不执行付款、不关闭异常，也不绕过审批；AI 不可用时核心业务仍可运行。
+## CI、镜像与免费部署
 
-第三方来源与许可证见 [NOTICE.md](NOTICE.md)，当前采用线与待依赖拉取后锁定的精确提交基线见 [upstream-baseline.md](docs/research/upstream-baseline.md)。
+- `.github/workflows/static.yml`：静态契约、Python 编译、空白和 npm 安全检查。
+- `.github/workflows/integration.yml`：锁定 Frappe 环境、完整业务测试、三条 Playwright 和性能证据。
+- `.github/workflows/build-image.yml`：BuildKit secret、amd64/arm64、SBOM、provenance 和 GHCR。
+- [Oracle 免费层部署](docs/deployment/oracle-always-free.md)：单机 HTTPS 路径；免费容量和政策不作永久承诺。
+- [Cloudflare Quick Tunnel](docs/deployment/cloudflare-tunnel.md)：只用于临时面试演示，无 SLA。
+- [备份与恢复](docs/deployment/backup-and-restore.md)：数据库/附件、SHA-256、一次性站点恢复。
 
-## 合成数据声明
+尚未公开推送前，GitHub Actions、GHCR 镜像和在线演示都不会存在；仓库不把配置完成描述成远端已运行。
 
-演示/测试输入是合成数据，测试结果和性能指标来自实际运行。合成的账号、客户、供应商、订单、金额、时间和风险不代表真实企业、真实客户、实际营收、实际采用规模或经营成效。
+## 文档入口
 
-## 许可证
+- 架构：[系统上下文](docs/architecture/system-context.md) · [数据模型](docs/architecture/data-model.md) · [业务闭环](docs/architecture/business-flow.md)
+- 用户：[销售与项目](docs/user-guide/sales-and-project.md) · [采购与交付](docs/user-guide/procurement-and-delivery.md) · [客户门户](docs/user-guide/customer-portal.md) · [供应商门户](docs/user-guide/supplier-portal.md) · [管理员](docs/user-guide/administrator.md)
+- 安全：[威胁模型](docs/security/threat-model.md)
+- 验收：[验收报告](docs/test-report/acceptance.md) · [已知限制](docs/test-report/known-limitations.md)
+- 求职：[简历项目](docs/interview/resume-project.md) · [三分钟陈述](docs/interview/three-minute-pitch.md) · [面试问答](docs/interview/questions-and-answers.md) · [个人贡献](docs/interview/personal-contribution.md)
 
-AutoFlow 360 自主代码采用 **AGPL-3.0-only**，官方全文见 [LICENSE](LICENSE)。第三方组件继续适用各自许可证与署名要求。
+## 安全与真实性
+
+前端按钮不是权限边界，所有敏感操作在服务端重新核对角色、项目、公司、客户/供应商关系和状态。关键转换使用文件锁、数据库行锁、唯一字段与幂等检查；AI 默认关闭，只生成带来源的建议，不提交/取消单据、不改库存、不付款、不关闭异常。
+
+当前残余风险包括附件白名单、AI 域名限制、可变供应链引用、备份加密和公网限流；完整说明见 [威胁模型](docs/security/threat-model.md) 和 [已知限制](docs/test-report/known-limitations.md)。
+
+## 来源与许可证
+
+AutoFlow 360 是独立自定义应用，不是 Frappe、ERPNext 或 Frappe CRM 的官方产品，也不修改它们或 `frappe_docker` 的核心源码。第三方来源和许可证见 [NOTICE.md](NOTICE.md) 与 [上游基线](docs/research/upstream-baseline.md)。本项目自主代码采用 **AGPL-3.0-only**，全文见 [LICENSE](LICENSE)。

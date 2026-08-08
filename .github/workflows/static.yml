@@ -1,0 +1,52 @@
+name: Static quality and secret hygiene
+
+on:
+  push:
+    branches:
+      - main
+      - "codex/**"
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: static-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: tests/e2e/package-lock.json
+
+      - name: Run repository contract tests
+        run: python -m unittest discover -s tests/static -v
+
+      - name: Compile Python modules
+        run: python -m compileall -q autoflow_360
+
+      - name: Check patch whitespace
+        run: git diff --check
+
+      - name: Install locked browser-test dependencies
+        working-directory: tests/e2e
+        run: npm ci
+
+      - name: Audit browser-test dependencies
+        working-directory: tests/e2e
+        run: npm audit --audit-level=high

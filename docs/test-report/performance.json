@@ -1,0 +1,63 @@
+{
+  "generated_at": "2026-08-01 11:54:44.529660",
+  "classification": "合成性能数据；结果仅代表本次本机容器环境。",
+  "measurement_policy": {
+    "warmup_runs": 1,
+    "measured_runs": 10,
+    "percentile_method": "nearest-rank",
+    "ai_enabled_during_weekly_task": false
+  },
+  "environment": {
+    "site": "autoflow.localhost",
+    "python": "3.14.2",
+    "node_requirement": "24+",
+    "frappe": "16.29.0",
+    "erpnext": "16.30.0",
+    "crm": "1.80.0",
+    "database": "11.8.8-MariaDB-ubu2404",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.36",
+    "cpu_count": 16,
+    "memory_total_mb": 7810
+  },
+  "record_counts": {
+    "customer_projects": 200,
+    "sample_requests": 1000,
+    "customer_feedback": 1000,
+    "sales_orders": 500,
+    "purchase_orders": 500,
+    "project_risks": 2000,
+    "business_exceptions": 1500,
+    "versions": 1500,
+    "risk_exception_version_total": 5000
+  },
+  "operations": {
+    "workbench_project_list": {
+      "runs": 10,
+      "p50_ms": 37.027,
+      "p95_ms": 42.9,
+      "max_ms": 42.9,
+      "last_result": 50
+    },
+    "project_panorama_detail": {
+      "runs": 10,
+      "p50_ms": 16.623,
+      "p95_ms": 17.683,
+      "max_ms": 17.683,
+      "last_result": "PERF-PROJECT-0001"
+    },
+    "daily_risk_scan": {
+      "runs": 10,
+      "p50_ms": 4556.394,
+      "p95_ms": 5888.688,
+      "max_ms": 5888.688,
+      "last_result": "completed"
+    },
+    "weekly_draft_scheduler": {
+      "runs": 10,
+      "p50_ms": 0.457,
+      "p95_ms": 0.6,
+      "max_ms": 0.6,
+      "last_result": 0
+    }
+  }
+}

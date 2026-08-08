@@ -1,0 +1,23 @@
+services:
+  configurator:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}
+  backend:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}
+  frontend:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}
+  websocket:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}
+  queue-short:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}
+  queue-long:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}
+  scheduler:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}
+  db:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}
+  redis-cache:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}
+  redis-queue:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}
+  proxy:
+    platform: ${AUTOFLOW_PLATFORM:-linux/arm64}

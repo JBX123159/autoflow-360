@@ -1,0 +1,517 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "NotoSansSC";
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "NotoSansSC";
+      color: #20242b;
+    }
+
+    .clip {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    [class~="01-hook-ground"] {
+      background:
+        linear-gradient(180deg, rgba(37, 99, 184, 0.035) 0%, rgba(37, 99, 184, 0) 34%),
+        #f7f9fc;
+    }
+
+    [class~="01-hook-depth-line"] {
+      position: absolute;
+      left: 7cqw;
+      width: 86cqw;
+      height: 1px;
+      background: rgba(37, 99, 184, 0.12);
+    }
+
+    [class~="01-hook-depth-line--one"] {
+      top: 45.5cqh;
+    }
+
+    [class~="01-hook-depth-line--two"] {
+      top: 55.5cqh;
+      opacity: 0.55;
+    }
+
+    [class~="01-hook-stage"] {
+      position: absolute;
+      inset: 0 0 184px 0;
+      overflow: hidden;
+    }
+
+    [class~="01-hook-kicker"] {
+      position: absolute;
+      top: 84px;
+      left: 96px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #2563b8;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="01-hook-kicker-line"] {
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #2563b8;
+    }
+
+    [class~="01-hook-hero"] {
+      position: absolute;
+      top: 142px;
+      left: 96px;
+      width: 1120px;
+      font-size: 81px;
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: #20242b;
+      transform-origin: 0 50%;
+    }
+
+    [class~="01-hook-hero-accent"] {
+      color: #2563b8;
+    }
+
+    [class~="01-hook-sequence"] {
+      position: absolute;
+      top: 184px;
+      right: 96px;
+      min-width: 290px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: baseline;
+      gap: 7px;
+      color: #667085;
+      font-size: 28px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    [class~="01-hook-sequence-wrap"] {
+      display: inline-flex;
+      justify-content: flex-end;
+      align-items: baseline;
+      min-width: 150px;
+      white-space: nowrap;
+    }
+
+    [class~="01-hook-sequence-text"] {
+      color: #2563b8;
+      font-weight: 700;
+    }
+
+    [class~="01-hook-cursor"] {
+      display: inline-block;
+      width: 16px;
+      color: #2563b8;
+    }
+
+    [class~="01-hook-chain"] {
+      position: absolute;
+      top: 332px;
+      left: 96px;
+      width: 1728px;
+      height: 350px;
+      transform-origin: 1460px 200px;
+    }
+
+    [class~="01-hook-route-svg"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    [class~="01-hook-route-live"] {
+      fill: none;
+      stroke: #2563b8;
+      stroke-width: 7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    [class~="01-hook-start-dot"] {
+      fill: #2563b8;
+    }
+
+    [class~="01-hook-node"] {
+      position: absolute;
+      top: 154px;
+      width: 172px;
+      height: 110px;
+      margin-left: -86px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      transform-origin: 50% 24px;
+    }
+
+    [class~="01-hook-node-dot"] {
+      width: 46px;
+      height: 46px;
+      box-sizing: border-box;
+      border: 7px solid #f7f9fc;
+      border-radius: 50%;
+      background: #98a2b3;
+      outline: 2px solid rgba(37, 99, 184, 0.22);
+    }
+
+    [class~="01-hook-node-label"] {
+      padding: 10px 22px 12px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.05);
+      color: #667085;
+      font-size: 27px;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    [class~="01-hook-node--quote"] { left: 250px; }
+    [class~="01-hook-node--sample"] { left: 557px; }
+    [class~="01-hook-node--buy"] { left: 864px; }
+    [class~="01-hook-node--deliver"] { left: 1171px; }
+    [class~="01-hook-node--cash"] { left: 1478px; }
+
+    [class~="01-hook-break-mask"] {
+      position: absolute;
+      top: 496px;
+      left: 1246px;
+      width: 172px;
+      height: 86px;
+      background: #f7f9fc;
+    }
+
+    [class~="01-hook-break-mark"] {
+      position: absolute;
+      top: 484px;
+      left: 1264px;
+      width: 138px;
+      height: 104px;
+    }
+
+    [class~="01-hook-break-mark"] path {
+      fill: none;
+      stroke: #2563b8;
+      stroke-width: 7;
+      stroke-linecap: round;
+    }
+
+    [class~="01-hook-break-label"] {
+      position: absolute;
+      top: 353px;
+      left: 1176px;
+      width: 318px;
+      padding: 18px 30px 21px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-left: 6px solid #2563b8;
+      border-radius: 12px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #20242b;
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      text-align: center;
+      transform-origin: 50% 100%;
+    }
+
+    [class~="01-hook-beat-rail"] {
+      position: absolute;
+      top: 744px;
+      left: 96px;
+      display: flex;
+      gap: 18px;
+    }
+
+    [class~="01-hook-beat-rail"] i {
+      display: block;
+      width: 5px;
+      height: 28px;
+      border-radius: 6px;
+      background: #2563b8;
+      opacity: 0.16;
+    }
+
+    [class~="01-hook-progress"] {
+      position: absolute;
+      top: 826px;
+      left: 96px;
+      width: 1728px;
+      height: 3px;
+      background: rgba(37, 99, 184, 0.10);
+    }
+
+    [class~="01-hook-progress-fill"] {
+      display: block;
+      width: 7.14%;
+      height: 3px;
+      background: #2563b8;
+    }
+  </style>
+
+  <div data-hf-id="hf-6zq4" id="root" data-composition-id="01-hook" data-start="0" data-duration="10.683" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-sp3p" class="clip 01-hook-ground" data-start="0" data-duration="10.683" data-track-index="0">
+      <div data-hf-id="hf-1y6y" class="01-hook-depth-line 01-hook-depth-line--one"></div>
+      <div data-hf-id="hf-59t8" class="01-hook-depth-line 01-hook-depth-line--two"></div>
+    </div>
+
+    <div data-hf-id="hf-84jm" class="clip 01-hook-content" data-start="0" data-duration="10.683" data-track-index="1">
+      <div data-hf-id="hf-gtf6" class="01-hook-stage" id="01-hook-stage">
+        <div data-hf-id="hf-hmgm" class="01-hook-kicker" id="01-hook-kicker">
+          <span data-hf-id="hf-9jmd" class="01-hook-kicker-line"></span>
+          <span data-hf-id="hf-cucz">客户项目 · 证据链</span>
+        </div>
+
+        <div data-hf-id="hf-67dl" class="01-hook-hero" id="01-hook-hero">一份<span data-hf-id="hf-0im9" class="01-hook-hero-accent">客户需求</span></div>
+
+        <div data-hf-id="hf-8eey" class="01-hook-sequence" aria-hidden="true">
+          <span data-hf-id="hf-7od3" class="01-hook-sequence-wrap"><span data-hf-id="hf-xrcl" class="01-hook-sequence-text" id="01-hook-sequence-text"></span></span>
+          <span data-hf-id="hf-wqqs" class="01-hook-cursor" id="01-hook-cursor">_</span>
+        </div>
+
+        <div data-hf-id="hf-jewg" class="01-hook-chain" id="01-hook-chain">
+          <svg data-hf-id="hf-8iz1" class="01-hook-route-svg" viewBox="0 0 1728 350" aria-hidden="true">
+            <path data-hf-id="hf-bhrg" class="01-hook-route-live" id="01-hook-route-live" d="M 92 177 L 250 177 L 557 177 L 864 177 L 1171 177 L 1478 177 L 1636 177" />
+            <circle data-hf-id="hf-axbm" class="01-hook-start-dot" id="01-hook-start-dot" cx="92" cy="177" r="10" />
+          </svg>
+
+          <div data-hf-id="hf-wewb" class="01-hook-node 01-hook-node--quote" id="01-hook-node-quote">
+            <span data-hf-id="hf-iefv" class="01-hook-node-dot"></span><span data-hf-id="hf-pymo" class="01-hook-node-label">报价</span>
+          </div>
+          <div data-hf-id="hf-held" class="01-hook-node 01-hook-node--sample" id="01-hook-node-sample">
+            <span data-hf-id="hf-9597" class="01-hook-node-dot"></span><span data-hf-id="hf-t2us" class="01-hook-node-label">样品</span>
+          </div>
+          <div data-hf-id="hf-nxtf" class="01-hook-node 01-hook-node--buy" id="01-hook-node-buy">
+            <span data-hf-id="hf-8qy6" class="01-hook-node-dot"></span><span data-hf-id="hf-11nk" class="01-hook-node-label">采购</span>
+          </div>
+          <div data-hf-id="hf-14mn" class="01-hook-node 01-hook-node--deliver" id="01-hook-node-deliver">
+            <span data-hf-id="hf-8cn5" class="01-hook-node-dot"></span><span data-hf-id="hf-v3b8" class="01-hook-node-label">交付</span>
+          </div>
+          <div data-hf-id="hf-n90f" class="01-hook-node 01-hook-node--cash" id="01-hook-node-cash">
+            <span data-hf-id="hf-7yc4" class="01-hook-node-dot"></span><span data-hf-id="hf-zn38" class="01-hook-node-label">回款</span>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-f51e" class="01-hook-break-mask" id="01-hook-break-mask"></div>
+        <svg data-hf-id="hf-jqfw" class="01-hook-break-mark" id="01-hook-break-mark" viewBox="0 0 138 104" aria-hidden="true">
+          <path data-hf-id="hf-qj70" id="01-hook-break-left" d="M 10 52 L 48 52 L 61 31" />
+          <path data-hf-id="hf-zm51" id="01-hook-break-right" d="M 128 52 L 90 52 L 77 73" />
+        </svg>
+        <div data-hf-id="hf-4zxo" class="01-hook-break-label" id="01-hook-break-label">证据断开</div>
+
+        <div data-hf-id="hf-qqv6" class="01-hook-beat-rail" aria-hidden="true">
+          <i data-hf-id="hf-wt6k"></i><i data-hf-id="hf-zeb8"></i><i data-hf-id="hf-y7e5"></i><i data-hf-id="hf-ylp6"></i><i data-hf-id="hf-0l8b"></i>
+        </div>
+        <div data-hf-id="hf-kl15" class="01-hook-progress"><span data-hf-id="hf-8g7y" class="01-hook-progress-fill"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="01-hook"]');
+      const timeline = gsap.timeline({ paused: true });
+      const duration = 10.283;
+      const pulse = 0.914;
+      const beats = [0.18, 1.828, 2.742, 3.656, 4.570, 5.484, 6.398, 8.569];
+
+      const byId = (id) => document.getElementById(id);
+      const allByClass = (className) => root.getElementsByClassName(className);
+      const route = byId('01-hook-route-live');
+      const routeLength = route.getTotalLength();
+      route.style.strokeDasharray = String(routeLength);
+      route.style.strokeDashoffset = String(routeLength);
+
+      [byId('01-hook-break-left'), byId('01-hook-break-right')].forEach((path) => {
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = String(length);
+        path.style.strokeDashoffset = String(length);
+      });
+
+      timeline.fromTo(
+        byId('01-hook-hero'),
+        { y: -82, scale: 1.16, filter: 'blur(13px)', opacity: 0 },
+        { y: 0, scale: 1, filter: 'blur(0px)', opacity: 1, duration: 0.52, ease: 'power4.out' },
+        beats[0]
+      );
+      timeline.fromTo(
+        byId('01-hook-kicker'),
+        { x: -80, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.44, ease: 'expo.out' },
+        beats[0] + 0.10
+      );
+      timeline.fromTo(
+        byId('01-hook-start-dot'),
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.46, ease: 'back.out(2)' },
+        beats[0] + 0.20
+      );
+      timeline.to(
+        route,
+        { strokeDashoffset: routeLength * 0.90, duration: 0.72, ease: 'power2.out' },
+        beats[0] + 0.24
+      );
+
+      const sequenceStates = [
+        { t: 0, text: '' },
+        { t: beats[1], text: '报价' },
+        { t: beats[2], text: '样品' },
+        { t: beats[3], text: '采购' },
+        { t: beats[4], text: '交付' },
+        { t: beats[5], text: '回款' },
+        { t: beats[6], text: '已连通 ✓' },
+        { t: beats[7], text: '断点' }
+      ];
+      const textElement = byId('01-hook-sequence-text');
+      const cursorElement = byId('01-hook-cursor');
+      const sequenceDriver = { time: 0 };
+      timeline.to(sequenceDriver, {
+        time: duration,
+        duration,
+        ease: 'none',
+        onUpdate: () => {
+          let value = '';
+          for (let index = sequenceStates.length - 1; index >= 0; index -= 1) {
+            if (sequenceDriver.time >= sequenceStates[index].t) {
+              value = sequenceStates[index].text;
+              break;
+            }
+          }
+          textElement.textContent = value;
+        }
+      }, 0);
+
+      const blinkDriver = { phase: 0 };
+      timeline.to(blinkDriver, {
+        phase: Math.PI * 2 * 16,
+        duration,
+        ease: 'none',
+        onUpdate: () => {
+          cursorElement.style.opacity = Math.sin(blinkDriver.phase) > 0 ? '1' : '0';
+        }
+      }, 0);
+
+      const nodes = [
+        { id: '01-hook-node-quote', beat: beats[1], route: 0.79, from: { scale: 1.52, filter: 'blur(12px)', opacity: 0 }, ease: 'power4.out' },
+        { id: '01-hook-node-sample', beat: beats[2], route: 0.61, from: { x: -145, opacity: 0 }, ease: 'expo.out' },
+        { id: '01-hook-node-buy', beat: beats[3], route: 0.43, from: { y: 72, rotation: 5, opacity: 0 }, ease: 'circ.out' },
+        { id: '01-hook-node-deliver', beat: beats[4], route: 0.25, from: { scale: 1.42, filter: 'blur(10px)', opacity: 0 }, ease: 'power4.out' },
+        { id: '01-hook-node-cash', beat: beats[5], route: 0, from: { x: 145, opacity: 0 }, ease: 'expo.out' }
+      ];
+
+      nodes.forEach((node) => {
+        const element = byId(node.id);
+        timeline.fromTo(
+          element,
+          node.from,
+          { x: 0, y: 0, rotation: 0, scale: 1, filter: 'blur(0px)', opacity: 1, duration: 0.48, ease: node.ease },
+          node.beat
+        );
+        timeline.to(
+          route,
+          { strokeDashoffset: routeLength * node.route, duration: 0.70, ease: 'power2.out' },
+          node.beat - 0.12
+        );
+        timeline.to(
+          element.querySelector('[class~="01-hook-node-dot"]'),
+          { backgroundColor: '#2563b8', outlineColor: 'rgba(37, 99, 184, 0.45)', duration: 0.18, ease: 'none' },
+          node.beat + 0.12
+        );
+        timeline.to(
+          element.querySelector('[class~="01-hook-node-label"]'),
+          { color: '#20242b', backgroundColor: 'rgba(37, 99, 184, 0.10)', duration: 0.18, ease: 'none' },
+          node.beat + 0.12
+        );
+      });
+
+      allByClass('01-hook-beat-rail')[0].querySelectorAll('i').forEach((tick, index) => {
+        timeline.fromTo(
+          tick,
+          { opacity: 0.16, scaleY: 1 },
+          { opacity: 1, scaleY: 1.9, duration: 0.16, ease: 'power2.out' },
+          beats[index + 1]
+        );
+        timeline.to(
+          tick,
+          { opacity: 0.42, scaleY: 1, duration: 0.20, ease: 'power1.out' },
+          beats[index + 1] + 0.16
+        );
+      });
+
+      timeline.fromTo(
+        byId('01-hook-chain'),
+        { x: 0, scale: 1 },
+        { x: -74, scale: 1.10, duration: 2.02, ease: 'power1.inOut' },
+        beats[6]
+      );
+      timeline.fromTo(
+        byId('01-hook-sequence-text'),
+        { color: '#2563b8' },
+        { color: '#20242b', duration: 0.36, ease: 'power1.out' },
+        beats[6] + 0.38
+      );
+
+      timeline.fromTo(
+        byId('01-hook-break-mask'),
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.20, ease: 'power4.out' },
+        beats[7]
+      );
+      timeline.to(
+        byId('01-hook-break-left'),
+        { strokeDashoffset: 0, duration: 0.30, ease: 'power2.out' },
+        beats[7] + 0.05
+      );
+      timeline.to(
+        byId('01-hook-break-right'),
+        { strokeDashoffset: 0, duration: 0.30, ease: 'power2.out' },
+        beats[7] + 0.27
+      );
+      timeline.fromTo(
+        byId('01-hook-break-label'),
+        { y: -74, scale: 1.38, filter: 'blur(14px)', opacity: 0 },
+        { y: 0, scale: 1, filter: 'blur(0px)', opacity: 1, duration: 0.50, ease: 'power4.out' },
+        beats[7] + 0.10
+      );
+      timeline.fromTo(
+        byId('01-hook-stage'),
+        { x: 0 },
+        { x: -18, duration: 0.16, ease: 'power4.out' },
+        beats[7]
+      );
+      timeline.to(
+        byId('01-hook-stage'),
+        { x: 0, duration: 0.34, ease: 'power2.out' },
+        beats[7] + 0.16
+      );
+
+      timeline.to({}, { duration: pulse * 0.1 }, duration - pulse * 0.1);
+      window.__timelines = window.__timelines || {};
+      window.__timelines['01-hook'] = timeline;
+    })();
+  </script>
+</template>

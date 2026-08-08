@@ -1,0 +1,21 @@
+{
+ "content": null,
+ "creation": "2026-08-01 00:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2026-08-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AutoFlow 360",
+ "name": "autoflow-cockpit",
+ "owner": "Administrator",
+ "page_name": "autoflow-cockpit",
+ "roles": [
+  {"role": "AutoFlow Administrator"},
+  {"role": "AutoFlow Executive"}
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "title": "AutoFlow 管理驾驶舱"
+}

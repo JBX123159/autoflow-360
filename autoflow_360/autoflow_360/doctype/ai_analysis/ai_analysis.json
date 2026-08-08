@@ -1,0 +1,261 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "naming_series:",
+ "creation": "2026-08-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "overview_tab",
+  "naming_series",
+  "customer_project",
+  "analysis_type",
+  "status",
+  "request_section",
+  "requested_by",
+  "requested_at",
+  "provider",
+  "model",
+  "prompt_version",
+  "input_hash",
+  "result_tab",
+  "display_text",
+  "output_json",
+  "sources",
+  "latency_ms",
+  "error_code",
+  "error_message",
+  "feedback_tab",
+  "adopted",
+  "user_revision",
+  "user_feedback"
+ ],
+ "fields": [
+  {
+   "fieldname": "overview_tab",
+   "fieldtype": "Tab Break",
+   "label": "Overview"
+  },
+  {
+   "default": "AI-.YYYY.-.#####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "AI-.YYYY.-.#####",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer Project",
+   "options": "Customer Project",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "analysis_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Analysis Type",
+   "options": "风险摘要\n下一步行动\n管理周报\n根因草稿\n供应商报价总结\n结项复盘",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "处理中",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "处理中\n成功\n降级\n失败",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "request_section",
+   "fieldtype": "Section Break",
+   "label": "Request Audit"
+  },
+  {
+   "fieldname": "requested_by",
+   "fieldtype": "Link",
+   "label": "Requested By",
+   "options": "User",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "requested_at",
+   "fieldtype": "Datetime",
+   "label": "Requested At",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "provider",
+   "fieldtype": "Data",
+   "label": "Provider",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model",
+   "read_only": 1
+  },
+  {
+   "fieldname": "prompt_version",
+   "fieldtype": "Data",
+   "label": "Prompt Version",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "input_hash",
+   "fieldtype": "Data",
+   "label": "Input Hash",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "result_tab",
+   "fieldtype": "Tab Break",
+   "label": "Generated Result"
+  },
+  {
+   "fieldname": "display_text",
+   "fieldtype": "Long Text",
+   "label": "Display Text",
+   "read_only": 1
+  },
+  {
+   "fieldname": "output_json",
+   "fieldtype": "JSON",
+   "label": "Structured Output",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sources",
+   "fieldtype": "Table",
+   "label": "Source References",
+   "options": "AI Source Reference",
+   "read_only": 1
+  },
+  {
+   "fieldname": "latency_ms",
+   "fieldtype": "Int",
+   "label": "Latency (ms)",
+   "non_negative": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "error_code",
+   "fieldtype": "Data",
+   "label": "Error Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "error_message",
+   "fieldtype": "Small Text",
+   "label": "Safe Error Message",
+   "read_only": 1
+  },
+  {
+   "fieldname": "feedback_tab",
+   "fieldtype": "Tab Break",
+   "label": "Human Review"
+  },
+  {
+   "default": "0",
+   "fieldname": "adopted",
+   "fieldtype": "Check",
+   "label": "Adopted"
+  },
+  {
+   "fieldname": "user_revision",
+   "fieldtype": "Long Text",
+   "label": "User Revision"
+  },
+  {
+   "fieldname": "user_feedback",
+   "fieldtype": "Select",
+   "label": "User Feedback",
+   "options": "\n有帮助\n部分有帮助\n无帮助"
+  }
+ ],
+ "links": [],
+ "modified": "2026-08-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AutoFlow 360",
+ "name": "AI Analysis",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "role": "System Manager"
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Administrator",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Sales Operations",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Project Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Procurement",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Warehouse",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Finance",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AutoFlow Executive",
+   "write": 1
+  }
+ ],
+ "search_fields": "customer_project,analysis_type,requested_by,error_code",
+ "sort_field": "requested_at",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "analysis_type",
+ "track_changes": 1
+}

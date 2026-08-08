@@ -1,0 +1,617 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "NotoSansSC";
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    #root {
+      --09-delay-remediation-bg: #f7f9fc;
+      --09-delay-remediation-primary: #2563b8;
+      --09-delay-remediation-text: #20242b;
+      --09-delay-remediation-muted: #667085;
+      --09-delay-remediation-light: #98a2b3;
+      --09-delay-remediation-accent-light: rgba(37, 99, 184, 0.10);
+      --09-delay-remediation-border: rgba(37, 99, 184, 0.24);
+      --09-delay-remediation-card: rgba(37, 99, 184, 0.05);
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: var(--09-delay-remediation-text);
+      font-family: "NotoSansSC";
+      font-weight: 400;
+    }
+
+    [data-frame-part="09-delay-remediation-ground"] {
+      position: absolute;
+      inset: 0;
+      background: var(--09-delay-remediation-bg);
+    }
+
+    [data-frame-part="09-delay-remediation-stage"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    [data-frame-part="09-delay-remediation-header"] {
+      position: absolute;
+      top: 4.5cqh;
+      left: 5cqw;
+      right: 5cqw;
+      height: 10cqh;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto 1fr;
+      align-items: start;
+      column-gap: 2cqw;
+    }
+
+    [data-frame-part="09-delay-remediation-eyebrow"] {
+      display: flex;
+      align-items: center;
+      gap: 0.8cqw;
+      color: var(--09-delay-remediation-primary);
+      font-size: 0.8cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+
+    [data-frame-part="09-delay-remediation-eyebrow"]::before {
+      width: 3.125cqw;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--09-delay-remediation-primary);
+      content: "";
+    }
+
+    [data-frame-part="09-delay-remediation-title"] {
+      grid-column: 1;
+      margin: 1.05cqh 0 0;
+      color: var(--09-delay-remediation-text);
+      font-size: 2.6cqw;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    [data-frame-part="09-delay-remediation-status"] {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      display: flex;
+      align-items: center;
+      gap: 0.55cqw;
+      margin-top: 0.2cqh;
+      padding: 0.65cqh 1.05cqw;
+      border-radius: 100px;
+      background: var(--09-delay-remediation-accent-light);
+      color: var(--09-delay-remediation-primary);
+      font-size: 0.8cqw;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    [data-frame-part="09-delay-remediation-status-dot"] {
+      width: 0.48cqw;
+      height: 0.48cqw;
+      border-radius: 50%;
+      background: var(--09-delay-remediation-primary);
+    }
+
+    [data-frame-part="09-delay-remediation-page-shell"] {
+      position: absolute;
+      top: 16.4cqh;
+      left: 4.5cqw;
+      width: 62.2cqw;
+      height: 60cqh;
+      overflow: hidden;
+      border: 1.5px solid var(--09-delay-remediation-border);
+      border-radius: 14px;
+      background: var(--09-delay-remediation-card);
+      transform: perspective(1600px) rotateY(-4deg) rotateX(1.5deg);
+      transform-origin: left center;
+      transform-style: preserve-3d;
+    }
+
+    [data-frame-part="09-delay-remediation-page-content"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 82cqh;
+      will-change: transform;
+    }
+
+    [data-frame-part="09-delay-remediation-product-image"] {
+      display: block;
+      width: 100%;
+      height: 82cqh;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    [data-frame-part="09-delay-remediation-image-veil"] {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: rgba(247, 249, 252, 0.08);
+    }
+
+    [data-frame-part="09-delay-remediation-page-labels"] {
+      position: absolute;
+      top: 2.2cqh;
+      left: 1.4cqw;
+      right: 1.4cqw;
+      z-index: 4;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    [data-frame-part="09-delay-remediation-page-label"],
+    [data-frame-part="09-delay-remediation-page-state"] {
+      padding: 0.6cqh 0.9cqw;
+      border: 1px solid var(--09-delay-remediation-border);
+      border-radius: 100px;
+      background: rgba(247, 249, 252, 0.92);
+      color: var(--09-delay-remediation-primary);
+      font-size: 0.72cqw;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    [data-frame-part="09-delay-remediation-focus-box"] {
+      position: absolute;
+      top: 19cqh;
+      left: 4.2cqw;
+      z-index: 5;
+      width: 49cqw;
+      height: 8.8cqh;
+      border: 2px solid var(--09-delay-remediation-primary);
+      border-radius: 12px;
+      background: rgba(37, 99, 184, 0.035);
+      pointer-events: none;
+    }
+
+    [data-frame-part="09-delay-remediation-audit-record"] {
+      position: absolute;
+      left: 4.2cqw;
+      bottom: 3.1cqh;
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 0.8cqw;
+      min-width: 24cqw;
+      padding: 1.15cqh 1.2cqw;
+      border-left: 4px solid var(--09-delay-remediation-primary);
+      border-radius: 12px;
+      background: rgba(247, 249, 252, 0.95);
+      color: var(--09-delay-remediation-text);
+      font-size: 1.4cqw;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    [data-frame-part="09-delay-remediation-audit-icon"] {
+      display: grid;
+      width: 2.2cqw;
+      height: 2.2cqw;
+      border-radius: 50%;
+      background: var(--09-delay-remediation-primary);
+      color: var(--09-delay-remediation-bg);
+      place-items: center;
+      font-size: 1.1cqw;
+      font-weight: 700;
+    }
+
+    [data-frame-part="09-delay-remediation-rail"] {
+      position: absolute;
+      top: 17.2cqh;
+      right: 5cqw;
+      width: 25.6cqw;
+      height: 59.4cqh;
+      padding: 2.2cqh 1.5cqw;
+      border: 1.5px solid var(--09-delay-remediation-border);
+      border-radius: 14px;
+      background: rgba(247, 249, 252, 0.96);
+      box-sizing: border-box;
+    }
+
+    [data-frame-part="09-delay-remediation-rail-heading"] {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.65cqh;
+      color: var(--09-delay-remediation-text);
+      font-size: 1.4cqw;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    [data-frame-part="09-delay-remediation-rail-count"] {
+      color: var(--09-delay-remediation-primary);
+      font-size: 0.8cqw;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+
+    [data-frame-part="09-delay-remediation-evidence-list"] {
+      display: grid;
+      gap: 1.15cqh;
+    }
+
+    [data-evidence-item] {
+      display: grid;
+      grid-template-columns: 2.8cqw 1fr auto;
+      align-items: center;
+      min-height: 8.4cqh;
+      padding: 1cqh 1cqw;
+      border: 1.5px solid var(--09-delay-remediation-border);
+      border-radius: 12px;
+      background: var(--09-delay-remediation-card);
+      box-sizing: border-box;
+    }
+
+    [data-frame-part="09-delay-remediation-check-ring"] {
+      display: grid;
+      width: 2.2cqw;
+      height: 2.2cqw;
+      border: 1.5px solid var(--09-delay-remediation-border);
+      border-radius: 50%;
+      background: var(--09-delay-remediation-accent-light);
+      place-items: center;
+    }
+
+    [data-frame-part="09-delay-remediation-check-svg"] {
+      width: 1.2cqw;
+      height: 1.2cqw;
+      overflow: visible;
+    }
+
+    [data-frame-part="09-delay-remediation-check-path"] {
+      fill: none;
+      stroke: var(--09-delay-remediation-primary);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    [data-frame-part="09-delay-remediation-evidence-title"] {
+      color: var(--09-delay-remediation-text);
+      font-size: 1.4cqw;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    [data-frame-part="09-delay-remediation-evidence-state"] {
+      color: var(--09-delay-remediation-primary);
+      font-size: 0.72cqw;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    [data-frame-part="09-delay-remediation-final-lock"] {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7cqw;
+      margin-top: 1.55cqh;
+      min-height: 6.6cqh;
+      border-radius: 100px;
+      background: var(--09-delay-remediation-primary);
+      color: var(--09-delay-remediation-bg);
+      font-size: 1.4cqw;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    [data-frame-part="09-delay-remediation-final-lock-mark"] {
+      display: grid;
+      width: 1.75cqw;
+      height: 1.75cqw;
+      border: 1.5px solid rgba(247, 249, 252, 0.7);
+      border-radius: 50%;
+      place-items: center;
+      font-size: 0.9cqw;
+      line-height: 1;
+    }
+
+    [data-frame-part="09-delay-remediation-connectors"] {
+      position: absolute;
+      top: 17.2cqh;
+      left: 4.5cqw;
+      z-index: 8;
+      width: 90.5cqw;
+      height: 59.4cqh;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    [data-frame-part="09-delay-remediation-connector-path"] {
+      fill: none;
+      stroke: var(--09-delay-remediation-primary);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.7;
+    }
+
+    [data-frame-part="09-delay-remediation-anchor"] {
+      fill: var(--09-delay-remediation-bg);
+      stroke: var(--09-delay-remediation-primary);
+      stroke-width: 2;
+    }
+
+    [data-frame-part="09-delay-remediation-progress-track"] {
+      position: absolute;
+      top: 82.45cqh;
+      left: 5cqw;
+      right: 5cqw;
+      height: 3px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: var(--09-delay-remediation-accent-light);
+    }
+
+    [data-frame-part="09-delay-remediation-progress-fill"] {
+      display: block;
+      width: 0%;
+      height: 100%;
+      border-radius: 6px;
+      background: var(--09-delay-remediation-primary);
+    }
+  </style>
+
+  <div data-hf-id="hf-t1qt" id="root" data-composition-id="09-delay-remediation" data-start="0" data-duration="12.013" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-68hx" class="clip" data-frame-part="09-delay-remediation-ground" data-start="0" data-duration="12.013" data-track-index="0"></div>
+
+    <div data-hf-id="hf-1fpj" class="clip" data-frame-part="09-delay-remediation-stage" data-start="0" data-duration="12.013" data-track-index="1">
+      <header data-hf-id="hf-p3i5" data-frame-part="09-delay-remediation-header">
+        <div data-hf-id="hf-s1sf" data-frame-part="09-delay-remediation-eyebrow">整改证据</div>
+        <h1 data-hf-id="hf-ivs9" data-frame-part="09-delay-remediation-title">关闭证据链</h1>
+        <div data-hf-id="hf-1o1a" data-frame-part="09-delay-remediation-status">
+          <span data-hf-id="hf-oao5" data-frame-part="09-delay-remediation-status-dot"></span>
+          延期异常 · 已关闭
+        </div>
+      </header>
+
+      <section data-hf-id="hf-xa04" id="09-delay-remediation-page-shell" data-frame-part="09-delay-remediation-page-shell" aria-label="延期异常与操作记录">
+        <div data-hf-id="hf-gmtm" id="09-delay-remediation-page-content" data-frame-part="09-delay-remediation-page-content">
+          <img data-hf-id="hf-9imt" data-frame-part="09-delay-remediation-product-image" src="assets/product/09-delay-remediation.png" alt="延期异常已关闭与操作审计证据">
+        </div>
+        <div data-hf-id="hf-kup6" data-frame-part="09-delay-remediation-image-veil"></div>
+        <div data-hf-id="hf-m5ed" data-frame-part="09-delay-remediation-page-labels">
+          <span data-hf-id="hf-d1k8" data-frame-part="09-delay-remediation-page-label">延期异常</span>
+          <span data-hf-id="hf-8fa6" data-frame-part="09-delay-remediation-page-state">已关闭</span>
+        </div>
+        <div data-hf-id="hf-fd9c" id="09-delay-remediation-focus-box" data-frame-part="09-delay-remediation-focus-box"></div>
+        <div data-hf-id="hf-t7e2" id="09-delay-remediation-audit-record" data-frame-part="09-delay-remediation-audit-record">
+          <span data-hf-id="hf-mlz6" data-frame-part="09-delay-remediation-audit-icon">◎</span>
+          操作审计记录
+        </div>
+      </section>
+
+      <svg data-hf-id="hf-1c5y" data-frame-part="09-delay-remediation-connectors" viewBox="0 0 1738 642" preserveAspectRatio="none" aria-hidden="true">
+        <circle data-hf-id="hf-a6fz" id="09-delay-remediation-anchor-1" data-frame-part="09-delay-remediation-anchor" cx="1040" cy="212" r="6" />
+        <circle data-hf-id="hf-tg3y" id="09-delay-remediation-anchor-2" data-frame-part="09-delay-remediation-anchor" cx="1008" cy="328" r="6" />
+        <circle data-hf-id="hf-22f4" id="09-delay-remediation-anchor-3" data-frame-part="09-delay-remediation-anchor" cx="1048" cy="444" r="6" />
+        <circle data-hf-id="hf-vlyp" id="09-delay-remediation-anchor-4" data-frame-part="09-delay-remediation-anchor" cx="1018" cy="520" r="6" />
+        <path data-hf-id="hf-xpho" id="09-delay-remediation-connector-1" data-frame-part="09-delay-remediation-connector-path" d="M1040 212 C1128 212 1150 86 1240 86" />
+        <path data-hf-id="hf-qgkz" id="09-delay-remediation-connector-2" data-frame-part="09-delay-remediation-connector-path" d="M1008 328 C1120 328 1154 188 1240 188" />
+        <path data-hf-id="hf-fh79" id="09-delay-remediation-connector-3" data-frame-part="09-delay-remediation-connector-path" d="M1048 444 C1134 444 1150 290 1240 290" />
+        <path data-hf-id="hf-nzf0" id="09-delay-remediation-connector-4" data-frame-part="09-delay-remediation-connector-path" d="M1018 520 C1128 520 1154 392 1240 392" />
+      </svg>
+
+      <aside data-hf-id="hf-4agn" data-frame-part="09-delay-remediation-rail">
+        <div data-hf-id="hf-m4gf" data-frame-part="09-delay-remediation-rail-heading">
+          <span data-hf-id="hf-rnfo">关闭校验</span>
+          <span data-hf-id="hf-8emv" data-frame-part="09-delay-remediation-rail-count">04 ITEMS</span>
+        </div>
+
+        <div data-hf-id="hf-5oa6" data-frame-part="09-delay-remediation-evidence-list">
+          <div data-hf-id="hf-s91a" id="09-delay-remediation-item-root-cause" data-evidence-item="root-cause">
+            <span data-hf-id="hf-ok7i" data-frame-part="09-delay-remediation-check-ring">
+              <svg data-hf-id="hf-lrfs" data-frame-part="09-delay-remediation-check-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path data-hf-id="hf-7lfm" id="09-delay-remediation-check-root-cause" data-frame-part="09-delay-remediation-check-path" d="M4 12.5 L9.2 17.2 L20 6.8" />
+              </svg>
+            </span>
+            <span data-hf-id="hf-pw72" data-frame-part="09-delay-remediation-evidence-title">根因</span>
+            <span data-hf-id="hf-sj1t" data-frame-part="09-delay-remediation-evidence-state">已校验</span>
+          </div>
+
+          <div data-hf-id="hf-ay98" id="09-delay-remediation-item-remediation" data-evidence-item="remediation">
+            <span data-hf-id="hf-zn0y" data-frame-part="09-delay-remediation-check-ring">
+              <svg data-hf-id="hf-t1cw" data-frame-part="09-delay-remediation-check-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path data-hf-id="hf-hvmb" id="09-delay-remediation-check-remediation" data-frame-part="09-delay-remediation-check-path" d="M4 12.5 L9.2 17.2 L20 6.8" />
+              </svg>
+            </span>
+            <span data-hf-id="hf-srfr" data-frame-part="09-delay-remediation-evidence-title">整改证据</span>
+            <span data-hf-id="hf-n9et" data-frame-part="09-delay-remediation-evidence-state">已校验</span>
+          </div>
+
+          <div data-hf-id="hf-w7sa" id="09-delay-remediation-item-verifier" data-evidence-item="verifier">
+            <span data-hf-id="hf-01bz" data-frame-part="09-delay-remediation-check-ring">
+              <svg data-hf-id="hf-ruft" data-frame-part="09-delay-remediation-check-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path data-hf-id="hf-d1ay" id="09-delay-remediation-check-verifier" data-frame-part="09-delay-remediation-check-path" d="M4 12.5 L9.2 17.2 L20 6.8" />
+              </svg>
+            </span>
+            <span data-hf-id="hf-tvgu" data-frame-part="09-delay-remediation-evidence-title">验证人</span>
+            <span data-hf-id="hf-ogbw" data-frame-part="09-delay-remediation-evidence-state">已校验</span>
+          </div>
+
+          <div data-hf-id="hf-o7tc" id="09-delay-remediation-item-time" data-evidence-item="validation-time">
+            <span data-hf-id="hf-0fn0" data-frame-part="09-delay-remediation-check-ring">
+              <svg data-hf-id="hf-s8qu" data-frame-part="09-delay-remediation-check-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path data-hf-id="hf-b5gb" id="09-delay-remediation-check-time" data-frame-part="09-delay-remediation-check-path" d="M4 12.5 L9.2 17.2 L20 6.8" />
+              </svg>
+            </span>
+            <span data-hf-id="hf-p7lu" data-frame-part="09-delay-remediation-evidence-title">验证时间</span>
+            <span data-hf-id="hf-o20v" data-frame-part="09-delay-remediation-evidence-state">已校验</span>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-9am2" id="09-delay-remediation-final-lock" data-frame-part="09-delay-remediation-final-lock">
+          <span data-hf-id="hf-evhq" data-frame-part="09-delay-remediation-final-lock-mark">✓</span>
+          独立验证完成
+        </div>
+      </aside>
+
+      <div data-hf-id="hf-enld" data-frame-part="09-delay-remediation-progress-track">
+        <span data-hf-id="hf-bug5" id="09-delay-remediation-progress-fill" data-frame-part="09-delay-remediation-progress-fill"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (() => {
+      const frame = document.querySelector('[data-composition-id="09-delay-remediation"]');
+      if (!frame || typeof gsap === "undefined") return;
+
+      window.__timelines = window.__timelines || {};
+      const timeline = gsap.timeline({ paused: true });
+      window.__timelines["09-delay-remediation"] = timeline;
+
+      const findById = (id) => document.getElementById(id);
+      const pageShell = findById("09-delay-remediation-page-shell");
+      const pageContent = findById("09-delay-remediation-page-content");
+      const focusBox = findById("09-delay-remediation-focus-box");
+      const auditRecord = findById("09-delay-remediation-audit-record");
+      const finalLock = findById("09-delay-remediation-final-lock");
+      const progressFill = findById("09-delay-remediation-progress-fill");
+
+      const content = [
+        { key: "root-cause", body: "根因字段", hold: 0.9 },
+        { key: "remediation", body: "整改证据字段", hold: 0.9 },
+        { key: "verifier", body: "验证人", hold: 0 },
+        { key: "time", body: "验证时间", hold: 0.6 },
+      ];
+
+      const baseDuration = 1.3;
+      const secondsPerCharacter = 0.05;
+      let cumulative = 2.207;
+      const evidenceTimeline = content.map((entry, index) => {
+        const start = cumulative;
+        const duration = baseDuration + entry.body.length * secondsPerCharacter + entry.hold;
+        cumulative += duration;
+        return { ...entry, index, start, end: cumulative };
+      });
+
+      const drawablePaths = frame.querySelectorAll(
+        '[data-frame-part="09-delay-remediation-connector-path"], [data-frame-part="09-delay-remediation-check-path"]',
+      );
+      drawablePaths.forEach((path) => {
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = `${length}`;
+        path.style.strokeDashoffset = `${length}`;
+      });
+
+      timeline.fromTo(
+        pageShell,
+        { opacity: 0.72 },
+        { opacity: 1, duration: 0.46, ease: "power2.out" },
+        0.04,
+      );
+      timeline.fromTo(
+        frame.querySelector('[data-frame-part="09-delay-remediation-header"]'),
+        { opacity: 0, y: -14 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+        0.08,
+      );
+      timeline.fromTo(
+        frame.querySelector('[data-frame-part="09-delay-remediation-status"]'),
+        { opacity: 0, x: 20 },
+        { opacity: 1, x: 0, duration: 0.42, ease: "power2.out" },
+        0.32,
+      );
+      timeline.to(
+        pageContent,
+        { y: -128, duration: 1.55, ease: "power3.out" },
+        0.52,
+      );
+      timeline.fromTo(
+        frame.querySelector('[data-frame-part="09-delay-remediation-rail"]'),
+        { opacity: 0, x: 24 },
+        { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" },
+        1.62,
+      );
+      timeline.fromTo(
+        focusBox,
+        { opacity: 0, y: 0 },
+        { opacity: 1, y: 0, duration: 0.42, ease: "power1.out" },
+        2.207,
+      );
+
+      evidenceTimeline.forEach((entry) => {
+        const item = findById(`09-delay-remediation-item-${entry.key}`);
+        const connector = findById(`09-delay-remediation-connector-${entry.index + 1}`);
+        const anchor = findById(`09-delay-remediation-anchor-${entry.index + 1}`);
+        const check = findById(`09-delay-remediation-check-${entry.key}`);
+
+        timeline.fromTo(
+          item,
+          { opacity: 0, x: 28 },
+          { opacity: 1, x: 0, duration: 0.52, ease: "power2.out" },
+          entry.start,
+        );
+        timeline.fromTo(
+          anchor,
+          { opacity: 0, scale: 0.5, transformOrigin: "center center" },
+          { opacity: 1, scale: 1, duration: 0.34, ease: "power2.out" },
+          entry.start + 0.08,
+        );
+        timeline.to(
+          connector,
+          { strokeDashoffset: 0, duration: 0.62, ease: "power2.out" },
+          entry.start + 0.12,
+        );
+        timeline.to(
+          check,
+          { strokeDashoffset: 0, duration: 0.46, ease: "power2.out" },
+          entry.start + 0.44,
+        );
+      });
+
+      timeline.to(
+        focusBox,
+        { y: 112, duration: 0.72, ease: "power2.inOut" },
+        4.625,
+      );
+      timeline.to(
+        focusBox,
+        { y: 226, duration: 0.72, ease: "power2.inOut" },
+        7.148,
+      );
+      timeline.to(
+        focusBox,
+        { y: 326, duration: 0.68, ease: "power2.inOut" },
+        8.48,
+      );
+      timeline.fromTo(
+        auditRecord,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" },
+        9.356,
+      );
+      timeline.fromTo(
+        finalLock,
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.64, ease: "power1.out" },
+        9.72,
+      );
+      timeline.to(
+        progressFill,
+        { width: "100%", duration: 11.1, ease: "none" },
+        0.18,
+      );
+    })();
+  </script>
+</template>

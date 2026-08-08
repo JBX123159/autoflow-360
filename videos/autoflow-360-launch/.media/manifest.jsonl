@@ -1,0 +1,10 @@
+{"id":"icon_001","type":"icon","path":"assets/brand/autoflow-360-logo.svg","source":"existing","description":"autoflow 360 logo","provenance":{"provider":"local","adopted":true}}
+{"id":"image_001","type":"image","path":"assets/product/01-workbench-overview.png","source":"existing","description":"01 workbench overview","width":1440,"height":900,"provenance":{"provider":"local","adopted":true}}
+{"id":"image_002","type":"image","path":"assets/product/02-normal-project.png","source":"existing","description":"02 normal project","width":1440,"height":900,"provenance":{"provider":"local","adopted":true}}
+{"id":"image_003","type":"image","path":"assets/product/03-supplier-delay.png","source":"existing","description":"03 supplier delay","width":1440,"height":900,"provenance":{"provider":"local","adopted":true}}
+{"id":"image_004","type":"image","path":"assets/product/04-resample.png","source":"existing","description":"04 resample","width":1440,"height":900,"provenance":{"provider":"local","adopted":true}}
+{"id":"image_005","type":"image","path":"assets/product/05-management-cockpit.png","source":"existing","description":"05 management cockpit","width":1440,"height":900,"provenance":{"provider":"local","adopted":true}}
+{"id":"image_006","type":"image","path":"assets/product/06-mobile-workbench.png","source":"existing","description":"06 mobile workbench","width":390,"height":844,"provenance":{"provider":"local","adopted":true}}
+{"id":"image_007","type":"image","path":"assets/product/07-project-portfolio.png","source":"existing","description":"07 project portfolio","width":1440,"height":900,"provenance":{"provider":"local","adopted":true}}
+{"id":"image_008","type":"image","path":"assets/product/08-normal-finance-closure.png","source":"existing","description":"08 normal finance closure","width":1440,"height":900,"provenance":{"provider":"local","adopted":true}}
+{"id":"image_009","type":"image","path":"assets/product/09-delay-remediation.png","source":"existing","description":"09 delay remediation","width":1440,"height":900,"provenance":{"provider":"local","adopted":true}}

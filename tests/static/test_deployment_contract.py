@@ -121,7 +121,7 @@ class DeploymentContractTest(unittest.TestCase):
         self.assertIn("AUTOFLOW_RUNTIME=.runtime/frappe_docker", content)
         self.assertIn("AUTOFLOW_WSL_DISTRO=Ubuntu", content)
         self.assertNotIn("AUTOFLOW_DB_ROOT_PASSWORD", content)
-        self.assertNotIn("294367704", content)
+        self.assertNotIn("@qq.com", content)
         self.assertNotIn("MYSQL_ROOT_PASSWORD", content)
 
     def test_bootstrap_uses_safe_config_and_current_toolchain(self):

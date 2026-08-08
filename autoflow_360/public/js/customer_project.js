@@ -80,9 +80,34 @@ function finalizeClosure(frm) {
 	dialog.show();
 }
 
+function openProjectPanorama(frm, section) {
+	frappe.route_options = {
+		project: frm.doc.name,
+		section,
+	};
+	frappe.set_route("autoflow-workbench");
+}
+
+function addProjectPanoramaEntries(frm) {
+	const group = __("Project Panorama");
+	for (const [label, section] of [
+		[__("打开项目全景"), "overview"],
+		[__("关联单据"), "documents"],
+		[__("风险与异常"), "exceptions"],
+		[__("AI 分析"), "ai"],
+		[__("操作记录"), "audit"],
+	]) {
+		frm.add_custom_button(label, () => openProjectPanorama(frm, section), group);
+	}
+}
+
 frappe.ui.form.on("Customer Project", {
 	async refresh(frm) {
-		if (frm.is_new() || ["暂停", "失败", "取消", "已结项"].includes(frm.doc.stage)) {
+		if (frm.is_new()) {
+			return;
+		}
+		addProjectPanoramaEntries(frm);
+		if (["暂停", "失败", "取消", "已结项"].includes(frm.doc.stage)) {
 			return;
 		}
 		frm.add_custom_button(__("Check Closure Readiness"), async () => {

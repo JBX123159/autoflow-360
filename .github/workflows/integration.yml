@@ -1,0 +1,167 @@
+name: Frappe integration and browser flows
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integration-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      AUTOFLOW_SITE: autoflow.test
+      AUTOFLOW_RUNTIME: .runtime/frappe_docker
+      GITHUB_WORKSPACE: ${{ github.workspace }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: tests/e2e/package-lock.json
+
+      - name: Generate an ephemeral administrator password
+        shell: bash
+        run: |
+          password="$(python3 -c 'import secrets; print(secrets.token_urlsafe(36))')"
+          echo "::add-mask::${password}"
+          printf 'AUTOFLOW_ADMIN_PASSWORD=%s\n' "${password}" >> "${GITHUB_ENV}"
+          printf 'AUTOFLOW_E2E_PASSWORD=%s\n' "${password}" >> "${GITHUB_ENV}"
+
+      - name: Check out locked frappe_docker
+        shell: bash
+        run: |
+          mkdir -p .runtime/frappe_docker
+          git -C .runtime/frappe_docker init
+          git -C .runtime/frappe_docker remote add origin https://github.com/frappe/frappe_docker
+          git -C .runtime/frappe_docker fetch --depth 1 origin f137f05d799a6a00d203b4c0d316a8f475e51778
+          git -C .runtime/frappe_docker checkout --detach f137f05d799a6a00d203b4c0d316a8f475e51778
+
+      - name: Start development services
+        shell: bash
+        run: |
+          docker compose \
+            -f .runtime/frappe_docker/devcontainer-example/docker-compose.yml \
+            -f deploy/ci/compose.autoflow.yaml \
+            up -d
+
+      - name: Bootstrap the locked application stack
+        shell: bash
+        run: |
+          docker compose \
+            -f .runtime/frappe_docker/devcontainer-example/docker-compose.yml \
+            -f deploy/ci/compose.autoflow.yaml \
+            exec -T \
+            -e AUTOFLOW_SITE \
+            -e AUTOFLOW_ADMIN_PASSWORD \
+            frappe bash /workspace/autoflow_360/scripts/bootstrap-container.sh
+
+      - name: Run Frappe integration tests
+        shell: bash
+        run: |
+          docker compose \
+            -f .runtime/frappe_docker/devcontainer-example/docker-compose.yml \
+            -f deploy/ci/compose.autoflow.yaml \
+            exec -T frappe bash -lc '
+              set -euo pipefail
+              cd /workspace/development/frappe-bench
+              bench --site autoflow.test set-config allow_tests true
+              bench --site autoflow.test run-tests --app autoflow_360
+            '
+
+      - name: Seed the three synthetic demo scenarios
+        shell: bash
+        run: |
+          docker compose \
+            -f .runtime/frappe_docker/devcontainer-example/docker-compose.yml \
+            -f deploy/ci/compose.autoflow.yaml \
+            exec -T frappe bash -lc '
+              cd /workspace/development/frappe-bench
+              bench --site autoflow.test execute autoflow_360.demo.seed.seed_demo_data
+            '
+
+      - name: Start the Frappe web process
+        shell: bash
+        run: |
+          sudo sh -c 'printf "127.0.0.1 autoflow.test\n" >> /etc/hosts'
+          docker compose \
+            -f .runtime/frappe_docker/devcontainer-example/docker-compose.yml \
+            -f deploy/ci/compose.autoflow.yaml \
+            exec -d frappe bash -lc '
+              cd /workspace/development/frappe-bench
+              exec bench start > /tmp/autoflow-bench.log 2>&1
+            '
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent --show-error http://autoflow.test:8000/api/method/ping >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Frappe web process did not become healthy." >&2
+          exit 1
+
+      - name: Install Playwright
+        working-directory: tests/e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Run three browser workflows
+        working-directory: tests/e2e
+        env:
+          AUTOFLOW_E2E_BASE_URL: http://autoflow.test:8000
+        run: npx playwright test
+
+      - name: Run reproducible scale and performance checks
+        shell: bash
+        run: |
+          docker compose \
+            -f .runtime/frappe_docker/devcontainer-example/docker-compose.yml \
+            -f deploy/ci/compose.autoflow.yaml \
+            exec -T frappe bash -lc '
+              cd /workspace/development/frappe-bench
+              bench --site autoflow.test execute autoflow_360.performance.generate_scale.generate
+              bench --site autoflow.test execute autoflow_360.performance.measure.measure
+            '
+
+      - name: Copy safe process log on failure
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p ci-artifacts
+          docker compose \
+            -f .runtime/frappe_docker/devcontainer-example/docker-compose.yml \
+            -f deploy/ci/compose.autoflow.yaml \
+            cp frappe:/tmp/autoflow-bench.log ci-artifacts/autoflow-bench.log || true
+
+      - name: Upload test and performance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: autoflow-integration-${{ github.run_id }}
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            docs/test-report/performance.json
+            tests/e2e/playwright-report/
+            tests/e2e/test-results/
+            ci-artifacts/
+
+      - name: Stop integration services
+        if: always()
+        shell: bash
+        run: |
+          docker compose \
+            -f .runtime/frappe_docker/devcontainer-example/docker-compose.yml \
+            -f deploy/ci/compose.autoflow.yaml \
+            down -v --remove-orphans

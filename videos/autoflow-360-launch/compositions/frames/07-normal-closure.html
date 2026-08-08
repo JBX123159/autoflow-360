@@ -1,0 +1,620 @@
+<template>
+  <style>
+    @font-face {
+      font-family: NotoSansSC;
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: NotoSansSC;
+      color: #20242b;
+    }
+
+    .clip {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    #root [data-part="07-normal-closure-ground"] {
+      background: #f7f9fc;
+    }
+
+    #root [data-part="07-normal-closure-scene"] {
+      width: 1920px;
+      height: 896px;
+      background: #f7f9fc;
+    }
+
+    #root [id="07-normal-closure-camera"] {
+      position: absolute;
+      inset: 0;
+      overflow: visible;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    #root [id="07-normal-closure-surface"] {
+      position: absolute;
+      left: 0;
+      top: -100px;
+      width: 1920px;
+      height: 1203px;
+      will-change: transform;
+    }
+
+    #root [data-part="07-normal-closure-product-image"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      filter: brightness(0.92) saturate(0.96);
+    }
+
+    #root [data-part="07-normal-closure-image-wash"] {
+      position: absolute;
+      inset: 0;
+      background: rgba(247, 249, 252, 0.08);
+      pointer-events: none;
+    }
+
+    #root [id="07-normal-closure-title"] {
+      position: absolute;
+      left: 94px;
+      top: 184px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 14px 24px 15px 18px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: rgba(247, 249, 252, 0.94);
+      color: #20242b;
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    #root [data-part="07-normal-closure-title-dot"] {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2563b8;
+    }
+
+    #root [data-part="07-normal-closure-route"] {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1203px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    #root [data-part="07-normal-closure-route-segment"],
+    #root [data-part="07-normal-closure-converge-line"] {
+      fill: none;
+      stroke: #2563b8;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 1;
+      vector-effect: non-scaling-stroke;
+    }
+
+    #root [data-part="07-normal-closure-converge-line"] {
+      stroke-width: 3;
+      opacity: 0.68;
+    }
+
+    #root [data-part="07-normal-closure-marker"] {
+      position: absolute;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      border: 4px solid #2563b8;
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    #root [data-part="07-normal-closure-marker-label"] {
+      margin: 10px 10px 0 0;
+      padding: 8px 16px;
+      border-radius: 100px;
+      background: #2563b8;
+      color: #f7f9fc;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    #root [id="07-normal-closure-delivery-target"] {
+      left: 631px;
+      top: 377px;
+      width: 420px;
+      height: 88px;
+    }
+
+    #root [id="07-normal-closure-invoice-target"] {
+      left: 631px;
+      top: 540px;
+      width: 420px;
+      height: 88px;
+    }
+
+    #root [id="07-normal-closure-payment-target"] {
+      left: 631px;
+      top: 627px;
+      width: 420px;
+      height: 88px;
+    }
+
+    #root [id="07-normal-closure-summary-target"] {
+      position: absolute;
+      left: 620px;
+      top: 736px;
+      width: 860px;
+      height: 220px;
+      pointer-events: none;
+    }
+
+    #root [id="07-normal-closure-summary-panel"] {
+      position: absolute;
+      left: 620px;
+      top: 736px;
+      width: 860px;
+      height: 220px;
+      display: grid;
+      grid-template-columns: 60fr 40fr;
+      overflow: hidden;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(247, 249, 252, 0.96);
+    }
+
+    #root [data-part="07-normal-closure-zero-zone"] {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      padding: 28px 40px 30px 42px;
+      border-right: 1.5px solid rgba(37, 99, 184, 0.18);
+    }
+
+    #root [data-part="07-normal-closure-zero-copy"] {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #root [data-part="07-normal-closure-eyebrow"] {
+      color: #2563b8;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+    }
+
+    #root [data-part="07-normal-closure-zero-label"] {
+      color: #667085;
+      font-size: 27px;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    #root [id="07-normal-closure-zero"] {
+      color: #2563b8;
+      font-size: 126px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.04em;
+      line-height: 0.9;
+    }
+
+    #root [data-part="07-normal-closure-proof-zone"] {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      padding: 26px 34px;
+      background: rgba(37, 99, 184, 0.05);
+    }
+
+    #root [data-part="07-normal-closure-proof-header"] {
+      color: #667085;
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    #root [id="07-normal-closure-sequence-label"] {
+      min-height: 48px;
+      color: #20242b;
+      font-size: 30px;
+      font-weight: 600;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    #root [data-part="07-normal-closure-proof-track"] {
+      width: 100%;
+      height: 10px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: rgba(37, 99, 184, 0.10);
+    }
+
+    #root [id="07-normal-closure-proof-fill"] {
+      display: block;
+      width: 0%;
+      height: 100%;
+      border-radius: 6px;
+      background: #2563b8;
+    }
+
+    #root [data-part="07-normal-closure-mini-evidence"] {
+      position: absolute;
+      right: 30px;
+      top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    #root [data-part="07-normal-closure-mini-chip"] {
+      padding: 7px 13px;
+      border: 1px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    #root [id="07-normal-closure-audit-target"] {
+      position: absolute;
+      left: 1136px;
+      top: 752px;
+      width: 332px;
+      height: 190px;
+      border: 4px solid #2563b8;
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    #root [id="07-normal-closure-stamp"] {
+      position: absolute;
+      left: 1186px;
+      top: 797px;
+      width: 232px;
+      height: 100px;
+      display: grid;
+      place-items: center;
+      border: 5px solid #2563b8;
+      border-radius: 100px;
+      background: rgba(247, 249, 252, 0.97);
+      color: #2563b8;
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+  </style>
+
+  <div data-hf-id="hf-rgnk" id="root" data-composition-id="07-normal-closure" data-start="0" data-duration="10.775" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-hzr0" class="clip" data-part="07-normal-closure-ground" data-start="0" data-duration="10.775" data-track-index="0"></div>
+
+    <div data-hf-id="hf-0ggm" class="clip" data-part="07-normal-closure-scene" data-start="0" data-duration="10.775" data-track-index="1">
+      <div data-hf-id="hf-4ljq" id="07-normal-closure-camera">
+        <div data-hf-id="hf-oqcg" id="07-normal-closure-surface">
+          <img data-hf-id="hf-qqr9" data-part="07-normal-closure-product-image" src="assets/product/08-normal-finance-closure.png" alt="AutoFlow 360 财务结项界面">
+          <div data-hf-id="hf-20q5" data-part="07-normal-closure-image-wash"></div>
+
+          <div data-hf-id="hf-yk9b" id="07-normal-closure-title">
+            <span data-hf-id="hf-pgm3" data-part="07-normal-closure-title-dot"></span>
+            <span data-hf-id="hf-1pu4">交付之后</span>
+          </div>
+
+          <svg data-hf-id="hf-jcdm" data-part="07-normal-closure-route" viewBox="0 0 1920 1203" aria-hidden="true">
+            <path data-hf-id="hf-z2x2" id="07-normal-closure-route-1" data-part="07-normal-closure-route-segment" pathLength="1" d="M 841 421 L 841 585" />
+            <path data-hf-id="hf-9wmu" id="07-normal-closure-route-2" data-part="07-normal-closure-route-segment" pathLength="1" d="M 841 585 L 841 671" />
+            <path data-hf-id="hf-q2pp" id="07-normal-closure-route-3" data-part="07-normal-closure-route-segment" pathLength="1" d="M 841 671 C 841 730 872 785 882 846" />
+            <path data-hf-id="hf-m460" id="07-normal-closure-route-4" data-part="07-normal-closure-route-segment" pathLength="1" d="M 882 846 C 1012 846 1150 846 1302 846" />
+            <path data-hf-id="hf-eo10" id="07-normal-closure-converge-1" data-part="07-normal-closure-converge-line" pathLength="1" d="M 841 421 L 1302 846" />
+            <path data-hf-id="hf-5bfq" id="07-normal-closure-converge-2" data-part="07-normal-closure-converge-line" pathLength="1" d="M 841 585 L 1302 846" />
+            <path data-hf-id="hf-2ukf" id="07-normal-closure-converge-3" data-part="07-normal-closure-converge-line" pathLength="1" d="M 841 671 L 1302 846" />
+            <path data-hf-id="hf-okjx" id="07-normal-closure-converge-4" data-part="07-normal-closure-converge-line" pathLength="1" d="M 882 846 L 1302 846" />
+          </svg>
+
+          <div data-hf-id="hf-jf4k" id="07-normal-closure-delivery-target" data-part="07-normal-closure-marker">
+            <span data-hf-id="hf-bg63" data-part="07-normal-closure-marker-label">已收货</span>
+          </div>
+
+          <div data-hf-id="hf-wtxn" id="07-normal-closure-invoice-target" data-part="07-normal-closure-marker">
+            <span data-hf-id="hf-klp2" data-part="07-normal-closure-marker-label">已付款</span>
+          </div>
+
+          <div data-hf-id="hf-vig2" id="07-normal-closure-payment-target" data-part="07-normal-closure-marker">
+            <span data-hf-id="hf-ms9s" data-part="07-normal-closure-marker-label">已提交</span>
+          </div>
+
+          <div data-hf-id="hf-6iit" id="07-normal-closure-summary-target"></div>
+          <div data-hf-id="hf-0j18" id="07-normal-closure-summary-panel">
+            <div data-hf-id="hf-ms25" data-part="07-normal-closure-zero-zone">
+              <div data-hf-id="hf-ledg" data-part="07-normal-closure-zero-copy">
+                <span data-hf-id="hf-qhx5" data-part="07-normal-closure-eyebrow">业务异常</span>
+                <span data-hf-id="hf-16ku" data-part="07-normal-closure-zero-label">零异常</span>
+              </div>
+              <span data-hf-id="hf-clsm" id="07-normal-closure-zero">0</span>
+            </div>
+            <div data-hf-id="hf-xwg1" data-part="07-normal-closure-proof-zone">
+              <span data-hf-id="hf-c8xl" data-part="07-normal-closure-proof-header" data-layout-allow-occlusion="">证据轨迹</span>
+              <span data-hf-id="hf-85wt" id="07-normal-closure-sequence-label" data-layout-allow-overlap="" data-layout-allow-occlusion="">真实交付</span>
+              <span data-hf-id="hf-vg9f" data-part="07-normal-closure-proof-track">
+                <span data-hf-id="hf-g2o0" id="07-normal-closure-proof-fill"></span>
+              </span>
+            </div>
+            <div data-hf-id="hf-d57x" data-part="07-normal-closure-mini-evidence">
+              <span data-hf-id="hf-29hr" id="07-normal-closure-mini-paid" data-part="07-normal-closure-mini-chip">已付款</span>
+              <span data-hf-id="hf-6esc" id="07-normal-closure-mini-submitted" data-part="07-normal-closure-mini-chip">已提交</span>
+            </div>
+          </div>
+
+          <div data-hf-id="hf-3056" id="07-normal-closure-audit-target"></div>
+          <div data-hf-id="hf-1zfl" id="07-normal-closure-stamp">可结项</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="07-normal-closure"]');
+      if (!root || typeof gsap === "undefined") return;
+
+      const scene = root.querySelector('[data-part="07-normal-closure-scene"]');
+      const camera = root.querySelector('[id="07-normal-closure-camera"]');
+      const surface = root.querySelector('[id="07-normal-closure-surface"]');
+      const deliveryTarget = root.querySelector('[id="07-normal-closure-delivery-target"]');
+      const invoiceTarget = root.querySelector('[id="07-normal-closure-invoice-target"]');
+      const paymentTarget = root.querySelector('[id="07-normal-closure-payment-target"]');
+      const summaryTarget = root.querySelector('[id="07-normal-closure-summary-target"]');
+      const auditTarget = root.querySelector('[id="07-normal-closure-audit-target"]');
+      const sequenceLabel = root.querySelector('[id="07-normal-closure-sequence-label"]');
+      const proofFill = root.querySelector('[id="07-normal-closure-proof-fill"]');
+
+      if (
+        !scene ||
+        !camera ||
+        !surface ||
+        !deliveryTarget ||
+        !invoiceTarget ||
+        !paymentTarget ||
+        !summaryTarget ||
+        !auditTarget ||
+        !sequenceLabel ||
+        !proofFill
+      ) return;
+
+      const measureCounter = (target) => {
+        const sceneRect = scene.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const scaleX = sceneRect.width / 1920 || 1;
+        const scaleY = sceneRect.height / 896 || 1;
+        const offsetX = targetRect.left + targetRect.width / 2 - (sceneRect.left + sceneRect.width / 2);
+        const offsetY = targetRect.top + targetRect.height / 2 - (sceneRect.top + sceneRect.height / 2);
+        return { x: -offsetX / scaleX, y: -offsetY / scaleY };
+      };
+
+      const invoiceCounter = measureCounter(invoiceTarget);
+      const paymentCounter = measureCounter(paymentTarget);
+      const summaryCounter = measureCounter(summaryTarget);
+      const auditCounter = measureCounter(auditTarget);
+
+      const content = [
+        { label: "真实交付", body: "收货", hold: 0.22 },
+        { label: "发票回款", body: "付款", hold: 0.22 },
+        { label: "审计留痕", body: "记录", hold: 0.22 },
+      ];
+      const baseDuration = 0.28;
+      const secondsPerCharacter = 0.04;
+      let cumulative = 0;
+      const contentTimeline = content.map((entry) => {
+        const duration = baseDuration + entry.body.length * secondsPerCharacter + entry.hold;
+        const start = cumulative;
+        cumulative += duration;
+        return { ...entry, start, end: cumulative };
+      });
+      const entryAt = (time) => {
+        for (let index = contentTimeline.length - 1; index >= 0; index -= 1) {
+          if (time >= contentTimeline[index].start) return contentTimeline[index];
+        }
+        return contentTimeline[0];
+      };
+
+      const timeline = gsap.timeline({ paused: true });
+      const phase = { scale: 0.99 };
+      const drift = { progress: 0 };
+
+      timeline.to(
+        drift,
+        {
+          progress: Math.PI * 2 * 1.4,
+          duration: 10.325,
+          ease: "none",
+          onUpdate: () => {
+            const driftX = Math.sin(drift.progress) * 3;
+            const driftY = Math.sin(drift.progress * 1.31) * 2;
+            camera.style.transform = `scale(${phase.scale}) translate(${driftX}px, ${driftY}px)`;
+          },
+        },
+        0,
+      );
+
+      timeline.fromTo(
+        root.querySelector('[id="07-normal-closure-title"]'),
+        { opacity: 0, x: -32 },
+        { opacity: 1, x: 0, duration: 0.48, ease: "power2.out" },
+        0.08,
+      );
+      timeline.fromTo(
+        deliveryTarget,
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" },
+        0.28,
+      );
+
+      timeline.to(phase, { scale: 1.18, duration: 1.3, ease: "power3.inOut" }, 2.151);
+      timeline.fromTo(
+        surface,
+        { x: 0, y: 0 },
+        { x: invoiceCounter.x, y: invoiceCounter.y, duration: 1.3, ease: "power3.inOut" },
+        2.151,
+      );
+      timeline.fromTo(
+        root.querySelector('[id="07-normal-closure-route-1"]'),
+        { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.9, ease: "power2.out" },
+        2.55,
+      );
+      timeline.fromTo(
+        invoiceTarget,
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.52, ease: "power2.out" },
+        3.38,
+      );
+
+      timeline.to(phase, { scale: 1.22, duration: 1.24, ease: "power3.inOut" }, 4.56);
+      timeline.to(
+        surface,
+        { x: paymentCounter.x, y: paymentCounter.y, duration: 1.24, ease: "power3.inOut" },
+        4.56,
+      );
+      timeline.fromTo(
+        root.querySelector('[id="07-normal-closure-route-2"]'),
+        { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.82, ease: "power2.out" },
+        4.92,
+      );
+      timeline.fromTo(
+        paymentTarget,
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" },
+        5.62,
+      );
+
+      timeline.to(phase, { scale: 1.25, duration: 1.18, ease: "power3.inOut" }, 6.883);
+      timeline.to(
+        surface,
+        { x: summaryCounter.x, y: summaryCounter.y, duration: 1.18, ease: "power3.inOut" },
+        6.883,
+      );
+      timeline.fromTo(
+        root.querySelector('[id="07-normal-closure-route-3"]'),
+        { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.82, ease: "power2.out" },
+        6.94,
+      );
+      timeline.fromTo(
+        root.querySelector('[id="07-normal-closure-summary-panel"]'),
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.62, ease: "power2.out" },
+        7.12,
+      );
+      timeline.fromTo(
+        root.querySelector('[id="07-normal-closure-zero"]'),
+        { opacity: 0, scale: 0.72 },
+        { opacity: 1, scale: 1, duration: 0.82, ease: "power3.out" },
+        7.52,
+      );
+      timeline.fromTo(
+        [
+          root.querySelector('[id="07-normal-closure-mini-paid"]'),
+          root.querySelector('[id="07-normal-closure-mini-submitted"]'),
+        ],
+        { opacity: 0, scale: 1.3 },
+        { opacity: 1, scale: 1, duration: 0.5, stagger: 0.16, ease: "power2.out" },
+        7.82,
+      );
+
+      const sequenceDriver = { time: 0 };
+      let lastLabel = "";
+      timeline.to(
+        sequenceDriver,
+        {
+          time: cumulative,
+          duration: cumulative,
+          ease: "none",
+          onUpdate: () => {
+            const entry = entryAt(sequenceDriver.time);
+            if (entry.label !== lastLabel) {
+              sequenceLabel.textContent = entry.label;
+              lastLabel = entry.label;
+            }
+            proofFill.style.width = `${Math.min(100, (sequenceDriver.time / cumulative) * 100)}%`;
+          },
+        },
+        6.94,
+      );
+
+      timeline.to(phase, { scale: 1.32, duration: 0.92, ease: "power3.inOut" }, 9.034);
+      timeline.to(
+        surface,
+        { x: auditCounter.x, y: auditCounter.y, duration: 0.92, ease: "power3.inOut" },
+        9.034,
+      );
+      timeline.fromTo(
+        root.querySelector('[id="07-normal-closure-route-4"]'),
+        { strokeDashoffset: 1 },
+        { strokeDashoffset: 0, duration: 0.54, ease: "power2.out" },
+        9.08,
+      );
+      timeline.fromTo(
+        [
+          root.querySelector('[id="07-normal-closure-converge-1"]'),
+          root.querySelector('[id="07-normal-closure-converge-2"]'),
+          root.querySelector('[id="07-normal-closure-converge-3"]'),
+          root.querySelector('[id="07-normal-closure-converge-4"]'),
+        ],
+        { strokeDashoffset: 1, opacity: 0 },
+        {
+          strokeDashoffset: 0,
+          opacity: 0.68,
+          duration: 0.52,
+          stagger: 0.06,
+          ease: "power2.out",
+        },
+        9.24,
+      );
+      timeline.fromTo(
+        auditTarget,
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.42, ease: "power2.out" },
+        9.38,
+      );
+      timeline.fromTo(
+        root.querySelector('[id="07-normal-closure-stamp"]'),
+        { opacity: 0, scale: 1.28 },
+        { opacity: 1, scale: 1, duration: 0.55, ease: "power3.out" },
+        9.64,
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["07-normal-closure"] = timeline;
+    })();
+  </script>
+</template>

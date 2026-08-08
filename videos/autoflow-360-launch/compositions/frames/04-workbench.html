@@ -1,0 +1,389 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "NotoSansSC";
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #20242b;
+      font-family: "NotoSansSC";
+    }
+
+    #root * {
+      box-sizing: border-box;
+    }
+
+    #root [class~="04-workbench-bg"] {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(37, 99, 184, 0.045) 0%, rgba(37, 99, 184, 0) 46%),
+        #f7f9fc;
+    }
+
+    #root [class~="04-workbench-scene"] {
+      position: absolute;
+      inset: 0 0 auto;
+      width: 1920px;
+      height: 896px;
+      overflow: hidden;
+    }
+
+    #root [class~="04-workbench-camera"] {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    #root [class~="04-workbench-focus-rail"] {
+      position: absolute;
+      inset: 0;
+      will-change: transform;
+    }
+
+    #root [class~="04-workbench-device"] {
+      position: absolute;
+      left: 72px;
+      top: 54px;
+      width: 1776px;
+      height: 792px;
+      overflow: hidden;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(37, 99, 184, 0.05);
+    }
+
+    #root [class~="04-workbench-screen"],
+    #root [class~="04-workbench-title-strip"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1776px;
+      height: auto;
+      display: block;
+      object-fit: contain;
+      object-position: 0 0;
+    }
+
+    #root [class~="04-workbench-screen"] {
+      opacity: 0.86;
+      filter: contrast(1.14) saturate(1.06);
+    }
+
+    #root [class~="04-workbench-title-strip"] {
+      opacity: 1;
+      filter: contrast(1.22) saturate(1.08);
+      clip-path: inset(0 0 85% 0);
+    }
+
+    #root [class~="04-workbench-device-edge"] {
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 13px;
+      pointer-events: none;
+    }
+
+    #root [class~="04-workbench-focus"] {
+      position: absolute;
+      z-index: 4;
+      border: 2px solid rgba(37, 99, 184, 0.82);
+      border-radius: 12px;
+      background: rgba(247, 249, 252, 0.06);
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+
+    #root [class~="04-workbench-focus-label"] {
+      position: absolute;
+      left: 14px;
+      top: -42px;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 14px 6px;
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    #root [class~="04-workbench-approval"] {
+      left: 652px;
+      top: 134px;
+      width: 395px;
+      height: 250px;
+    }
+
+    #root [class~="04-workbench-expiry"] {
+      left: 1057px;
+      top: 129px;
+      width: 407px;
+      height: 340px;
+    }
+
+    #root [class~="04-workbench-risk"] {
+      left: 1478px;
+      top: 128px;
+      width: 350px;
+      height: 350px;
+    }
+
+    #root [class~="04-workbench-ai"] {
+      left: 364px;
+      top: 535px;
+      width: 280px;
+      height: 102px;
+    }
+
+    #root [class~="04-workbench-ai-note"] {
+      position: absolute;
+      left: 14px;
+      top: 118px;
+      display: inline-flex;
+      align-items: center;
+      min-height: 40px;
+      padding: 7px 16px 8px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-left: 4px solid #2563b8;
+      border-radius: 12px;
+      background: rgba(37, 99, 184, 0.05);
+      color: #20242b;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    #root [class~="04-workbench-risk-glow"] {
+      position: absolute;
+      z-index: 3;
+      left: 1415px;
+      top: 70px;
+      width: 475px;
+      height: 465px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 50% 50%,
+        rgba(37, 99, 184, 0.30) 0%,
+        rgba(37, 99, 184, 0.14) 38%,
+        rgba(37, 99, 184, 0) 72%
+      );
+      transform-origin: 50% 50%;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    #root [class~="04-workbench-progress"] {
+      position: absolute;
+      left: 0;
+      top: 892px;
+      width: 549px;
+      height: 4px;
+      background: #2563b8;
+    }
+  </style>
+
+  <div data-hf-id="hf-mdq3" id="root" data-composition-id="04-workbench" data-start="0" data-duration="12.717" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-ta32" class="clip 04-workbench-bg" data-start="0" data-duration="12.717" data-track-index="0"></div>
+
+    <div data-hf-id="hf-7bae" class="clip 04-workbench-scene" data-start="0" data-duration="12.717" data-track-index="1">
+      <div data-hf-id="hf-74mu" id="04-workbench-camera" class="04-workbench-camera">
+        <div data-hf-id="hf-oy56" id="04-workbench-focus-rail" class="04-workbench-focus-rail">
+          <div data-hf-id="hf-sr90" id="04-workbench-device" class="04-workbench-device">
+            <img data-hf-id="hf-tyvx" class="04-workbench-screen" src="assets/product/01-workbench-overview.png" alt="AutoFlow 360 角色工作台">
+            <img data-hf-id="hf-fn2p" class="04-workbench-title-strip" src="assets/product/01-workbench-overview.png" alt="">
+            <div data-hf-id="hf-h0ub" class="04-workbench-device-edge"></div>
+          </div>
+
+          <div data-hf-id="hf-l236" id="04-workbench-risk-glow" class="04-workbench-risk-glow"></div>
+
+          <div data-hf-id="hf-jqej" id="04-workbench-approval" class="04-workbench-focus 04-workbench-approval">
+            <span data-hf-id="hf-ym2b" class="04-workbench-focus-label">待我审批</span>
+          </div>
+
+          <div data-hf-id="hf-sovf" id="04-workbench-expiry" class="04-workbench-focus 04-workbench-expiry">
+            <span data-hf-id="hf-8j1m" class="04-workbench-focus-label">七日节点</span>
+          </div>
+
+          <div data-hf-id="hf-17l7" id="04-workbench-risk" class="04-workbench-focus 04-workbench-risk">
+            <span data-hf-id="hf-9jrg" class="04-workbench-focus-label">高风险</span>
+          </div>
+
+          <div data-hf-id="hf-s6xp" id="04-workbench-ai" class="04-workbench-focus 04-workbench-ai">
+            <span data-hf-id="hf-p348" class="04-workbench-focus-label">AI · 默认关闭</span>
+            <span data-hf-id="hf-rdn1" class="04-workbench-ai-note">只读 · 默认关闭</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-lhfo" class="04-workbench-progress"></div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (() => {
+      const compositionId = "04-workbench";
+      const root = document.querySelector('[data-composition-id="04-workbench"]');
+      const scene = root.querySelector('[class~="04-workbench-scene"]');
+      const camera = document.getElementById("04-workbench-camera");
+      const focusRail = document.getElementById("04-workbench-focus-rail");
+      const device = document.getElementById("04-workbench-device");
+      const approval = document.getElementById("04-workbench-approval");
+      const expiry = document.getElementById("04-workbench-expiry");
+      const risk = document.getElementById("04-workbench-risk");
+      const ai = document.getElementById("04-workbench-ai");
+      const riskGlow = document.getElementById("04-workbench-risk-glow");
+
+      const sceneRect = scene.getBoundingClientRect();
+      const sceneCenterX = sceneRect.left + sceneRect.width / 2;
+      const sceneCenterY = sceneRect.top + sceneRect.height / 2;
+
+      const targetPlan = (element, desiredScale) => {
+        const rect = element.getBoundingClientRect();
+        const offsetX = rect.left + rect.width / 2 - sceneCenterX;
+        const offsetY = rect.top + rect.height / 2 - sceneCenterY;
+        const maxScale = Math.min(
+          (0.88 * sceneRect.width) / rect.width,
+          (0.88 * sceneRect.height) / rect.height,
+        );
+
+        return {
+          x: -offsetX,
+          y: -offsetY,
+          scale: Math.min(desiredScale, maxScale),
+        };
+      };
+
+      const approvalPlan = targetPlan(approval, 1.22);
+      const expiryPlan = targetPlan(expiry, 1.18);
+      const riskPlan = targetPlan(risk, 1.18);
+      const aiPlan = targetPlan(ai, 1.22);
+
+      const phase = { scale: 0.96 };
+      const drift = { p: 0 };
+      const timeline = gsap.timeline({ paused: true });
+
+      timeline.fromTo(
+        device,
+        { opacity: 0.64, y: 14 },
+        { opacity: 1, y: 0, duration: 0.52, ease: "power2.out" },
+        0,
+      );
+      timeline.to(phase, { scale: 1, duration: 1.45, ease: "power2.out" }, 0.2);
+
+      timeline.to(
+        phase,
+        { scale: approvalPlan.scale, duration: 1.35, ease: "power3.inOut" },
+        2.044,
+      );
+      timeline.to(
+        focusRail,
+        { x: approvalPlan.x, y: approvalPlan.y, duration: 1.35, ease: "power3.inOut" },
+        2.044,
+      );
+      timeline.fromTo(
+        approval,
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.56, ease: "power2.out" },
+        2.42,
+      );
+
+      timeline.to(
+        phase,
+        { scale: expiryPlan.scale, duration: 1.15, ease: "power2.inOut" },
+        5.111,
+      );
+      timeline.to(
+        focusRail,
+        { x: expiryPlan.x, y: expiryPlan.y, duration: 1.15, ease: "power2.inOut" },
+        5.111,
+      );
+      timeline.to(approval, { opacity: 0.24, duration: 0.46, ease: "power2.out" }, 5.111);
+      timeline.fromTo(
+        expiry,
+        { opacity: 0, scale: 0.97 },
+        { opacity: 1, scale: 1, duration: 0.58, ease: "power2.out" },
+        5.48,
+      );
+
+      timeline.to(
+        phase,
+        { scale: riskPlan.scale, duration: 1.08, ease: "power2.inOut" },
+        7.667,
+      );
+      timeline.to(
+        focusRail,
+        { x: riskPlan.x, y: riskPlan.y, duration: 1.08, ease: "power2.inOut" },
+        7.667,
+      );
+      timeline.to(expiry, { opacity: 0.24, duration: 0.44, ease: "power2.out" }, 7.667);
+      timeline.fromTo(
+        riskGlow,
+        { opacity: 0, scale: 0.82 },
+        { opacity: 0.3, scale: 1, duration: 0.86, ease: "power2.out" },
+        7.82,
+      );
+      timeline.fromTo(
+        risk,
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.62, ease: "power2.out" },
+        8.02,
+      );
+      timeline.to(risk, { scale: 1.025, duration: 0.28, ease: "power2.out" }, 8.72);
+      timeline.to(risk, { scale: 1, duration: 0.46, ease: "power2.out" }, 9.0);
+
+      timeline.to(
+        phase,
+        { scale: aiPlan.scale, duration: 1.05, ease: "power3.inOut" },
+        10.222,
+      );
+      timeline.to(
+        focusRail,
+        { x: aiPlan.x, y: aiPlan.y, duration: 1.05, ease: "power3.inOut" },
+        10.222,
+      );
+      timeline.to(risk, { opacity: 0.24, duration: 0.42, ease: "power2.out" }, 10.222);
+      timeline.to(riskGlow, { opacity: 0.12, duration: 0.42, ease: "power2.out" }, 10.222);
+      timeline.fromTo(
+        ai,
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.62, ease: "power2.out" },
+        10.6,
+      );
+
+      timeline.to(
+        drift,
+        {
+          p: Math.PI * 2 * 1.25,
+          duration: 12.267,
+          ease: "none",
+          onUpdate: () => {
+            const driftX = Math.sin(drift.p) * 3;
+            const driftY = Math.sin(drift.p * 1.31) * 2;
+            camera.style.transform = `scale(${phase.scale}) translate(${driftX}px, ${driftY}px)`;
+          },
+        },
+        0,
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["04-workbench"] = timeline;
+    })();
+  </script>
+</template>

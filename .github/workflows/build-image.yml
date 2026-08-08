@@ -1,0 +1,69 @@
+name: Build multi-architecture production image
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  packages: write
+  attestations: write
+  id-token: write
+
+concurrency:
+  group: image-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Sign in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check out locked frappe_docker
+        shell: bash
+        run: |
+          mkdir -p .runtime/frappe_docker
+          git -C .runtime/frappe_docker init
+          git -C .runtime/frappe_docker remote add origin https://github.com/frappe/frappe_docker
+          git -C .runtime/frappe_docker fetch --depth 1 origin f137f05d799a6a00d203b4c0d316a8f475e51778
+          git -C .runtime/frappe_docker checkout --detach f137f05d799a6a00d203b4c0d316a8f475e51778
+          cp deploy/apps.production.json .runtime/frappe_docker/apps.json
+
+      - name: Build and publish amd64 and arm64 images
+        working-directory: .runtime/frappe_docker
+        shell: bash
+        env:
+          IMAGE_NAME: ghcr.io/jbx123159/autoflow-360
+        run: |
+          image_tag="${GITHUB_REF_NAME}"
+          if [[ "${GITHUB_REF_TYPE}" != "tag" ]]; then
+            image_tag="sha-${GITHUB_SHA}"
+          fi
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --build-arg FRAPPE_PATH=https://github.com/frappe/frappe \
+            --build-arg FRAPPE_BRANCH=version-16 \
+            --secret id=apps_json,src=apps.json \
+            --file images/layered/Containerfile \
+            --tag "${IMAGE_NAME}:${image_tag}" \
+            --provenance=true \
+            --sbom=true \
+            --push .

@@ -1,0 +1,452 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "NotoSansSC";
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      color: #20242b;
+      font-family: "NotoSansSC";
+      container-type: size;
+    }
+
+    #root [data-f03="ground"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(37, 99, 184, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 99, 184, 0.035) 1px, transparent 1px),
+        #f7f9fc;
+      background-size: 64px 64px;
+    }
+
+    #root [data-f03="ground"]::before {
+      content: "";
+      position: absolute;
+      left: 960px;
+      top: 412px;
+      width: 760px;
+      height: 760px;
+      margin-left: -380px;
+      margin-top: -380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 184, 0.075) 0%, rgba(37, 99, 184, 0.025) 42%, transparent 70%);
+    }
+
+    #root [data-f03="stage"] {
+      position: absolute;
+      inset: 0 0 auto 0;
+      width: 1920px;
+      height: 896px;
+      overflow: hidden;
+    }
+
+    #root [data-f03="network-svg"] {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 896px;
+      overflow: visible;
+    }
+
+    #root [data-f03="draw-path"] {
+      fill: none;
+      stroke: #2563b8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #root [data-path-role="origin"] {
+      stroke-width: 5;
+      opacity: 0.34;
+    }
+
+    #root [data-path-role="audit"] {
+      stroke-width: 4;
+      opacity: 0.82;
+    }
+
+    #root [data-path-role="connector"] {
+      stroke-width: 3;
+      opacity: 0.30;
+    }
+
+    #root [data-f03="origin"] {
+      position: absolute;
+      left: 960px;
+      top: 412px;
+      width: 24px;
+      height: 24px;
+      margin-left: -12px;
+      margin-top: -12px;
+      border-radius: 50%;
+      border: 5px solid rgba(37, 99, 184, 0.20);
+      background: #2563b8;
+      background-clip: padding-box;
+    }
+
+    #root [data-f03="burst-wrap"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+    }
+
+    #root [data-f03="station"] {
+      position: absolute;
+      left: 50%;
+      top: 46%;
+      min-width: 144px;
+      height: 68px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.05);
+      color: #20242b;
+      font-size: 27px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    #root [data-f03="station-dot"] {
+      width: 12px;
+      height: 12px;
+      flex: 0 0 12px;
+      border-radius: 50%;
+      background: #2563b8;
+    }
+
+    #root [data-f03="logo-lockup"] {
+      position: absolute;
+      left: 960px;
+      top: 412px;
+      width: 360px;
+      height: 360px;
+      margin-left: -180px;
+      margin-top: -180px;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+
+    #root [data-f03="logo-piece"] {
+      position: absolute;
+      left: 100px;
+      width: 160px;
+      overflow: hidden;
+      will-change: transform, opacity;
+    }
+
+    #root [data-f03="logo-piece"][data-band="top"] {
+      top: 100px;
+      height: 54px;
+    }
+
+    #root [data-f03="logo-piece"][data-band="middle"] {
+      top: 154px;
+      height: 53px;
+    }
+
+    #root [data-f03="logo-piece"][data-band="bottom"] {
+      top: 207px;
+      height: 53px;
+    }
+
+    #root [data-f03="logo-piece"] img {
+      position: absolute;
+      left: 0;
+      width: 160px;
+      height: 160px;
+      display: block;
+    }
+
+    #root [data-f03="logo-piece"][data-band="top"] img {
+      top: 0;
+    }
+
+    #root [data-f03="logo-piece"][data-band="middle"] img {
+      top: -54px;
+    }
+
+    #root [data-f03="logo-piece"][data-band="bottom"] img {
+      top: -107px;
+    }
+
+    #root [data-f03="logo-final"] {
+      position: absolute;
+      left: 100px;
+      top: 100px;
+      width: 160px;
+      height: 160px;
+      display: block;
+      will-change: transform, opacity;
+    }
+
+    #root [data-f03="wordmark"] {
+      position: absolute;
+      left: 960px;
+      top: 566px;
+      width: 560px;
+      margin-left: -280px;
+      text-align: center;
+      color: #20242b;
+      font-size: 59px;
+      line-height: 1.08;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    #root [data-f03="audit-label"] {
+      position: absolute;
+      left: 960px;
+      top: 652px;
+      min-width: 176px;
+      height: 48px;
+      padding: 0 24px;
+      margin-left: -112px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+  </style>
+
+  <div data-hf-id="hf-6l9u" id="root" data-composition-id="03-product-intro" data-start="0" data-duration="11.074" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-3z5v" class="clip" data-f03="ground" data-start="0" data-duration="11.074" data-track-index="0"></div>
+
+    <div data-hf-id="hf-eo81" class="clip" data-f03="stage" data-start="0" data-duration="11.074" data-track-index="1">
+      <svg data-hf-id="hf-im97" data-f03="network-svg" viewBox="0 0 1920 896" aria-hidden="true">
+        <circle data-hf-id="hf-3lxu" data-f03="draw-path" data-path-role="origin" cx="960" cy="412" r="132" transform="rotate(-90 960 412)" />
+
+        <path data-hf-id="hf-713g" data-f03="draw-path" data-path-role="connector" data-station-index="0" d="M960 412 C840 346 690 255 520 200" />
+        <path data-hf-id="hf-iklq" data-f03="draw-path" data-path-role="connector" data-station-index="1" d="M960 412 C960 330 960 230 960 150" />
+        <path data-hf-id="hf-yj7u" data-f03="draw-path" data-path-role="connector" data-station-index="2" d="M960 412 C1080 346 1230 258 1390 205" />
+        <path data-hf-id="hf-bn34" data-f03="draw-path" data-path-role="connector" data-station-index="3" d="M960 412 C1132 430 1305 458 1470 480" />
+        <path data-hf-id="hf-gqmv" data-f03="draw-path" data-path-role="connector" data-station-index="4" d="M960 412 C1060 505 1166 604 1260 675" />
+        <path data-hf-id="hf-hh80" data-f03="draw-path" data-path-role="connector" data-station-index="5" d="M960 412 C860 505 754 604 660 675" />
+        <path data-hf-id="hf-5u3r" data-f03="draw-path" data-path-role="connector" data-station-index="6" d="M960 412 C788 430 615 458 450 480" />
+
+        <circle data-hf-id="hf-m2lr" data-f03="draw-path" data-path-role="audit" cx="960" cy="412" r="174" transform="rotate(-90 960 412)" />
+      </svg>
+
+      <div data-hf-id="hf-79pg" data-f03="origin"></div>
+
+      <div data-hf-id="hf-yxpx" data-f03="burst-wrap">
+        <div data-hf-id="hf-qa41" data-f03="station" data-station-index="0" data-target-x="-440" data-target-y="-212">
+          <span data-hf-id="hf-dbid" data-f03="station-dot"></span><span data-hf-id="hf-53v1">商机</span>
+        </div>
+        <div data-hf-id="hf-ry6k" data-f03="station" data-station-index="1" data-target-x="0" data-target-y="-262">
+          <span data-hf-id="hf-5wih" data-f03="station-dot"></span><span data-hf-id="hf-csr6">项目</span>
+        </div>
+        <div data-hf-id="hf-jgcd" data-f03="station" data-station-index="2" data-target-x="430" data-target-y="-207">
+          <span data-hf-id="hf-73fk" data-f03="station-dot"></span><span data-hf-id="hf-13o9">样品</span>
+        </div>
+        <div data-hf-id="hf-66gz" data-f03="station" data-station-index="3" data-target-x="510" data-target-y="68">
+          <span data-hf-id="hf-6p4j" data-f03="station-dot"></span><span data-hf-id="hf-e8dj">销售</span>
+        </div>
+        <div data-hf-id="hf-kima" data-f03="station" data-station-index="4" data-target-x="300" data-target-y="263">
+          <span data-hf-id="hf-4ple" data-f03="station-dot"></span><span data-hf-id="hf-n67h">采购</span>
+        </div>
+        <div data-hf-id="hf-g7vc" data-f03="station" data-station-index="5" data-target-x="-300" data-target-y="263">
+          <span data-hf-id="hf-4bad" data-f03="station-dot"></span><span data-hf-id="hf-q2xe" data-layout-allow-overlap="">交付</span>
+        </div>
+        <div data-hf-id="hf-08rj" data-f03="station" data-station-index="6" data-target-x="-510" data-target-y="68">
+          <span data-hf-id="hf-5i7g" data-f03="station-dot"></span><span data-hf-id="hf-rbns">财务</span>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-vjfy" data-f03="logo-lockup">
+        <div data-hf-id="hf-ukhg" data-f03="logo-piece" data-band="top">
+          <img data-hf-id="hf-d6tn" src="assets/brand/autoflow-360-logo.svg" alt="">
+        </div>
+        <div data-hf-id="hf-7wsq" data-f03="logo-piece" data-band="middle">
+          <img data-hf-id="hf-moff" src="assets/brand/autoflow-360-logo.svg" alt="">
+        </div>
+        <div data-hf-id="hf-scqk" data-f03="logo-piece" data-band="bottom">
+          <img data-hf-id="hf-ma4e" src="assets/brand/autoflow-360-logo.svg" alt="">
+        </div>
+        <img data-hf-id="hf-ik1a" data-f03="logo-final" src="assets/brand/autoflow-360-logo.svg" alt="AutoFlow 360">
+      </div>
+
+      <div data-hf-id="hf-osu9" data-f03="wordmark">AutoFlow 360</div>
+      <div data-hf-id="hf-y6nq" data-f03="audit-label">可审计链路</div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (() => {
+      const frameRoot = document.querySelector('[data-composition-id="03-product-intro"]');
+      if (!frameRoot || !window.gsap) return;
+
+      const drawPaths = Array.from(frameRoot.querySelectorAll('[data-f03="draw-path"]'));
+      const originRing = frameRoot.querySelector('[data-path-role="origin"]');
+      const auditRing = frameRoot.querySelector('[data-path-role="audit"]');
+      const connectors = Array.from(frameRoot.querySelectorAll('[data-path-role="connector"]'));
+      const stations = Array.from(frameRoot.querySelectorAll('[data-f03="station"]'));
+      const logoPieces = Array.from(frameRoot.querySelectorAll('[data-f03="logo-piece"]'));
+      const logoFinal = frameRoot.querySelector('[data-f03="logo-final"]');
+      const wordmark = frameRoot.querySelector('[data-f03="wordmark"]');
+      const auditLabel = frameRoot.querySelector('[data-f03="audit-label"]');
+      const origin = frameRoot.querySelector('[data-f03="origin"]');
+
+      drawPaths.forEach((path) => {
+        const measuredLength = path.getTotalLength();
+        path.style.strokeDasharray = String(measuredLength);
+        path.style.strokeDashoffset = String(measuredLength);
+      });
+
+      connectors.forEach((path) => {
+        path.style.strokeWidth = "3";
+        path.style.opacity = "0.30";
+      });
+      originRing.style.strokeWidth = "5";
+      originRing.style.opacity = "0.34";
+      auditRing.style.strokeWidth = "4";
+      auditRing.style.opacity = "0.82";
+
+      gsap.set(stations, { xPercent: -50, yPercent: -50, opacity: 0, scale: 0.62 });
+      gsap.set(connectors, { opacity: 0.30 });
+      gsap.set(auditRing, { opacity: 0 });
+      gsap.set(logoPieces, { opacity: 0 });
+      gsap.set(logoFinal, { opacity: 0, scale: 0.92 });
+      gsap.set(wordmark, { opacity: 0, y: 18 });
+      gsap.set(auditLabel, { opacity: 0, y: 14 });
+
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo(origin,
+        { opacity: 0, scale: 0.35 },
+        { opacity: 1, scale: 1, duration: 0.42, ease: "power2.out" },
+        0.08
+      );
+      tl.to(originRing,
+        { strokeDashoffset: 0, duration: 1.48, ease: "power2.out" },
+        0.18
+      );
+
+      const stationStarts = [1.94, 2.42, 3.08, 3.72, 4.42, 5.18, 5.84];
+      stations.forEach((station, index) => {
+        const targetX = Number(station.dataset.targetX);
+        const targetY = Number(station.dataset.targetY);
+        tl.fromTo(station,
+          {
+            xPercent: -50,
+            yPercent: -50,
+            x: targetX * 0.20,
+            y: targetY * 0.20,
+            scale: 0.62,
+            opacity: 0
+          },
+          {
+            x: targetX,
+            y: targetY,
+            scale: 1,
+            opacity: 1,
+            duration: 1.12,
+            ease: "power3.out"
+          },
+          stationStarts[index]
+        );
+
+        tl.to(connectors[index],
+          { strokeDashoffset: 0, duration: 0.90, ease: "power2.out" },
+          stationStarts[index] + 0.34
+        );
+      });
+
+      tl.to(stations,
+        {
+          x: (index, element) => Number(element.dataset.targetX) * 0.68,
+          y: (index, element) => Number(element.dataset.targetY) * 0.68,
+          scale: 0.78,
+          opacity: 0.56,
+          duration: 1.14,
+          stagger: 0.035,
+          ease: "power3.out"
+        },
+        7.224
+      );
+      tl.to(connectors,
+        { opacity: 0.12, duration: 0.82, stagger: 0.025, ease: "power1.out" },
+        7.30
+      );
+      tl.to(auditRing,
+        { opacity: 0.82, strokeDashoffset: 0, duration: 1.10, ease: "power2.out" },
+        7.30
+      );
+
+      tl.fromTo(logoPieces[0],
+        { x: 0, y: -112, opacity: 0, scale: 0.84 },
+        { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.72, ease: "power3.out" },
+        7.48
+      );
+      tl.fromTo(logoPieces[1],
+        { x: -126, y: 0, opacity: 0, scale: 0.84 },
+        { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.72, ease: "power3.out" },
+        7.72
+      );
+      tl.fromTo(logoPieces[2],
+        { x: 112, y: 92, opacity: 0, scale: 0.84 },
+        { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.72, ease: "power3.out" },
+        7.96
+      );
+      tl.fromTo(logoFinal,
+        { opacity: 0, scale: 0.92 },
+        { opacity: 1, scale: 1, duration: 0.46, ease: "power1.out" },
+        8.54
+      );
+      tl.fromTo(wordmark,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.52, ease: "power1.out" },
+        8.74
+      );
+      tl.fromTo(auditLabel,
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.44, ease: "power1.out" },
+        9.02
+      );
+
+      tl.to(stations,
+        { opacity: 0.34, duration: 0.44, stagger: 0.02, ease: "power1.out" },
+        9.349
+      );
+      tl.to(origin,
+        { opacity: 0.30, scale: 0.70, duration: 0.42, ease: "power1.out" },
+        9.349
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["03-product-intro"] = tl;
+    })();
+  </script>
+</template>

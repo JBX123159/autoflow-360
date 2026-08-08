@@ -24,6 +24,8 @@ require_type_annotated_api_methods = True
 after_install = "autoflow_360.install.after_install"
 after_migrate = "autoflow_360.install.after_migrate"
 
+app_include_css = ["/assets/autoflow_360/css/autoflow.css"]
+
 doctype_js = {
 	"Business Exception": "public/js/business_exception.js",
 	"CRM Deal": "public/js/crm_deal.js",
@@ -99,6 +101,7 @@ portal_menu_items = [
 
 permission_query_conditions = {
 	"Account": "autoflow_360.permissions.portal.supplier_account_query",
+	"AI Analysis": "autoflow_360.ai.audit.ai_analysis_query",
 	"Customer Feedback": "autoflow_360.permissions.portal.customer_feedback_query",
 	"Customer Project": "autoflow_360.permissions.project.customer_project_query",
 	"Customer Receipt": "autoflow_360.permissions.portal.customer_receipt_query",
@@ -111,6 +114,7 @@ permission_query_conditions = {
 
 has_permission = {
 	"Account": "autoflow_360.permissions.portal.supplier_account_has_permission",
+	"AI Analysis": "autoflow_360.ai.audit.ai_analysis_has_permission",
 	"Customer Feedback": "autoflow_360.permissions.portal.customer_feedback_has_permission",
 	"Customer Project": "autoflow_360.permissions.project.customer_project_has_permission",
 	"Customer Receipt": "autoflow_360.permissions.portal.customer_receipt_has_permission",
@@ -124,4 +128,5 @@ has_permission = {
 scheduler_events = {
 	"hourly": ["autoflow_360.risk_engine.scheduled.scan_delivery_risks"],
 	"daily": ["autoflow_360.risk_engine.scheduled.scan_daily_risks"],
+	"weekly_long": ["autoflow_360.ai.service.generate_weekly_drafts"],
 }

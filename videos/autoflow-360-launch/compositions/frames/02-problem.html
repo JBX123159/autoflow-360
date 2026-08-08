@@ -1,0 +1,480 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "NotoSansSC";
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "NotoSansSC";
+      color: #20242b;
+    }
+
+    [data-composition-id="02-problem"] [data-part="ground"] {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #f7f9fc;
+    }
+
+    [data-composition-id="02-problem"] [data-part="content"] {
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 1920px;
+      height: 896px;
+      overflow: hidden;
+    }
+
+    [data-composition-id="02-problem"] [data-part="header"] {
+      position: absolute;
+      top: 58px;
+      left: 96px;
+      right: 96px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    [data-composition-id="02-problem"] [data-part="header-label"] {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: #20242b;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    [data-composition-id="02-problem"] [data-part="accent-line"] {
+      width: 60px;
+      height: 4px;
+      flex: 0 0 auto;
+      border-radius: 2px;
+      background: #2563b8;
+    }
+
+    [data-composition-id="02-problem"] [data-part="header-tag"] {
+      padding: 11px 22px 12px;
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+
+    [data-composition-id="02-problem"] [data-part="scene-root"] {
+      position: absolute;
+      inset: 116px 0 0 0;
+      height: 700px;
+      perspective: 1400px;
+    }
+
+    [data-composition-id="02-problem"] [data-part="cloud-stage"] {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 700px;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    [data-composition-id="02-problem"] [data-part="carrier"] {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 320px;
+      height: 144px;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      align-items: center;
+      gap: 20px;
+      padding: 24px 26px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(37, 99, 184, 0.05);
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      will-change: transform, opacity;
+    }
+
+    [data-composition-id="02-problem"] [data-part="carrier-icon"] {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 12px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+    }
+
+    [data-composition-id="02-problem"] [data-part="carrier-icon"] svg {
+      width: 34px;
+      height: 34px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    [data-composition-id="02-problem"] [data-part="carrier-copy"] {
+      min-width: 0;
+    }
+
+    [data-composition-id="02-problem"] [data-part="carrier-title"] {
+      color: #20242b;
+      font-size: 34px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    [data-composition-id="02-problem"] [data-part="carrier-meta"] {
+      margin-top: 9px;
+      color: #667085;
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+    }
+
+    [data-composition-id="02-problem"] [data-part="stub"] {
+      position: absolute;
+      top: 70px;
+      width: 116px;
+      height: 0;
+      border-top: 2px dashed rgba(37, 99, 184, 0.24);
+    }
+
+    [data-composition-id="02-problem"] [data-side="left"] [data-part="stub"] {
+      right: -140px;
+    }
+
+    [data-composition-id="02-problem"] [data-side="right"] [data-part="stub"] {
+      left: -140px;
+    }
+
+    [data-composition-id="02-problem"] [data-part="stub"]::after {
+      content: "";
+      position: absolute;
+      top: -5px;
+      width: 8px;
+      height: 8px;
+      border: 2px solid rgba(37, 99, 184, 0.24);
+      border-radius: 50%;
+      background: #f7f9fc;
+    }
+
+    [data-composition-id="02-problem"] [data-side="left"] [data-part="stub"]::after {
+      right: -2px;
+    }
+
+    [data-composition-id="02-problem"] [data-side="right"] [data-part="stub"]::after {
+      left: -2px;
+    }
+
+    [data-composition-id="02-problem"] [data-part="question-stack"] {
+      position: absolute;
+      top: 132px;
+      left: 662px;
+      width: 596px;
+      min-height: 428px;
+      display: grid;
+      grid-template-rows: repeat(3, 112px);
+      gap: 24px;
+      align-content: center;
+      pointer-events: none;
+    }
+
+    [data-composition-id="02-problem"] [data-part="question"] {
+      position: relative;
+      width: 596px;
+      height: 112px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      padding: 0 42px 0 52px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: #f7f9fc;
+      color: #20242b;
+      font-size: 45px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      will-change: transform, opacity;
+    }
+
+    [data-composition-id="02-problem"] [data-part="question"]::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 20px;
+      width: 5px;
+      height: 72px;
+      border-radius: 0 4px 4px 0;
+      background: #2563b8;
+    }
+
+    [data-composition-id="02-problem"] [data-part="question-mark"] {
+      margin-left: auto;
+      color: #2563b8;
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    [data-composition-id="02-problem"] [data-part="progress"] {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(37, 99, 184, 0.10);
+    }
+
+    [data-composition-id="02-problem"] [data-part="progress-fill"] {
+      display: block;
+      width: 14.286%;
+      height: 100%;
+      border-radius: 0;
+      background: #2563b8;
+    }
+  </style>
+
+  <div data-hf-id="hf-i6ei" id="root" data-composition-id="02-problem" data-start="0" data-duration="12.532" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-kcar" class="clip" data-start="0" data-duration="12.532" data-track-index="0" data-part="ground"></div>
+
+    <div data-hf-id="hf-l1go" class="clip" data-start="0" data-duration="12.532" data-track-index="1" data-part="content">
+      <div data-hf-id="hf-1jdh" data-part="header">
+        <div data-hf-id="hf-k58c" data-part="header-label">
+          <span data-hf-id="hf-74b4" data-part="accent-line"></span>
+          <span data-hf-id="hf-d1mt">信息散落</span>
+        </div>
+        <div data-hf-id="hf-enl1" data-part="header-tag">项目盲区</div>
+      </div>
+
+      <div data-hf-id="hf-d6sz" data-part="scene-root">
+        <div data-hf-id="hf-f6mn" id="02-problem-cloud-stage" data-part="cloud-stage">
+          <div data-hf-id="hf-91jx" id="02-problem-card-table" data-part="carrier" data-side="left" data-target-x="-590" data-target-y="-190">
+            <div data-hf-id="hf-8zq4" data-part="carrier-icon">
+              <svg data-hf-id="hf-rdxy" viewBox="0 0 36 36" aria-hidden="true">
+                <rect data-hf-id="hf-yqo9" x="4" y="5" width="28" height="26" rx="3" />
+                <path data-hf-id="hf-0bh5" d="M4 13h28M13 5v26M23 5v26M4 22h28" />
+              </svg>
+            </div>
+            <div data-hf-id="hf-yssw" data-part="carrier-copy">
+              <div data-hf-id="hf-6qwj" data-part="carrier-title">表格</div>
+              <div data-hf-id="hf-pis2" data-part="carrier-meta">进度记录</div>
+            </div>
+            <span data-hf-id="hf-0k37" data-part="stub"></span>
+          </div>
+
+          <div data-hf-id="hf-mgu5" id="02-problem-card-chat" data-part="carrier" data-side="right" data-target-x="590" data-target-y="-190">
+            <div data-hf-id="hf-uod0" data-part="carrier-icon">
+              <svg data-hf-id="hf-yloa" viewBox="0 0 36 36" aria-hidden="true">
+                <path data-hf-id="hf-7j6x" d="M6 7h24a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H17l-7 5v-5H6a3 3 0 0 1-3-3V10a3 3 0 0 1 3-3Z" />
+                <path data-hf-id="hf-0viu" d="M10 14h16M10 20h11" />
+              </svg>
+            </div>
+            <div data-hf-id="hf-l92g" data-part="carrier-copy">
+              <div data-hf-id="hf-8ffe" data-part="carrier-title">聊天</div>
+              <div data-hf-id="hf-r2l4" data-part="carrier-meta">异常跟进</div>
+            </div>
+            <span data-hf-id="hf-ymfn" data-part="stub"></span>
+          </div>
+
+          <div data-hf-id="hf-rb8m" id="02-problem-card-document" data-part="carrier" data-side="left" data-target-x="-590" data-target-y="205">
+            <div data-hf-id="hf-thfx" data-part="carrier-icon">
+              <svg data-hf-id="hf-yzzb" viewBox="0 0 36 36" aria-hidden="true">
+                <path data-hf-id="hf-1dby" d="M8 3h14l7 7v23H8Z" />
+                <path data-hf-id="hf-wqoq" d="M22 3v8h7M13 18h11M13 24h11" />
+              </svg>
+            </div>
+            <div data-hf-id="hf-k25d" data-part="carrier-copy">
+              <div data-hf-id="hf-lpl4" data-part="carrier-title">单据</div>
+              <div data-hf-id="hf-6crk" data-part="carrier-meta">系统凭证</div>
+            </div>
+            <span data-hf-id="hf-y84m" data-part="stub"></span>
+          </div>
+
+          <div data-hf-id="hf-bxyk" id="02-problem-card-risk" data-part="carrier" data-side="right" data-target-x="590" data-target-y="205">
+            <div data-hf-id="hf-tvqy" data-part="carrier-icon">
+              <svg data-hf-id="hf-zeac" viewBox="0 0 36 36" aria-hidden="true">
+                <path data-hf-id="hf-6ilx" d="M18 4 33 31H3Z" />
+                <path data-hf-id="hf-2knj" d="M18 13v9M18 27h.01" />
+              </svg>
+            </div>
+            <div data-hf-id="hf-kgge" data-part="carrier-copy">
+              <div data-hf-id="hf-lbt2" data-part="carrier-title">风险</div>
+              <div data-hf-id="hf-nn1x" data-part="carrier-meta">零散预警</div>
+            </div>
+            <span data-hf-id="hf-xttl" data-part="stub"></span>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-9ohv" id="02-problem-question-stack" data-part="question-stack">
+          <div data-hf-id="hf-7xne" id="02-problem-question-blocked" data-part="question">
+            <span data-hf-id="hf-w712">卡在哪</span><span data-hf-id="hf-b03c" data-part="question-mark">？</span>
+          </div>
+          <div data-hf-id="hf-0w1r" id="02-problem-question-owner" data-part="question">
+            <span data-hf-id="hf-vz9m">谁负责</span><span data-hf-id="hf-0mxc" data-part="question-mark">？</span>
+          </div>
+          <div data-hf-id="hf-3sw5" id="02-problem-question-next" data-part="question">
+            <span data-hf-id="hf-9ea5">下一步</span><span data-hf-id="hf-zg09" data-part="question-mark">？</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-cgmb" data-part="progress"><span data-hf-id="hf-l4mw" data-part="progress-fill"></span></div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (() => {
+      const frameRoot = document.querySelector('[data-composition-id="02-problem"]');
+      const cloudStage = document.getElementById('02-problem-cloud-stage');
+      const carriers = Array.from(frameRoot.querySelectorAll('[data-part="carrier"]'));
+      const questions = Array.from(frameRoot.querySelectorAll('[data-part="question"]'));
+      const duration = 12.032;
+
+      const GOLDEN = Math.PI * (3 - Math.sqrt(5));
+      const RADIUS_X = 260;
+      const RADIUS_Y = 100;
+      const Z_NEAR = 280;
+      const Z_FAR = -340;
+      const TUMBLE = 68;
+
+      const scatter = carriers.map((carrier, index) => {
+        const angle = index * GOLDEN;
+        const depthRatio = carriers.length > 1 ? index / (carriers.length - 1) : 0;
+        const targetX = Number(carrier.dataset.targetX);
+        const targetY = Number(carrier.dataset.targetY);
+        const horizontalDirection = Math.sign(targetX);
+        const verticalDirection = Math.sign(targetY);
+        return {
+          x: targetX + horizontalDirection * (RADIUS_X + Math.abs(Math.cos(angle)) * 80),
+          y: targetY + verticalDirection * (RADIUS_Y + Math.abs(Math.sin(angle)) * 40),
+          z: Z_NEAR - depthRatio * (Z_NEAR - Z_FAR),
+          rotationX: Math.sin(angle) * TUMBLE,
+          rotationY: Math.cos(angle) * TUMBLE
+        };
+      });
+
+      carriers.forEach((carrier, index) => {
+        gsap.set(carrier, {
+          xPercent: -50,
+          yPercent: -50,
+          ...scatter[index],
+          opacity: 0
+        });
+      });
+
+      questions.forEach((question) => {
+        gsap.set(question, { opacity: 0, y: 28, scale: 0.96 });
+      });
+
+      gsap.set(cloudStage, { rotationY: -8, transformPerspective: 1400 });
+
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["02-problem"] = tl;
+
+      tl.to(cloudStage, {
+        rotationY: 5,
+        duration: 6.55,
+        ease: "power1.out"
+      }, 0);
+
+      const arrivals = [0.08, 2.406, 4.922, 5.34];
+      carriers.forEach((carrier, index) => {
+        tl.to(carrier, {
+          x: Number(carrier.dataset.targetX),
+          y: Number(carrier.dataset.targetY),
+          z: 0,
+          rotationX: 0,
+          rotationY: 0,
+          opacity: 1,
+          duration: index < 2 ? 1.18 : 1.08,
+          ease: "power3.out"
+        }, arrivals[index]);
+      });
+
+      tl.to(cloudStage, {
+        rotationY: 0,
+        duration: 0.56,
+        ease: "power2.out"
+      }, 6.55);
+
+      tl.to(carriers, {
+        opacity: 0.46,
+        duration: 0.58,
+        ease: "power2.out"
+      }, 6.53);
+
+      tl.to(carriers, {
+        x: (index, carrier) => Number(carrier.dataset.targetX) * 0.92,
+        y: (index, carrier) => Number(carrier.dataset.targetY) * 0.92,
+        duration: 2.88,
+        ease: "power1.out"
+      }, 7.11);
+
+      const QUESTION_CONTENT = [
+        { title: "卡在哪", hold: 0.25 },
+        { title: "谁负责", hold: 0.30 },
+        { title: "下一步", hold: 1.00 }
+      ];
+      const BASE_DURATION = 0.62;
+      const SEC_PER_CHAR = 0.05;
+      let cumulative = 0;
+      const QUESTION_TIMELINE = QUESTION_CONTENT.map((entry) => {
+        const itemDuration = BASE_DURATION + entry.title.length * SEC_PER_CHAR + entry.hold;
+        const start = cumulative;
+        cumulative += itemDuration;
+        return { ...entry, start, end: cumulative };
+      });
+      const sequenceStart = 7.11;
+      const sequenceWindow = 3.172;
+
+      QUESTION_TIMELINE.forEach((entry, index) => {
+        const arrival = sequenceStart + (entry.start / cumulative) * sequenceWindow;
+        tl.fromTo(questions[index], {
+          opacity: 0,
+          y: 28,
+          scale: 0.96
+        }, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.68,
+          ease: "power3.out"
+        }, arrival);
+      });
+
+      const holdDriver = { progress: 0 };
+      tl.to(holdDriver, {
+        progress: 1,
+        duration: duration - 10.282,
+        ease: "none"
+      }, 10.282);
+    })();
+  </script>
+</template>

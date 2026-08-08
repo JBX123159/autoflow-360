@@ -41,6 +41,7 @@
   "audit_tab",
   "is_demo",
   "demo_key",
+  "demo_scenario",
   "data_classification"
  ],
  "fields": [
@@ -263,6 +264,13 @@
    "label": "Demo Key",
    "read_only": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "demo_scenario",
+   "fieldtype": "Select",
+   "label": "Demo Scenario",
+   "options": "normal\nsupplier_delay\nresample",
+   "read_only": 1
   },
   {
    "default": "内部",

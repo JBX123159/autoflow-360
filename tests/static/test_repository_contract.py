@@ -24,14 +24,12 @@ class RepositoryContractTest(unittest.TestCase):
             "AutoFlow 360",
             "Frappe CRM",
             "ERPNext",
-            "规划中的自主新增范围",
+            "已实现的自主扩展",
             "合成数据",
-            "业务闭环",
-            "三条演示路径",
-            "快速开始",
-            "测试命令",
-            "上游边界",
-            "许可证",
+            "三条可复现演示",
+            "本地运行",
+            "验证",
+            "来源与许可证",
         ):
             self.assertIn(required_text, content)
 
@@ -72,8 +70,13 @@ class RepositoryContractTest(unittest.TestCase):
             "logs/",
             "*.log",
             "playwright-report/",
-            "test-results/",
-        }
+              "test-results/",
+              "videos/*/capture/",
+			"videos/*/.thumbnails/",
+			"videos/*/snapshots/",
+			"videos/*/renders/",
+			"videos/*/.hyperframes/frame-packets/",
+          }
         self.assertTrue(required_entries.issubset(entries), required_entries - entries)
 
     def test_upstream_baseline_declares_pins_and_pending_hashes(self):
@@ -107,28 +110,19 @@ class RepositoryContractTest(unittest.TestCase):
             r"git add [^\n]*docs/research/upstream-baseline\.md",
         )
 
-    def test_unfinished_custom_scope_is_labeled_as_planned(self):
-        documents = {
-            "README.md": (ROOT / "README.md").read_text(encoding="utf-8"),
-            "NOTICE.md": (ROOT / "NOTICE.md").read_text(encoding="utf-8"),
-            "docs/research/upstream-baseline.md": (
-                ROOT / "docs/research/upstream-baseline.md"
-            ).read_text(encoding="utf-8"),
-        }
-        for relative_path, content in documents.items():
-            self.assertTrue(
-                "规划中的自主新增范围" in content or "计划自主实现" in content,
-                relative_path,
-            )
+    def test_custom_scope_and_unfinished_delivery_are_truthfully_labeled(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        for required_text in (
+            "已实现的自主扩展",
+            "未上线真实企业",
+            "当前完整 Frappe 集成回归：148/148",
+            "RESTORE_CHECK_PASSED",
+            "尚未公开推送前",
+        ):
+            self.assertIn(required_text, readme)
 
-        forbidden_claims = (
-            "**自主新增能力：**",
-            "本仓库的自主新增能力包括",
-            "AutoFlow 360 自主实现",
-        )
-        for relative_path, content in documents.items():
-            for forbidden_claim in forbidden_claims:
-                self.assertNotIn(forbidden_claim, content, relative_path)
+        self.assertNotIn("已上线真实企业", readme)
+        self.assertNotIn("产生真实营收", readme)
 
     def test_task_one_matches_public_static_test_contract(self):
         command = "python -m unittest discover -s tests/static -v"

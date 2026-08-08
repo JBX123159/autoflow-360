@@ -1,0 +1,937 @@
+{
+  "total_duration_s": 162.624,
+  "width": 1920,
+  "height": 1080,
+  "groups": [
+    {
+      "id": "caption-group-0",
+      "frame": 1,
+      "start": 0.12,
+      "end": 1.999,
+      "text": "一份客户需求，",
+      "words": [
+        {
+          "id": "caption-word-0-0",
+          "text": "一份客户需求，",
+          "start": 0.12,
+          "end": 1.879
+        }
+      ]
+    },
+    {
+      "id": "caption-group-1",
+      "frame": 1,
+      "start": 2.099,
+      "end": 6.031,
+      "text": "要穿过报价、样品、采购、交付、回款。",
+      "words": [
+        {
+          "id": "caption-word-1-0",
+          "text": "要穿过报价、样品、采购、交付、回款。",
+          "start": 2.099,
+          "end": 5.911
+        }
+      ]
+    },
+    {
+      "id": "caption-group-2",
+      "frame": 1,
+      "start": 6.131,
+      "end": 8.01,
+      "text": "只要一环断开，",
+      "words": [
+        {
+          "id": "caption-word-2-0",
+          "text": "只要一环断开，",
+          "start": 6.131,
+          "end": 7.89
+        }
+      ]
+    },
+    {
+      "id": "caption-group-3",
+      "frame": 1,
+      "start": 8.11,
+      "end": 10.283,
+      "text": "项目就失去证据。",
+      "words": [
+        {
+          "id": "caption-word-3-0",
+          "text": "项目就失去证据。",
+          "start": 8.11,
+          "end": 10.163
+        }
+      ]
+    },
+    {
+      "id": "caption-group-4",
+      "frame": 2,
+      "start": 10.403,
+      "end": 11.805,
+      "text": "表格记进度，",
+      "words": [
+        {
+          "id": "caption-word-4-0",
+          "text": "表格记进度，",
+          "start": 10.403,
+          "end": 11.685
+        }
+      ]
+    },
+    {
+      "id": "caption-group-5",
+      "frame": 2,
+      "start": 11.905,
+      "end": 13.306,
+      "text": "聊天追异常，",
+      "words": [
+        {
+          "id": "caption-word-5-0",
+          "text": "聊天追异常，",
+          "start": 11.905,
+          "end": 13.186
+        }
+      ]
+    },
+    {
+      "id": "caption-group-6",
+      "frame": 2,
+      "start": 13.406,
+      "end": 15.064,
+      "text": "单据留在系统。",
+      "words": [
+        {
+          "id": "caption-word-6-0",
+          "text": "单据留在系统。",
+          "start": 13.406,
+          "end": 14.944
+        }
+      ]
+    },
+    {
+      "id": "caption-group-7",
+      "frame": 2,
+      "start": 15.164,
+      "end": 16.565,
+      "text": "客户一追问，",
+      "words": [
+        {
+          "id": "caption-word-7-0",
+          "text": "客户一追问，",
+          "start": 15.164,
+          "end": 16.445
+        }
+      ]
+    },
+    {
+      "id": "caption-group-8",
+      "frame": 2,
+      "start": 16.665,
+      "end": 18.579,
+      "text": "团队仍回答不了：",
+      "words": [
+        {
+          "id": "caption-word-8-0",
+          "text": "团队仍回答不了：",
+          "start": 16.665,
+          "end": 18.459
+        }
+      ]
+    },
+    {
+      "id": "caption-group-9",
+      "frame": 2,
+      "start": 18.679,
+      "end": 19.568,
+      "text": "卡在哪，",
+      "words": [
+        {
+          "id": "caption-word-9-0",
+          "text": "卡在哪，",
+          "start": 18.679,
+          "end": 19.448
+        }
+      ]
+    },
+    {
+      "id": "caption-group-10",
+      "frame": 2,
+      "start": 19.668,
+      "end": 20.557,
+      "text": "谁负责，",
+      "words": [
+        {
+          "id": "caption-word-10-0",
+          "text": "谁负责，",
+          "start": 19.668,
+          "end": 20.437
+        }
+      ]
+    },
+    {
+      "id": "caption-group-11",
+      "frame": 2,
+      "start": 20.657,
+      "end": 22.315,
+      "text": "下一步是什么。",
+      "words": [
+        {
+          "id": "caption-word-11-0",
+          "text": "下一步是什么。",
+          "start": 20.657,
+          "end": 22.195
+        }
+      ]
+    },
+    {
+      "id": "caption-group-12",
+      "frame": 3,
+      "start": 22.435,
+      "end": 26.586,
+      "text": "AutoFlow 360 连接商机、",
+      "words": [
+        {
+          "id": "caption-word-12-0",
+          "text": "AutoFlow 360 连接商机、",
+          "start": 22.435,
+          "end": 26.466
+        }
+      ]
+    },
+    {
+      "id": "caption-group-13",
+      "frame": 3,
+      "start": 26.686,
+      "end": 30.3,
+      "text": "项目、样品、销售、采购、交付和财务，",
+      "words": [
+        {
+          "id": "caption-word-13-0",
+          "text": "项目、样品、销售、采购、交付和财务，",
+          "start": 26.686,
+          "end": 30.18
+        }
+      ]
+    },
+    {
+      "id": "caption-group-14",
+      "frame": 3,
+      "start": 30.4,
+      "end": 32.939,
+      "text": "形成一条可审计链路。",
+      "words": [
+        {
+          "id": "caption-word-14-0",
+          "text": "形成一条可审计链路。",
+          "start": 30.4,
+          "end": 32.819
+        }
+      ]
+    },
+    {
+      "id": "caption-group-15",
+      "frame": 4,
+      "start": 33.059,
+      "end": 36.17,
+      "text": "角色工作台先回答三件事：",
+      "words": [
+        {
+          "id": "caption-word-15-0",
+          "text": "角色工作台先回答三件事：",
+          "start": 33.059,
+          "end": 36.05
+        }
+      ]
+    },
+    {
+      "id": "caption-group-16",
+      "frame": 4,
+      "start": 36.27,
+      "end": 38.021,
+      "text": "待我审批什么，",
+      "words": [
+        {
+          "id": "caption-word-16-0",
+          "text": "待我审批什么，",
+          "start": 36.27,
+          "end": 37.901
+        }
+      ]
+    },
+    {
+      "id": "caption-group-17",
+      "frame": 4,
+      "start": 38.121,
+      "end": 40.144,
+      "text": "七天内什么到期，",
+      "words": [
+        {
+          "id": "caption-word-17-0",
+          "text": "七天内什么到期，",
+          "start": 38.121,
+          "end": 40.024
+        }
+      ]
+    },
+    {
+      "id": "caption-group-18",
+      "frame": 4,
+      "start": 40.244,
+      "end": 43.355,
+      "text": "哪些高风险必须升级处理。",
+      "words": [
+        {
+          "id": "caption-word-18-0",
+          "text": "哪些高风险必须升级处理。",
+          "start": 40.244,
+          "end": 43.235
+        }
+      ]
+    },
+    {
+      "id": "caption-group-19",
+      "frame": 4,
+      "start": 43.455,
+      "end": 45.206,
+      "text": "AI 默认关闭。",
+      "words": [
+        {
+          "id": "caption-word-19-0",
+          "text": "AI 默认关闭。",
+          "start": 43.455,
+          "end": 45.086
+        }
+      ]
+    },
+    {
+      "id": "caption-group-20",
+      "frame": 5,
+      "start": 45.326,
+      "end": 50.221,
+      "text": "三个演示项目全部使用人民币合成数据，",
+      "words": [
+        {
+          "id": "caption-word-20-0",
+          "text": "三个演示项目全部使用人民币合成数据，",
+          "start": 45.326,
+          "end": 50.101
+        }
+      ]
+    },
+    {
+      "id": "caption-group-21",
+      "frame": 5,
+      "start": 50.321,
+      "end": 55.215,
+      "text": "分别复现正常交付、供应商延期和客户退",
+      "words": [
+        {
+          "id": "caption-word-21-0",
+          "text": "分别复现正常交付、供应商延期和客户退",
+          "start": 50.321,
+          "end": 55.095
+        }
+      ]
+    },
+    {
+      "id": "caption-group-22",
+      "frame": 5,
+      "start": 55.315,
+      "end": 56.278,
+      "text": "样重打。",
+      "words": [
+        {
+          "id": "caption-word-22-0",
+          "text": "样重打。",
+          "start": 55.315,
+          "end": 56.158
+        }
+      ]
+    },
+    {
+      "id": "caption-group-23",
+      "frame": 6,
+      "start": 56.398,
+      "end": 59.522,
+      "text": "正常场景从商机立项开始，",
+      "words": [
+        {
+          "id": "caption-word-23-0",
+          "text": "正常场景从商机立项开始，",
+          "start": 56.398,
+          "end": 59.402
+        }
+      ]
+    },
+    {
+      "id": "caption-group-24",
+      "frame": 6,
+      "start": 59.622,
+      "end": 64.111,
+      "text": "依次经过样品认可、报价审批、订单履约",
+      "words": [
+        {
+          "id": "caption-word-24-0",
+          "text": "依次经过样品认可、报价审批、订单履约",
+          "start": 59.622,
+          "end": 63.991
+        }
+      ]
+    },
+    {
+      "id": "caption-group-25",
+      "frame": 6,
+      "start": 64.211,
+      "end": 65.696,
+      "text": "和交付签收；",
+      "words": [
+        {
+          "id": "caption-word-25-0",
+          "text": "和交付签收；",
+          "start": 64.211,
+          "end": 65.576
+        }
+      ]
+    },
+    {
+      "id": "caption-group-26",
+      "frame": 6,
+      "start": 65.796,
+      "end": 68.374,
+      "text": "每一步都有来源单据。",
+      "words": [
+        {
+          "id": "caption-word-26-0",
+          "text": "每一步都有来源单据。",
+          "start": 65.796,
+          "end": 68.254
+        }
+      ]
+    },
+    {
+      "id": "caption-group-27",
+      "frame": 7,
+      "start": 68.494,
+      "end": 69.858,
+      "text": "履约完成后，",
+      "words": [
+        {
+          "id": "caption-word-27-0",
+          "text": "履约完成后，",
+          "start": 68.494,
+          "end": 69.738
+        }
+      ]
+    },
+    {
+      "id": "caption-group-28",
+      "frame": 7,
+      "start": 69.958,
+      "end": 71.819,
+      "text": "销售发票已付款，",
+      "words": [
+        {
+          "id": "caption-word-28-0",
+          "text": "销售发票已付款，",
+          "start": 69.958,
+          "end": 71.699
+        }
+      ]
+    },
+    {
+      "id": "caption-group-29",
+      "frame": 7,
+      "start": 71.919,
+      "end": 74.03,
+      "text": "收付款记录已提交，",
+      "words": [
+        {
+          "id": "caption-word-29-0",
+          "text": "收付款记录已提交，",
+          "start": 71.919,
+          "end": 73.91
+        }
+      ]
+    },
+    {
+      "id": "caption-group-30",
+      "frame": 7,
+      "start": 74.13,
+      "end": 75.742,
+      "text": "业务异常为零；",
+      "words": [
+        {
+          "id": "caption-word-30-0",
+          "text": "业务异常为零；",
+          "start": 74.13,
+          "end": 75.622
+        }
+      ]
+    },
+    {
+      "id": "caption-group-31",
+      "frame": 7,
+      "start": 75.842,
+      "end": 78.699,
+      "text": "操作记录保留了结项证据。",
+      "words": [
+        {
+          "id": "caption-word-31-0",
+          "text": "操作记录保留了结项证据。",
+          "start": 75.842,
+          "end": 78.579
+        }
+      ]
+    },
+    {
+      "id": "caption-group-32",
+      "frame": 8,
+      "start": 78.819,
+      "end": 80.25,
+      "text": "延期场景中，",
+      "words": [
+        {
+          "id": "caption-word-32-0",
+          "text": "延期场景中，",
+          "start": 78.819,
+          "end": 80.13
+        }
+      ]
+    },
+    {
+      "id": "caption-group-33",
+      "frame": 8,
+      "start": 80.35,
+      "end": 84.403,
+      "text": "系统比较供应商到货日和客户交期，",
+      "words": [
+        {
+          "id": "caption-word-33-0",
+          "text": "系统比较供应商到货日和客户交期，",
+          "start": 80.35,
+          "end": 84.283
+        }
+      ]
+    },
+    {
+      "id": "caption-group-34",
+      "frame": 8,
+      "start": 84.503,
+      "end": 88.032,
+      "text": "命中确定性规则后标记高风险，",
+      "words": [
+        {
+          "id": "caption-word-34-0",
+          "text": "命中确定性规则后标记高风险，",
+          "start": 84.503,
+          "end": 87.912
+        }
+      ]
+    },
+    {
+      "id": "caption-group-35",
+      "frame": 8,
+      "start": 88.132,
+      "end": 91.136,
+      "text": "后续节点不再被虚假推进。",
+      "words": [
+        {
+          "id": "caption-word-35-0",
+          "text": "后续节点不再被虚假推进。",
+          "start": 88.132,
+          "end": 91.016
+        }
+      ]
+    },
+    {
+      "id": "caption-group-36",
+      "frame": 9,
+      "start": 91.256,
+      "end": 94.463,
+      "text": "异常关闭不是点一下按钮。",
+      "words": [
+        {
+          "id": "caption-word-36-0",
+          "text": "异常关闭不是点一下按钮。",
+          "start": 91.256,
+          "end": 94.343
+        }
+      ]
+    },
+    {
+      "id": "caption-group-37",
+      "frame": 9,
+      "start": 94.563,
+      "end": 99.172,
+      "text": "根因、整改证据、验证人和验证时间都要",
+      "words": [
+        {
+          "id": "caption-word-37-0",
+          "text": "根因、整改证据、验证人和验证时间都要",
+          "start": 94.563,
+          "end": 99.052
+        }
+      ]
+    },
+    {
+      "id": "caption-group-38",
+      "frame": 9,
+      "start": 99.272,
+      "end": 99.954,
+      "text": "齐全，",
+      "words": [
+        {
+          "id": "caption-word-38-0",
+          "text": "齐全，",
+          "start": 99.272,
+          "end": 99.834
+        }
+      ]
+    },
+    {
+      "id": "caption-group-39",
+      "frame": 9,
+      "start": 100.054,
+      "end": 102.699,
+      "text": "并留下独立审计记录。",
+      "words": [
+        {
+          "id": "caption-word-39-0",
+          "text": "并留下独立审计记录。",
+          "start": 100.054,
+          "end": 102.579
+        }
+      ]
+    },
+    {
+      "id": "caption-group-40",
+      "frame": 10,
+      "start": 102.819,
+      "end": 105.869,
+      "text": "退样场景保留第一轮反馈，",
+      "words": [
+        {
+          "id": "caption-word-40-0",
+          "text": "退样场景保留第一轮反馈，",
+          "start": 102.819,
+          "end": 105.749
+        }
+      ]
+    },
+    {
+      "id": "caption-group-41",
+      "frame": 10,
+      "start": 105.969,
+      "end": 108.487,
+      "text": "生成第二轮样品请求，",
+      "words": [
+        {
+          "id": "caption-word-41-0",
+          "text": "生成第二轮样品请求，",
+          "start": 105.969,
+          "end": 108.367
+        }
+      ]
+    },
+    {
+      "id": "caption-group-42",
+      "frame": 10,
+      "start": 108.587,
+      "end": 110.572,
+      "text": "再记录客户认可；",
+      "words": [
+        {
+          "id": "caption-word-42-0",
+          "text": "再记录客户认可；",
+          "start": 108.587,
+          "end": 110.452
+        }
+      ]
+    },
+    {
+      "id": "caption-group-43",
+      "frame": 10,
+      "start": 110.672,
+      "end": 112.923,
+      "text": "两轮证据互相链接，",
+      "words": [
+        {
+          "id": "caption-word-43-0",
+          "text": "两轮证据互相链接，",
+          "start": 110.672,
+          "end": 112.803
+        }
+      ]
+    },
+    {
+      "id": "caption-group-44",
+      "frame": 10,
+      "start": 113.023,
+      "end": 114.475,
+      "text": "不覆盖历史。",
+      "words": [
+        {
+          "id": "caption-word-44-0",
+          "text": "不覆盖历史。",
+          "start": 113.023,
+          "end": 114.355
+        }
+      ]
+    },
+    {
+      "id": "caption-group-45",
+      "frame": 11,
+      "start": 114.595,
+      "end": 116.969,
+      "text": "在合成压力数据下，",
+      "words": [
+        {
+          "id": "caption-word-45-0",
+          "text": "在合成压力数据下，",
+          "start": 114.595,
+          "end": 116.849
+        }
+      ]
+    },
+    {
+      "id": "caption-group-46",
+      "frame": 11,
+      "start": 117.069,
+      "end": 121.98,
+      "text": "管理驾驶舱按权限汇总二百零二个项目、",
+      "words": [
+        {
+          "id": "caption-word-46-0",
+          "text": "管理驾驶舱按权限汇总二百零二个项目、",
+          "start": 117.069,
+          "end": 121.86
+        }
+      ]
+    },
+    {
+      "id": "caption-group-47",
+      "frame": 11,
+      "start": 122.08,
+      "end": 125.582,
+      "text": "在途金额、风险和未关闭异常，",
+      "words": [
+        {
+          "id": "caption-word-47-0",
+          "text": "在途金额、风险和未关闭异常，",
+          "start": 122.08,
+          "end": 125.462
+        }
+      ]
+    },
+    {
+      "id": "caption-group-48",
+      "frame": 11,
+      "start": 125.682,
+      "end": 127.211,
+      "text": "并支持下钻。",
+      "words": [
+        {
+          "id": "caption-word-48-0",
+          "text": "并支持下钻。",
+          "start": 125.682,
+          "end": 127.091
+        }
+      ]
+    },
+    {
+      "id": "caption-group-49",
+      "frame": 12,
+      "start": 127.331,
+      "end": 131.57,
+      "text": "权限按角色、项目、公司和门户四层隔离",
+      "words": [
+        {
+          "id": "caption-word-49-0",
+          "text": "权限按角色、项目、公司和门户四层隔离",
+          "start": 127.331,
+          "end": 131.45
+        }
+      ]
+    },
+    {
+      "id": "caption-group-50",
+      "frame": 12,
+      "start": 131.67,
+      "end": 132.047,
+      "text": "。",
+      "words": [
+        {
+          "id": "caption-word-50-0",
+          "text": "。",
+          "start": 131.67,
+          "end": 131.927
+        }
+      ]
+    },
+    {
+      "id": "caption-group-51",
+      "frame": 12,
+      "start": 132.147,
+      "end": 134.842,
+      "text": "AI 只读分析、默认关闭，",
+      "words": [
+        {
+          "id": "caption-word-51-0",
+          "text": "AI 只读分析、默认关闭，",
+          "start": 132.147,
+          "end": 134.722
+        }
+      ]
+    },
+    {
+      "id": "caption-group-52",
+      "frame": 12,
+      "start": 134.942,
+      "end": 138.923,
+      "text": "失败也不会提交单据或改业务状态。",
+      "words": [
+        {
+          "id": "caption-word-52-0",
+          "text": "失败也不会提交单据或改业务状态。",
+          "start": 134.942,
+          "end": 138.803
+        }
+      ]
+    },
+    {
+      "id": "caption-group-53",
+      "frame": 13,
+      "start": 139.043,
+      "end": 141.603,
+      "text": "工程证据同样可复现：",
+      "words": [
+        {
+          "id": "caption-word-53-0",
+          "text": "工程证据同样可复现：",
+          "start": 139.043,
+          "end": 141.483
+        }
+      ]
+    },
+    {
+      "id": "caption-group-54",
+      "frame": 13,
+      "start": 141.703,
+      "end": 145.889,
+      "text": "一百七十项静态测试、一百四十八项",
+      "words": [
+        {
+          "id": "caption-word-54-0",
+          "text": "一百七十项静态测试、一百四十八项",
+          "start": 141.703,
+          "end": 145.769
+        }
+      ]
+    },
+    {
+      "id": "caption-group-55",
+      "frame": 13,
+      "start": 145.989,
+      "end": 150.447,
+      "text": "Frappe 集成测试、三项浏览器闭",
+      "words": [
+        {
+          "id": "caption-word-55-0",
+          "text": "Frappe 集成测试、三项浏览器闭",
+          "start": 145.989,
+          "end": 150.327
+        }
+      ]
+    },
+    {
+      "id": "caption-group-56",
+      "frame": 13,
+      "start": 150.547,
+      "end": 152.022,
+      "text": "环全部通过，",
+      "words": [
+        {
+          "id": "caption-word-56-0",
+          "text": "环全部通过，",
+          "start": 150.547,
+          "end": 151.902
+        }
+      ]
+    },
+    {
+      "id": "caption-group-57",
+      "frame": 13,
+      "start": 152.122,
+      "end": 154.411,
+      "text": "备份恢复校验通过。",
+      "words": [
+        {
+          "id": "caption-word-57-0",
+          "text": "备份恢复校验通过。",
+          "start": 152.122,
+          "end": 154.291
+        }
+      ]
+    },
+    {
+      "id": "caption-group-58",
+      "frame": 14,
+      "start": 154.531,
+      "end": 156.901,
+      "text": "这不是一张概念图。",
+      "words": [
+        {
+          "id": "caption-word-58-0",
+          "text": "这不是一张概念图。",
+          "start": 154.531,
+          "end": 156.781
+        }
+      ]
+    },
+    {
+      "id": "caption-group-59",
+      "frame": 14,
+      "start": 157.001,
+      "end": 158.246,
+      "text": "打开仓库，",
+      "words": [
+        {
+          "id": "caption-word-59-0",
+          "text": "打开仓库，",
+          "start": 157.001,
+          "end": 158.126
+        }
+      ]
+    },
+    {
+      "id": "caption-group-60",
+      "frame": 14,
+      "start": 158.346,
+      "end": 159.873,
+      "text": "按演示脚本，",
+      "words": [
+        {
+          "id": "caption-word-60-0",
+          "text": "按演示脚本，",
+          "start": 158.346,
+          "end": 159.753
+        }
+      ]
+    },
+    {
+      "id": "caption-group-61",
+      "frame": 14,
+      "start": 159.973,
+      "end": 162.624,
+      "text": "从任一场景继续下钻。",
+      "words": [
+        {
+          "id": "caption-word-61-0",
+          "text": "从任一场景继续下钻。",
+          "start": 159.973,
+          "end": 162.504
+        }
+      ]
+    }
+  ]
+}

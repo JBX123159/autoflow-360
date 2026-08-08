@@ -1,0 +1,4 @@
+services:
+  frappe:
+    volumes:
+      - ${GITHUB_WORKSPACE:?GITHUB_WORKSPACE is required}:/workspace/autoflow_360

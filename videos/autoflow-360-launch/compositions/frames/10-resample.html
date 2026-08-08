@@ -1,0 +1,511 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "NotoSansSC";
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "NotoSansSC";
+      color: #20242b;
+    }
+
+    [data-composition-id="10-resample"] *,
+    [data-composition-id="10-resample"] *::before,
+    [data-composition-id="10-resample"] *::after {
+      box-sizing: border-box;
+    }
+
+    [id="10-resample-ground"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #f7f9fc;
+    }
+
+    [id="10-resample-source"] {
+      position: absolute;
+      left: 96px;
+      top: 188px;
+      width: 1728px;
+      height: 688px;
+      overflow: hidden;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: #f7f9fc;
+    }
+
+    [id="10-resample-source-image"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.90;
+      filter: saturate(0.92) contrast(0.96);
+    }
+
+    [id="10-resample-source-wash"] {
+      position: absolute;
+      inset: 0;
+      background: rgba(247, 249, 252, 0.10);
+    }
+
+    [id="10-resample-content"] {
+      position: absolute;
+      inset: 0;
+      perspective: 1800px;
+    }
+
+    [id="10-resample-header"] {
+      position: absolute;
+      left: 96px;
+      top: 68px;
+      width: 1728px;
+      height: 96px;
+    }
+
+    [id="10-resample-accent-line"] {
+      width: 60px;
+      height: 4px;
+      margin-bottom: 14px;
+      border-radius: 2px;
+      background: #2563b8;
+    }
+
+    [id="10-resample-eyebrow"] {
+      margin-bottom: 5px;
+      color: #2563b8;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    [id="10-resample-title"] {
+      color: #20242b;
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    [id="10-resample-tag"] {
+      position: absolute;
+      right: 0;
+      top: 10px;
+      min-width: 138px;
+      padding: 10px 20px;
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+      font-size: 15px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    [id="10-resample-stage"] {
+      position: absolute;
+      left: 210px;
+      top: 276px;
+      display: flex;
+      width: 1500px;
+      height: 438px;
+      gap: 180px;
+      border-radius: 14px;
+      background: rgba(247, 249, 252, 0.82);
+      transform-style: preserve-3d;
+    }
+
+    [class~="10-resample-pair"] {
+      position: relative;
+      width: 660px;
+      height: 438px;
+      transform-style: preserve-3d;
+      will-change: transform, opacity;
+    }
+
+    [class~="10-resample-evidence-card"] {
+      position: absolute;
+      left: 0;
+      width: 660px;
+      height: 182px;
+      overflow: hidden;
+      padding: 26px 30px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(37, 99, 184, 0.05);
+      transform-style: preserve-3d;
+      will-change: transform, opacity, border-radius, background-color;
+    }
+
+    [class~="10-resample-request-card"] {
+      top: 0;
+    }
+
+    [class~="10-resample-feedback-card"] {
+      top: 256px;
+    }
+
+    [class~="10-resample-card-topline"] {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    [class~="10-resample-round-label"] {
+      color: #2563b8;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="10-resample-state-pill"] {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    [class~="10-resample-state-pill"]::before {
+      width: 8px;
+      height: 8px;
+      margin-right: 9px;
+      border-radius: 50%;
+      background: #2563b8;
+      content: "";
+    }
+
+    [class~="10-resample-card-title"] {
+      margin-bottom: 8px;
+      color: #20242b;
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    [class~="10-resample-card-meta"] {
+      color: #667085;
+      font-size: 27px;
+      font-weight: 400;
+      line-height: 1.35;
+    }
+
+    [class~="10-resample-rail"] {
+      position: absolute;
+      left: 32px;
+      top: 182px;
+      width: 4px;
+      height: 74px;
+      border-radius: 2px;
+      background: #2563b8;
+      transform-origin: center top;
+    }
+
+    [id="10-resample-relations"] {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 896px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    [class~="10-resample-relation-path"] {
+      fill: none;
+      stroke: #2563b8;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    [class~="10-resample-relation-node"] {
+      fill: #f7f9fc;
+      stroke: #2563b8;
+      stroke-width: 4;
+    }
+
+    [id="10-resample-history-pill"] {
+      position: absolute;
+      left: 744px;
+      top: 758px;
+      width: 432px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: #f7f9fc;
+      color: #20242b;
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    [id="10-resample-history-pill"]::before {
+      width: 10px;
+      height: 10px;
+      margin-right: 14px;
+      border-radius: 50%;
+      background: #2563b8;
+      content: "";
+    }
+
+    [id="10-resample-progress"] {
+      position: absolute;
+      left: 96px;
+      top: 892px;
+      width: 1728px;
+      height: 4px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: rgba(37, 99, 184, 0.10);
+    }
+
+    [id="10-resample-progress-fill"] {
+      display: block;
+      width: 76%;
+      height: 100%;
+      border-radius: 6px;
+      background: #2563b8;
+    }
+  </style>
+
+  <div data-hf-id="hf-qn4w" id="root" data-composition-id="10-resample" data-start="0" data-duration="12.276" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-piqh" id="10-resample-ground" class="clip" data-start="0" data-duration="12.276" data-track-index="0"></div>
+
+    <div data-hf-id="hf-h76i" id="10-resample-source" class="clip" data-start="0" data-duration="12.276" data-track-index="1">
+      <img data-hf-id="hf-dgpe" id="10-resample-source-image" src="assets/product/04-resample.png" alt="AutoFlow 360 两轮样品与客户反馈项目全景">
+      <div data-hf-id="hf-r804" id="10-resample-source-wash"></div>
+    </div>
+
+    <div data-hf-id="hf-4dtp" id="10-resample-content" class="clip" data-start="0" data-duration="12.276" data-track-index="2">
+      <header data-hf-id="hf-y4ss" id="10-resample-header">
+        <div data-hf-id="hf-hb3s" id="10-resample-accent-line"></div>
+        <div data-hf-id="hf-kqc9" id="10-resample-eyebrow">重新打样 · 证据链</div>
+        <div data-hf-id="hf-alii" id="10-resample-title">双轮记录，前后可追溯</div>
+        <div data-hf-id="hf-g9u7" id="10-resample-tag">项目全景</div>
+      </header>
+
+      <div data-hf-id="hf-n5tf" id="10-resample-stage">
+        <section data-hf-id="hf-6e7u" id="10-resample-left-pair" class="10-resample-pair">
+          <article data-hf-id="hf-qx82" id="10-resample-left-request" class="10-resample-evidence-card 10-resample-request-card">
+            <div data-hf-id="hf-5p9k" class="10-resample-card-topline">
+              <span data-hf-id="hf-3hel" class="10-resample-round-label">第 1 轮</span>
+              <span data-hf-id="hf-4igo" class="10-resample-state-pill">已提交</span>
+            </div>
+            <div data-hf-id="hf-bfeg" class="10-resample-card-title">样品请求</div>
+            <div data-hf-id="hf-9ec0" class="10-resample-card-meta">初版样品 · 独立记录</div>
+          </article>
+          <div data-hf-id="hf-pvzq" id="10-resample-left-rail" class="10-resample-rail"></div>
+          <article data-hf-id="hf-mwyy" id="10-resample-left-feedback" class="10-resample-evidence-card 10-resample-feedback-card">
+            <div data-hf-id="hf-fwgw" class="10-resample-card-topline">
+              <span data-hf-id="hf-31ru" class="10-resample-round-label">客户反馈</span>
+              <span data-hf-id="hf-yb3b" class="10-resample-state-pill">退样</span>
+            </div>
+            <div data-hf-id="hf-par0" class="10-resample-card-title">反馈留档</div>
+            <div data-hf-id="hf-1p4i" class="10-resample-card-meta">与第一轮请求保持关联</div>
+          </article>
+        </section>
+
+        <section data-hf-id="hf-xmd1" id="10-resample-right-pair" class="10-resample-pair">
+          <article data-hf-id="hf-7fbp" id="10-resample-right-request" class="10-resample-evidence-card 10-resample-request-card">
+            <div data-hf-id="hf-epjt" class="10-resample-card-topline">
+              <span data-hf-id="hf-uegc" class="10-resample-round-label">第 2 轮</span>
+              <span data-hf-id="hf-3pyl" class="10-resample-state-pill">重新打样</span>
+            </div>
+            <div data-hf-id="hf-ry4w" class="10-resample-card-title">样品请求</div>
+            <div data-hf-id="hf-p3ib" class="10-resample-card-meta">新版本 · 延续证据链</div>
+          </article>
+          <div data-hf-id="hf-5n2l" id="10-resample-right-rail" class="10-resample-rail"></div>
+          <article data-hf-id="hf-zw8r" id="10-resample-right-feedback" class="10-resample-evidence-card 10-resample-feedback-card">
+            <div data-hf-id="hf-f3uu" class="10-resample-card-topline">
+              <span data-hf-id="hf-g2u6" class="10-resample-round-label">客户反馈</span>
+              <span data-hf-id="hf-lgns" id="10-resample-approved-pill" class="10-resample-state-pill">认可</span>
+            </div>
+            <div data-hf-id="hf-0pwo" class="10-resample-card-title">决策留档</div>
+            <div data-hf-id="hf-e2ha" class="10-resample-card-meta">与第二轮请求保持关联</div>
+          </article>
+        </section>
+      </div>
+
+      <svg data-hf-id="hf-f9x6" id="10-resample-relations" viewBox="0 0 1920 896" aria-hidden="true">
+        <path data-hf-id="hf-nhaw" id="10-resample-spine" class="10-resample-relation-path" d="M 960 314 L 960 706" />
+        <path data-hf-id="hf-60a1" id="10-resample-link-left-top" class="10-resample-relation-path" d="M 960 364 C 914 364 882 364 870 364" />
+        <path data-hf-id="hf-6bi5" id="10-resample-link-left-bottom" class="10-resample-relation-path" d="M 960 620 C 914 620 882 620 870 620" />
+        <path data-hf-id="hf-gnxi" id="10-resample-link-right-top" class="10-resample-relation-path" d="M 960 364 C 1006 364 1038 364 1050 364" />
+        <path data-hf-id="hf-k0cw" id="10-resample-link-right-bottom" class="10-resample-relation-path" d="M 960 620 C 1006 620 1038 620 1050 620" />
+        <circle data-hf-id="hf-emf1" id="10-resample-node-top" class="10-resample-relation-node" cx="960" cy="364" r="10" />
+        <circle data-hf-id="hf-stq4" id="10-resample-node-bottom" class="10-resample-relation-node" cx="960" cy="620" r="10" />
+      </svg>
+
+      <div data-hf-id="hf-4rve" id="10-resample-history-pill">保留历史，不覆盖</div>
+      <div data-hf-id="hf-c73y" id="10-resample-progress"><span data-hf-id="hf-qral" id="10-resample-progress-fill"></span></div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (() => {
+      window.__timelines = window.__timelines || {};
+      const timeline = gsap.timeline({ paused: true });
+      window.__timelines["10-resample"] = timeline;
+
+      const composition = document.querySelector('[data-composition-id="10-resample"]');
+      if (!composition) return;
+
+      const find = (selector) => composition.querySelector(selector);
+      const findAll = (selector) => Array.from(composition.querySelectorAll(selector));
+      const relationPaths = findAll('[class~="10-resample-relation-path"]');
+
+      relationPaths.forEach((path) => {
+        if (typeof path.getTotalLength !== "function") return;
+        const pathLength = path.getTotalLength();
+        path.style.strokeDasharray = `${pathLength}`;
+        path.style.strokeDashoffset = `${pathLength}`;
+      });
+
+      timeline.fromTo(
+        find('[id="10-resample-source"]'),
+        { opacity: 0, scale: 1.025 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" },
+        0
+      );
+      timeline.fromTo(
+        find('[id="10-resample-header"]'),
+        { opacity: 0, y: -22 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
+        0.08
+      );
+      timeline.fromTo(
+        find('[id="10-resample-left-pair"]'),
+        { x: -320, rotateY: 22, opacity: 0 },
+        { x: 0, rotateY: 10, opacity: 1, duration: 1.15, ease: "power3.out" },
+        0.28
+      );
+      timeline.fromTo(
+        find('[id="10-resample-left-request"]'),
+        { scale: 0.7, borderRadius: 28, backgroundColor: "rgba(37, 99, 184, 0.18)" },
+        { scale: 1, borderRadius: 14, backgroundColor: "rgba(37, 99, 184, 0.05)", duration: 1.05, ease: "power2.inOut" },
+        0.38
+      );
+
+      timeline.fromTo(
+        find('[id="10-resample-left-rail"]'),
+        { scaleY: 0, opacity: 0 },
+        { scaleY: 1, opacity: 1, duration: 0.55, ease: "power2.out" },
+        1.806
+      );
+      timeline.fromTo(
+        find('[id="10-resample-left-feedback"]'),
+        { y: -34, scale: 0.86, opacity: 0 },
+        { y: 0, scale: 1, opacity: 1, duration: 0.9, ease: "power3.out" },
+        2.12
+      );
+
+      timeline.fromTo(
+        find('[id="10-resample-right-pair"]'),
+        { x: 320, rotateY: -22, opacity: 0 },
+        { x: 0, rotateY: -10, opacity: 0.64, duration: 1.1, ease: "power3.out" },
+        4.396
+      );
+      timeline.fromTo(
+        find('[id="10-resample-right-request"]'),
+        { scale: 0.7, borderRadius: 28, backgroundColor: "rgba(37, 99, 184, 0.18)" },
+        { scale: 1, borderRadius: 14, backgroundColor: "rgba(37, 99, 184, 0.05)", duration: 0.95, ease: "power2.inOut" },
+        4.52
+      );
+      timeline.to(
+        find('[id="10-resample-left-pair"]'),
+        { y: -5, duration: 0.5, ease: "sine.inOut" },
+        5.45
+      );
+      timeline.to(
+        find('[id="10-resample-right-pair"]'),
+        { y: 5, duration: 0.5, ease: "sine.inOut" },
+        5.45
+      );
+      timeline.to(
+        find('[id="10-resample-left-pair"]'),
+        { y: 0, duration: 0.5, ease: "sine.inOut" },
+        5.95
+      );
+      timeline.to(
+        find('[id="10-resample-right-pair"]'),
+        { y: 0, duration: 0.5, ease: "sine.inOut" },
+        5.95
+      );
+
+      timeline.fromTo(
+        find('[id="10-resample-right-rail"]'),
+        { scaleY: 0, opacity: 0 },
+        { scaleY: 1, opacity: 1, duration: 0.55, ease: "power2.out" },
+        6.595
+      );
+      timeline.fromTo(
+        find('[id="10-resample-right-feedback"]'),
+        { y: -34, scale: 0.86, opacity: 0 },
+        { y: 0, scale: 1, opacity: 1, duration: 0.9, ease: "power3.out" },
+        6.88
+      );
+      timeline.to(
+        find('[id="10-resample-right-pair"]'),
+        { opacity: 1, duration: 0.75, ease: "power1.out" },
+        6.88
+      );
+      timeline.to(
+        find('[id="10-resample-left-pair"]'),
+        { opacity: 0.78, duration: 0.75, ease: "power1.out" },
+        6.88
+      );
+      timeline.fromTo(
+        find('[id="10-resample-approved-pill"]'),
+        { scale: 0.72 },
+        { scale: 1, duration: 0.55, ease: "power2.out" },
+        7.3
+      );
+
+      const drawOrder = [
+        "10-resample-spine",
+        "10-resample-link-left-top",
+        "10-resample-link-right-top",
+        "10-resample-link-left-bottom",
+        "10-resample-link-right-bottom"
+      ];
+      drawOrder.forEach((pathId, index) => {
+        timeline.to(
+          find(`[id="${pathId}"]`),
+          { strokeDashoffset: 0, duration: index === 0 ? 0.75 : 0.48, ease: "power2.out" },
+          9.028 + index * 0.36
+        );
+      });
+      timeline.fromTo(
+        findAll('[class~="10-resample-relation-node"]'),
+        { scale: 0, opacity: 0, transformOrigin: "50% 50%" },
+        { scale: 1, opacity: 1, duration: 0.45, stagger: 0.16, ease: "power2.out" },
+        10.16
+      );
+      timeline.fromTo(
+        find('[id="10-resample-history-pill"]'),
+        { y: 20, scale: 0.94, opacity: 0 },
+        { y: 0, scale: 1, opacity: 1, duration: 0.68, ease: "power2.out" },
+        10.42
+      );
+    })();
+  </script>
+</template>

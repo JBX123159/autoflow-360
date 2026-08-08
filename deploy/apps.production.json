@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://github.com/frappe/erpnext",
+    "branch": "version-16"
+  },
+  {
+    "url": "https://github.com/frappe/crm",
+    "branch": "main"
+  },
+  {
+    "url": "https://github.com/JBX123159/autoflow-360",
+    "branch": "main"
+  }
+]

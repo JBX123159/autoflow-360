@@ -1,0 +1,538 @@
+﻿<template>
+  <style>
+    @font-face {
+      font-family: "NotoSansSC";
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #20242b;
+      font-family: "NotoSansSC";
+    }
+
+    #root * {
+      box-sizing: border-box;
+    }
+
+    .clip {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .frame-06-normal-flow-ground {
+      z-index: 0;
+      background:
+        linear-gradient(180deg, rgba(37, 99, 184, 0.045), rgba(37, 99, 184, 0) 32%),
+        #f7f9fc;
+    }
+
+    .frame-06-normal-flow-header {
+      position: absolute;
+      z-index: 4;
+      top: 26px;
+      left: 96px;
+      right: 96px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .frame-06-normal-flow-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: #2563b8;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .frame-06-normal-flow-eyebrow::before {
+      content: "";
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #2563b8;
+    }
+
+    .frame-06-normal-flow-tag {
+      padding: 10px 20px 11px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.1);
+      color: #2563b8;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .frame-06-normal-flow-camera {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      overflow: hidden;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    .frame-06-normal-flow-zoom-outer,
+    .frame-06-normal-flow-zoom-inner {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    .frame-06-normal-flow-surface {
+      position: absolute;
+      top: 82px;
+      left: 96px;
+      width: 1728px;
+      height: 770px;
+      overflow: hidden;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: #f7f9fc;
+    }
+
+    .frame-06-normal-flow-screenshot {
+      position: absolute;
+      z-index: 0;
+      top: -54px;
+      left: -30px;
+      width: 1788px;
+      height: auto;
+      opacity: 0.92;
+      will-change: transform;
+    }
+
+    .frame-06-normal-flow-soften {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background: rgba(247, 249, 252, 0.08);
+      pointer-events: none;
+    }
+
+    .frame-06-normal-flow-project-focus {
+      position: absolute;
+      z-index: 3;
+      top: 30px;
+      left: 548px;
+      width: 610px;
+      height: 96px;
+      border: 2px solid rgba(37, 99, 184, 0.72);
+      border-radius: 12px;
+      background: rgba(247, 249, 252, 0.13);
+      pointer-events: none;
+    }
+
+    .frame-06-normal-flow-project-chip {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      padding: 6px 13px 7px;
+      border-radius: 100px;
+      background: #2563b8;
+      color: #f7f9fc;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.035em;
+    }
+
+    .frame-06-normal-flow-evidence-panel {
+      position: absolute;
+      z-index: 4;
+      top: 338px;
+      left: 64px;
+      width: 1600px;
+      height: 292px;
+      overflow: hidden;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(247, 249, 252, 0.9);
+    }
+
+    .frame-06-normal-flow-axis {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      width: 1600px;
+      height: 292px;
+      pointer-events: none;
+    }
+
+    .frame-06-normal-flow-axis-base {
+      fill: none;
+      stroke: rgba(37, 99, 184, 0.18);
+      stroke-width: 8;
+      stroke-linecap: round;
+    }
+
+    .frame-06-normal-flow-axis-live {
+      fill: none;
+      stroke: #2563b8;
+      stroke-width: 8;
+      stroke-linecap: round;
+    }
+
+    .frame-06-normal-flow-nodes {
+      position: absolute;
+      z-index: 2;
+      top: 28px;
+      left: 46px;
+      width: 1508px;
+      display: grid;
+      grid-template-columns: repeat(6, 226px);
+      gap: 30px;
+    }
+
+    .frame-06-normal-flow-node {
+      position: relative;
+      height: 232px;
+      text-align: center;
+      transform-origin: 50% 98px;
+      will-change: transform, opacity;
+    }
+
+    .frame-06-normal-flow-node-label {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #20242b;
+      font-size: 25px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .frame-06-normal-flow-node-dot {
+      width: 62px;
+      height: 62px;
+      margin: 16px auto 0;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(37, 99, 184, 0.42);
+      border-radius: 50%;
+      background: #f7f9fc;
+      color: #2563b8;
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .frame-06-normal-flow-source {
+      min-height: 42px;
+      margin: 18px 4px 0;
+      padding: 9px 10px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.05);
+      color: #667085;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .frame-06-normal-flow-proof {
+      position: absolute;
+      z-index: 5;
+      top: 658px;
+      right: 64px;
+      min-width: 322px;
+      height: 68px;
+      padding: 0 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: #2563b8;
+      color: #f7f9fc;
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .frame-06-normal-flow-proof-mark {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(247, 249, 252, 0.88);
+      border-radius: 50%;
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .frame-06-normal-flow-progress-track {
+      position: absolute;
+      z-index: 5;
+      top: 884px;
+      left: 96px;
+      width: 1728px;
+      height: 4px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: rgba(37, 99, 184, 0.1);
+    }
+
+    .frame-06-normal-flow-progress {
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      background: #2563b8;
+      transform-origin: 0 50%;
+      will-change: transform;
+    }
+  </style>
+
+  <div data-hf-id="hf-2luk" id="root" data-composition-id="06-normal-flow" data-start="0" data-duration="12.496" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-qytf" class="clip frame-06-normal-flow-ground" data-start="0" data-duration="12.496" data-track-index="0"></div>
+
+    <div data-hf-id="hf-qc4o" class="frame-06-normal-flow-camera" id="frame-06-normal-flow-camera">
+      <div data-hf-id="hf-uw8v" class="frame-06-normal-flow-header">
+        <div data-hf-id="hf-mlu2" class="frame-06-normal-flow-eyebrow">NORMAL DELIVERY</div>
+        <div data-hf-id="hf-9oqw" class="frame-06-normal-flow-tag">端到端闭环</div>
+      </div>
+
+      <div data-hf-id="hf-e854" class="frame-06-normal-flow-zoom-outer" id="frame-06-normal-flow-zoom-outer">
+        <div data-hf-id="hf-w6pu" class="frame-06-normal-flow-zoom-inner" id="frame-06-normal-flow-zoom-inner">
+          <div data-hf-id="hf-jeqq" class="frame-06-normal-flow-surface" id="frame-06-normal-flow-surface">
+            <img data-hf-id="hf-vo43" class="frame-06-normal-flow-screenshot" id="frame-06-normal-flow-screenshot" src="assets/product/02-normal-project.png" alt="AutoFlow 360 正常交付项目全景">
+            <div data-hf-id="hf-yq6h" class="frame-06-normal-flow-soften"></div>
+
+            <div data-hf-id="hf-5evu" class="frame-06-normal-flow-project-focus" id="frame-06-normal-flow-project-focus">
+              <div data-hf-id="hf-8vut" class="frame-06-normal-flow-project-chip">DEMO-NORMAL-001</div>
+            </div>
+
+            <div data-hf-id="hf-bl82" class="frame-06-normal-flow-evidence-panel" id="frame-06-normal-flow-evidence-panel">
+              <svg data-hf-id="hf-ji6m" class="frame-06-normal-flow-axis" viewBox="0 0 1600 292" aria-hidden="true">
+                <path data-hf-id="hf-j6au" class="frame-06-normal-flow-axis-base" d="M 159 118 L 1441 118" />
+                <path data-hf-id="hf-em4p" class="frame-06-normal-flow-axis-live" id="frame-06-normal-flow-axis-live" d="M 159 118 L 1441 118" />
+              </svg>
+
+              <div data-hf-id="hf-isvb" class="frame-06-normal-flow-nodes">
+                <div data-hf-id="hf-5dvg" class="frame-06-normal-flow-node" id="frame-06-normal-flow-node-1">
+                  <div data-hf-id="hf-dxbl" class="frame-06-normal-flow-node-label">商机立项</div>
+                  <div data-hf-id="hf-758s" class="frame-06-normal-flow-node-dot" id="frame-06-normal-flow-dot-1">01</div>
+                  <div data-hf-id="hf-jnqx" class="frame-06-normal-flow-source" id="frame-06-normal-flow-source-1">机会单 → 项目单</div>
+                </div>
+                <div data-hf-id="hf-g9d3" class="frame-06-normal-flow-node" id="frame-06-normal-flow-node-2">
+                  <div data-hf-id="hf-o7vc" class="frame-06-normal-flow-node-label">样品认可</div>
+                  <div data-hf-id="hf-c6oy" class="frame-06-normal-flow-node-dot" id="frame-06-normal-flow-dot-2">02</div>
+                  <div data-hf-id="hf-p24u" class="frame-06-normal-flow-source" id="frame-06-normal-flow-source-2">SMP-2026-00001</div>
+                </div>
+                <div data-hf-id="hf-cb92" class="frame-06-normal-flow-node" id="frame-06-normal-flow-node-3">
+                  <div data-hf-id="hf-fopn" class="frame-06-normal-flow-node-label">报价审批</div>
+                  <div data-hf-id="hf-08ic" class="frame-06-normal-flow-node-dot" id="frame-06-normal-flow-dot-3">03</div>
+                  <div data-hf-id="hf-t3aj" class="frame-06-normal-flow-source" id="frame-06-normal-flow-source-3">SAL-QTN-2026-00001</div>
+                </div>
+                <div data-hf-id="hf-kz4x" class="frame-06-normal-flow-node" id="frame-06-normal-flow-node-4">
+                  <div data-hf-id="hf-m5ge" class="frame-06-normal-flow-node-label">销售订单</div>
+                  <div data-hf-id="hf-xn3q" class="frame-06-normal-flow-node-dot" id="frame-06-normal-flow-dot-4">04</div>
+                  <div data-hf-id="hf-ha4i" class="frame-06-normal-flow-source" id="frame-06-normal-flow-source-4">SAL-ORD-2026-00001</div>
+                </div>
+                <div data-hf-id="hf-k7h4" class="frame-06-normal-flow-node" id="frame-06-normal-flow-node-5">
+                  <div data-hf-id="hf-1r5m" class="frame-06-normal-flow-node-label">采购履约</div>
+                  <div data-hf-id="hf-f3xw" class="frame-06-normal-flow-node-dot" id="frame-06-normal-flow-dot-5">05</div>
+                  <div data-hf-id="hf-g0pq" class="frame-06-normal-flow-source" id="frame-06-normal-flow-source-5">PUR-RFQ-2026-00001</div>
+                </div>
+                <div data-hf-id="hf-svcz" class="frame-06-normal-flow-node" id="frame-06-normal-flow-node-6">
+                  <div data-hf-id="hf-kf85" class="frame-06-normal-flow-node-label">交付签收</div>
+                  <div data-hf-id="hf-so22" class="frame-06-normal-flow-node-dot" id="frame-06-normal-flow-dot-6">06</div>
+                  <div data-hf-id="hf-iv3l" class="frame-06-normal-flow-source" id="frame-06-normal-flow-source-6">MAT-DN-2026-00001</div>
+                </div>
+              </div>
+            </div>
+
+            <div data-hf-id="hf-5u1u" class="frame-06-normal-flow-proof" id="frame-06-normal-flow-proof">
+              <span data-hf-id="hf-8le8" class="frame-06-normal-flow-proof-mark">✓</span>
+              <span data-hf-id="hf-kjnm">每一步都有来源</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-hf-id="hf-nper" class="frame-06-normal-flow-progress-track">
+      <div data-hf-id="hf-qrpw" class="frame-06-normal-flow-progress" id="frame-06-normal-flow-progress"></div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (() => {
+      const compositionId = "06-normal-flow";
+      const duration = 12.096;
+      const camera = document.getElementById("frame-06-normal-flow-camera");
+      const line = document.getElementById("frame-06-normal-flow-axis-live");
+      const lineLength = line.getTotalLength();
+
+      line.style.strokeDasharray = `${lineLength}`;
+      line.style.strokeDashoffset = `${lineLength}`;
+
+      const phase = { scale: 0.965 };
+      const drift = { p: 0 };
+      camera.style.transform = `scale(${phase.scale}) translate(0px, 0px)`;
+
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo(
+        "#frame-06-normal-flow-surface",
+        { opacity: 0.72, scale: 0.985 },
+        { opacity: 1, scale: 1, duration: 0.48, ease: "power2.out", immediateRender: true },
+        0,
+      );
+      tl.fromTo(
+        "#frame-06-normal-flow-screenshot",
+        { x: -18 },
+        { x: 18, duration, ease: "none", immediateRender: true },
+        0,
+      );
+      tl.fromTo(
+        "#frame-06-normal-flow-progress",
+        { scaleX: 0 },
+        { scaleX: 1, duration, ease: "none", immediateRender: true },
+        0,
+      );
+
+      tl.to(phase, { scale: 0.995, duration: 1.1, ease: "power2.out" }, 0.35);
+      tl.to(phase, { scale: 1.02, duration: 2.0, ease: "power2.inOut" }, 8.05);
+      tl.to(
+        drift,
+        {
+          p: Math.PI * 2 * 1.2,
+          duration,
+          ease: "none",
+          onUpdate: () => {
+            const dx = Math.sin(drift.p) * 4;
+            const dy = Math.sin(drift.p * 1.31) * 2;
+            camera.style.transform = `scale(${phase.scale}) translate(${dx}px, ${dy}px)`;
+          },
+        },
+        0,
+      );
+
+      tl.fromTo(
+        "#frame-06-normal-flow-project-focus",
+        { opacity: 0, scale: 0.965, y: 7 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.46, ease: "power2.out", immediateRender: true },
+        1.08,
+      );
+
+      const revealNode = (number, at, drawRatio) => {
+        const node = `#frame-06-normal-flow-node-${number}`;
+        const dot = `#frame-06-normal-flow-dot-${number}`;
+        const source = `#frame-06-normal-flow-source-${number}`;
+
+        tl.fromTo(
+          node,
+          { opacity: 0.16, scale: 0.72 },
+          { opacity: 1, scale: 1, duration: 0.46, ease: "power2.out", immediateRender: true },
+          at,
+        );
+        tl.fromTo(
+          dot,
+          { backgroundColor: "#f7f9fc", color: "#2563b8", borderColor: "rgba(37, 99, 184, 0.42)" },
+          {
+            backgroundColor: "#2563b8",
+            color: "#f7f9fc",
+            borderColor: "#2563b8",
+            duration: 0.36,
+            ease: "power1.out",
+            immediateRender: true,
+          },
+          at + 0.08,
+        );
+        tl.fromTo(
+          source,
+          { opacity: 0, y: 14 },
+          { opacity: 1, y: 0, duration: 0.44, ease: "power2.out", immediateRender: true },
+          at + 0.5,
+        );
+        tl.to(
+          line,
+          { strokeDashoffset: lineLength * drawRatio, duration: 0.72, ease: "power2.out" },
+          at,
+        );
+      };
+
+      revealNode(1, 1.663, 0.84);
+      revealNode(2, 3.402, 0.65);
+      tl.to("#frame-06-normal-flow-node-1", { opacity: 0.72, scale: 0.94, duration: 0.36, ease: "power1.out" }, 3.56);
+
+      revealNode(3, 5.292, 0.46);
+      tl.to("#frame-06-normal-flow-node-2", { opacity: 0.72, scale: 0.94, duration: 0.36, ease: "power1.out" }, 5.46);
+      tl.fromTo(
+        "#frame-06-normal-flow-zoom-outer",
+        { scale: 1 },
+        { scale: 1.055, duration: 1.2, ease: "power3.inOut", immediateRender: true },
+        5.292,
+      );
+      tl.fromTo(
+        "#frame-06-normal-flow-zoom-inner",
+        { x: 0, y: 0 },
+        { x: 129, y: 0, duration: 1.2, ease: "power3.inOut", immediateRender: true },
+        5.292,
+      );
+
+      tl.to("#frame-06-normal-flow-zoom-outer", { scale: 1, duration: 1.15, ease: "power3.inOut" }, 7.787);
+      tl.to("#frame-06-normal-flow-zoom-inner", { x: 0, y: 0, duration: 1.15, ease: "power3.inOut" }, 7.787);
+      revealNode(4, 7.787, 0.28);
+      tl.to("#frame-06-normal-flow-node-3", { opacity: 0.72, scale: 0.94, duration: 0.36, ease: "power1.out" }, 7.95);
+      revealNode(5, 8.82, 0.12);
+      tl.to("#frame-06-normal-flow-node-4", { opacity: 0.78, scale: 0.96, duration: 0.34, ease: "power1.out" }, 8.98);
+
+      revealNode(6, 9.828, 0);
+      tl.to("#frame-06-normal-flow-node-5", { opacity: 0.78, scale: 0.96, duration: 0.34, ease: "power1.out" }, 9.99);
+      tl.fromTo(
+        "#frame-06-normal-flow-node-6",
+        { scale: 0.9 },
+        { scale: 1.08, duration: 0.5, ease: "power2.out", immediateRender: false },
+        10.54,
+      );
+      tl.to("#frame-06-normal-flow-node-6", { scale: 1, duration: 0.42, ease: "power2.out" }, 11.04);
+
+      tl.fromTo(
+        "#frame-06-normal-flow-proof",
+        { opacity: 0, x: 30, scale: 0.96 },
+        { opacity: 1, x: 0, scale: 1, duration: 0.44, ease: "power2.out", immediateRender: true },
+        11.491,
+      );
+      tl.to(
+        [
+          "#frame-06-normal-flow-node-1",
+          "#frame-06-normal-flow-node-2",
+          "#frame-06-normal-flow-node-3",
+          "#frame-06-normal-flow-node-4",
+          "#frame-06-normal-flow-node-5",
+          "#frame-06-normal-flow-node-6",
+        ],
+        { opacity: 1, scale: 1, duration: 0.38, ease: "power1.out" },
+        11.491,
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["06-normal-flow"] = tl;
+    })();
+  </script>
+</template>

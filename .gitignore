@@ -18,3 +18,15 @@ logs/
 *.log
 playwright-report/
 test-results/
+
+# 视频素材抓取中间产物（最终使用的审核素材保留在 assets/）
+videos/*/capture/
+videos/*/.thumbnails/
+videos/*/snapshots/
+videos/*/renders/
+videos/*/.hyperframes/frame-packets/
+
+# Production deployment secrets and generated state
+deploy/oracle/compose.env
+deploy/oracle/compose.generated.yaml
+deploy/oracle/backups/

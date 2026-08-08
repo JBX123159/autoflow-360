@@ -8,7 +8,9 @@ requires-python = ">=3.14,<3.15"
 readme = "README.md"
 license = "AGPL-3.0-only"
 dynamic = ["version"]
-dependencies = []
+dependencies = [
+    "requests>=2.32,<3",
+]
 
 [build-system]
 requires = ["flit_core >=3.11,<4"]

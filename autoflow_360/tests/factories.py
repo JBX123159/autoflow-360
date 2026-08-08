@@ -57,12 +57,9 @@ def make_crm_deal(organization_name: str, **overrides):
 		"organization_name": organization_name,
 		"status": _get_open_crm_deal_status(),
 		"deal_owner": SYNTHETIC_USER,
-		"currency": frappe.get_cached_value(
-			"Company",
-			SYNTHETIC_COMPANY,
-			"default_currency",
-		)
-		or "INR",
+		# CRM Deal validates against the system currency. Keeping the synthetic
+		# fixture in that currency makes tests deterministic and network-free.
+		"currency": frappe.db.get_single_value("FCRM Settings", "currency") or "USD",
 		"probability": 40,
 		"deal_value": 200000,
 		"expected_deal_value": 80000,
@@ -1009,6 +1006,17 @@ def make_inactive_project(*, days_inactive: int = 10):
 		"SYNTHETIC Inactive Customer Project",
 		last_meaningful_activity=now_datetime() - timedelta(days=days_inactive),
 	)
+
+
+def make_project_with_risk():
+	from autoflow_360.risk_engine.service import evaluate_project, upsert_risks
+
+	project = make_overdue_project()
+	risk_names = upsert_risks(project.name, evaluate_project(project.name))
+	if not risk_names:
+		frappe.throw("Synthetic AI project requires at least one Project Risk")
+	project.risk_name = risk_names[0]
+	return project
 
 
 def _save_synthetic_private_file(filename: str, owner: str) -> str:

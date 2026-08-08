@@ -1,0 +1,26 @@
+{
+ "content": null,
+ "creation": "2026-08-01 00:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2026-08-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AutoFlow 360",
+ "name": "autoflow-workbench",
+ "owner": "Administrator",
+ "page_name": "autoflow-workbench",
+ "roles": [
+  {"role": "AutoFlow Administrator"},
+  {"role": "AutoFlow Sales Operations"},
+  {"role": "AutoFlow Project Manager"},
+  {"role": "AutoFlow Procurement"},
+  {"role": "AutoFlow Warehouse"},
+  {"role": "AutoFlow Finance"},
+  {"role": "AutoFlow Executive"}
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "title": "AutoFlow 工作台"
+}

@@ -1,0 +1,667 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "NotoSansSC";
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #20242b;
+      font-family: "NotoSansSC";
+    }
+
+    [class~="12-guardrails-background"] {
+      position: absolute;
+      inset: 0;
+      background: #f7f9fc;
+    }
+
+    [class~="12-guardrails-content"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    [class~="12-guardrails-header"] {
+      position: absolute;
+      top: 3.2cqw;
+      left: 5cqw;
+      right: 5cqw;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      z-index: 5;
+    }
+
+    [class~="12-guardrails-eyebrow"] {
+      margin: 0 0 0.55cqw;
+      color: #2563b8;
+      font-size: 0.72cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="12-guardrails-title"] {
+      margin: 0;
+      color: #20242b;
+      font-size: 2.25cqw;
+      font-weight: 600;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+
+    [class~="12-guardrails-tag"] {
+      margin-top: 0.2cqw;
+      padding: 0.46cqw 1.1cqw;
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+      font-size: 0.68cqw;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    [class~="12-guardrails-grid-stage"] {
+      position: absolute;
+      top: 8.25cqw;
+      left: 5cqw;
+      width: 90cqw;
+      height: 24.55cqw;
+      transform-origin: 50% 0%;
+      z-index: 3;
+    }
+
+    [class~="12-guardrails-grid"] {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1.4cqw;
+    }
+
+    [class~="12-guardrails-card"] {
+      position: relative;
+      box-sizing: border-box;
+      overflow: hidden;
+      min-width: 0;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(37, 99, 184, 0.05);
+    }
+
+    [class~="12-guardrails-card-inner"] {
+      position: absolute;
+      inset: 1.35cqw 1.55cqw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    [class~="12-guardrails-card-label"] {
+      color: #20242b;
+      font-size: 1.62cqw;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    [class~="12-guardrails-card-index"] {
+      display: grid;
+      width: 2.25cqw;
+      height: 2.25cqw;
+      place-items: center;
+      border-radius: 50%;
+      background: #2563b8;
+      color: #f7f9fc;
+      font-size: 0.72cqw;
+      font-weight: 700;
+    }
+
+    [class~="12-guardrails-card-rule"] {
+      position: absolute;
+      left: 1.55cqw;
+      right: 1.55cqw;
+      bottom: 1.28cqw;
+      height: 3px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: rgba(37, 99, 184, 0.10);
+    }
+
+    [class~="12-guardrails-card-rule"]::after {
+      content: "";
+      display: block;
+      width: 42%;
+      height: 100%;
+      border-radius: 6px;
+      background: #2563b8;
+    }
+
+    [class~="12-guardrails-role-card"] {
+      overflow: visible;
+    }
+
+    [class~="12-guardrails-role-anchor"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0.55cqw;
+      height: 0.55cqw;
+      border-radius: 50%;
+      background: #2563b8;
+    }
+
+    [class~="12-guardrails-role-head"] {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      box-sizing: border-box;
+      height: 4.35cqw;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.55cqw;
+      border-radius: 14px 14px 0 0;
+      background: rgba(37, 99, 184, 0.05);
+    }
+
+    [class~="12-guardrails-expand-mask"] {
+      position: absolute;
+      top: 4.35cqw;
+      left: 0;
+      right: 0;
+      height: 5.1cqw;
+      overflow: hidden;
+    }
+
+    [class~="12-guardrails-expand-sheet"] {
+      box-sizing: border-box;
+      height: 5.1cqw;
+      padding: 0.8cqw 1.55cqw 0;
+      border-radius: 0 0 14px 14px;
+      background: rgba(37, 99, 184, 0.05);
+      will-change: transform;
+    }
+
+    [class~="12-guardrails-layer-row"] {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #667085;
+      font-size: 0.72cqw;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    [class~="12-guardrails-layer-line"] {
+      width: 62%;
+      height: 3px;
+      border-radius: 6px;
+      background: #2563b8;
+    }
+
+    [class~="12-guardrails-role-follow"] {
+      position: absolute;
+      right: 1.55cqw;
+      bottom: 0.9cqw;
+      z-index: 2;
+      color: #2563b8;
+      font-size: 0.68cqw;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      will-change: transform;
+    }
+
+    [class~="12-guardrails-boundary-svg"] {
+      position: absolute;
+      inset: -0.5cqw;
+      width: calc(100% + 1cqw);
+      height: calc(100% + 1cqw);
+      overflow: visible;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    [class~="12-guardrails-boundary-svg"] path,
+    [class~="12-guardrails-boundary-svg"] rect {
+      fill: none;
+      stroke: #2563b8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    [class~="12-guardrails-access-path"] {
+      stroke-width: 3;
+      opacity: 0.72;
+    }
+
+    [class~="12-guardrails-isolation-path"] {
+      stroke-width: 3;
+      opacity: 0.34;
+    }
+
+    [class~="12-guardrails-outer-boundary"] {
+      stroke-width: 4;
+      opacity: 0.9;
+    }
+
+    [class~="12-guardrails-center"] {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 6;
+      display: grid;
+      box-sizing: border-box;
+      width: 9.5cqw;
+      height: 3.25cqw;
+      margin-top: -1.625cqw;
+      margin-left: -4.75cqw;
+      place-items: center;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: #f7f9fc;
+      color: #2563b8;
+      font-size: 1.05cqw;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    [class~="12-guardrails-guardrail"] {
+      position: absolute;
+      top: 34.8cqw;
+      left: 5cqw;
+      z-index: 7;
+      display: grid;
+      box-sizing: border-box;
+      width: 90cqw;
+      height: 10.25cqw;
+      grid-template-columns: 20.5cqw 1fr;
+      gap: 1.6cqw;
+      padding: 1.05cqw;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-left: 4px solid #2563b8;
+      border-radius: 14px;
+      background: rgba(37, 99, 184, 0.05);
+      overflow: hidden;
+    }
+
+    [class~="12-guardrails-proof"] {
+      position: relative;
+      overflow: hidden;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 10px;
+      background: #f7f9fc;
+    }
+
+    [class~="12-guardrails-proof"] img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    [class~="12-guardrails-proof-label"] {
+      position: absolute;
+      top: 0.65cqw;
+      left: 0.65cqw;
+      padding: 0.28cqw 0.7cqw;
+      border-radius: 100px;
+      background: #2563b8;
+      color: #f7f9fc;
+      font-size: 0.62cqw;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    [class~="12-guardrails-guardrail-main"] {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    [class~="12-guardrails-guardrail-heading"] {
+      display: flex;
+      align-items: center;
+      gap: 0.65cqw;
+      margin-bottom: 0.85cqw;
+      color: #20242b;
+      font-size: 1.55cqw;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    [class~="12-guardrails-shield"] {
+      position: relative;
+      box-sizing: border-box;
+      width: 1.7cqw;
+      height: 1.7cqw;
+      flex: 0 0 auto;
+      border: 3px solid #2563b8;
+      border-radius: 50%;
+    }
+
+    [class~="12-guardrails-shield"]::after {
+      content: "";
+      position: absolute;
+      top: 0.33cqw;
+      left: 0.43cqw;
+      width: 0.55cqw;
+      height: 0.3cqw;
+      border-bottom: 3px solid #2563b8;
+      border-left: 3px solid #2563b8;
+      transform: rotate(-45deg);
+    }
+
+    [class~="12-guardrails-chip-row"] {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8cqw;
+    }
+
+    [class~="12-guardrails-chip"] {
+      display: flex;
+      box-sizing: border-box;
+      min-width: 0;
+      height: 3.35cqw;
+      align-items: center;
+      gap: 0.65cqw;
+      padding: 0 0.9cqw;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 12px;
+      background: #f7f9fc;
+      color: #20242b;
+      font-size: 1.18cqw;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    [class~="12-guardrails-chip-dot"] {
+      display: grid;
+      width: 1.4cqw;
+      height: 1.4cqw;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+      font-size: 0.75cqw;
+      font-weight: 800;
+    }
+
+    [class~="12-guardrails-progress"] {
+      position: absolute;
+      top: 46cqw;
+      left: 5cqw;
+      z-index: 8;
+      width: 90cqw;
+      height: 3px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: rgba(37, 99, 184, 0.10);
+    }
+
+    [class~="12-guardrails-progress-fill"] {
+      display: block;
+      width: 82%;
+      height: 100%;
+      border-radius: 6px;
+      background: #2563b8;
+    }
+  </style>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+
+  <div data-hf-id="hf-e9u1" id="root" data-composition-id="12-guardrails" data-start="0" data-duration="12.212" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-ar7l" class="clip 12-guardrails-background" data-start="0" data-duration="12.212" data-track-index="0"></div>
+
+    <div data-hf-id="hf-erkn" class="clip 12-guardrails-content" data-start="0" data-duration="12.212" data-track-index="1">
+      <header data-hf-id="hf-qrvu" id="12-guardrails-header" class="12-guardrails-header">
+        <div data-hf-id="hf-yeow">
+          <p data-hf-id="hf-h3xm" class="12-guardrails-eyebrow">GUARDRAILS / 04 LAYERS</p>
+          <h2 data-hf-id="hf-eqay" class="12-guardrails-title">权限边界</h2>
+        </div>
+        <div data-hf-id="hf-qaxl" class="12-guardrails-tag">ENTERPRISE CONTROL</div>
+      </header>
+
+      <section data-hf-id="hf-doga" id="12-guardrails-grid-stage" class="12-guardrails-grid-stage" aria-label="四层权限网格">
+        <div data-hf-id="hf-l8ep" class="12-guardrails-grid">
+          <article data-hf-id="hf-5ldg" id="12-guardrails-role-card" class="12-guardrails-card 12-guardrails-role-card">
+            <span data-hf-id="hf-kabe" class="12-guardrails-role-anchor"></span>
+            <div data-hf-id="hf-km30" class="12-guardrails-role-head">
+              <span data-hf-id="hf-wfy3" class="12-guardrails-card-label">角色</span>
+              <span data-hf-id="hf-lcyq" class="12-guardrails-card-index">01</span>
+            </div>
+            <div data-hf-id="hf-kk27" class="12-guardrails-expand-mask" data-layout-allow-overflow="">
+              <div data-hf-id="hf-pqcm" id="12-guardrails-role-sheet" class="12-guardrails-expand-sheet">
+                <div data-hf-id="hf-9t3z" class="12-guardrails-layer-row">
+                  <span data-hf-id="hf-vqh9">ROLE</span>
+                  <span data-hf-id="hf-qfsm" class="12-guardrails-layer-line"></span>
+                </div>
+              </div>
+            </div>
+            <div data-hf-id="hf-hd8k" id="12-guardrails-role-follow" class="12-guardrails-role-follow">权限域</div>
+          </article>
+
+          <article data-hf-id="hf-2duf" id="12-guardrails-project-card" class="12-guardrails-card">
+            <div data-hf-id="hf-7pdo" class="12-guardrails-card-inner">
+              <span data-hf-id="hf-7ndk" class="12-guardrails-card-label">项目</span>
+              <span data-hf-id="hf-lr9r" class="12-guardrails-card-index">02</span>
+            </div>
+            <span data-hf-id="hf-ezl1" class="12-guardrails-card-rule"></span>
+          </article>
+
+          <article data-hf-id="hf-26yx" id="12-guardrails-company-card" class="12-guardrails-card">
+            <div data-hf-id="hf-q8j8" class="12-guardrails-card-inner">
+              <span data-hf-id="hf-6gvr" class="12-guardrails-card-label">公司</span>
+              <span data-hf-id="hf-m5ks" class="12-guardrails-card-index">03</span>
+            </div>
+            <span data-hf-id="hf-14ah" class="12-guardrails-card-rule"></span>
+          </article>
+
+          <article data-hf-id="hf-kyqq" id="12-guardrails-portal-card" class="12-guardrails-card">
+            <div data-hf-id="hf-p1m5" class="12-guardrails-card-inner">
+              <span data-hf-id="hf-4gca" class="12-guardrails-card-label">门户</span>
+              <span data-hf-id="hf-mjvt" class="12-guardrails-card-index">04</span>
+            </div>
+            <span data-hf-id="hf-2b7k" class="12-guardrails-card-rule"></span>
+          </article>
+        </div>
+
+        <svg data-hf-id="hf-3j7y" class="12-guardrails-boundary-svg" viewBox="0 0 1748 492" aria-hidden="true">
+          <path data-hf-id="hf-h1jj" id="12-guardrails-role-boundary" class="12-guardrails-isolation-path" data-draw-path="" d="M 10 236 L 10 10 L 855 10 L 855 236" />
+          <path data-hf-id="hf-hsg6" id="12-guardrails-project-access" class="12-guardrails-access-path" data-draw-path="" d="M 855 122 L 893 122" />
+          <path data-hf-id="hf-h1cy" id="12-guardrails-company-boundary" class="12-guardrails-isolation-path" data-draw-path="" d="M 10 256 L 10 482 L 855 482 L 855 256" />
+          <path data-hf-id="hf-rp6l" id="12-guardrails-portal-access" class="12-guardrails-access-path" data-draw-path="" d="M 855 370 L 893 370" />
+          <rect data-hf-id="hf-2kwq" id="12-guardrails-outer-boundary" class="12-guardrails-outer-boundary" data-draw-path="" x="4" y="4" width="1740" height="484" rx="24" />
+        </svg>
+
+        <div data-hf-id="hf-r3iw" id="12-guardrails-center" class="12-guardrails-center">最小权限</div>
+      </section>
+
+      <section data-hf-id="hf-ekkf" id="12-guardrails-guardrail" class="12-guardrails-guardrail" aria-label="AI 安全护栏">
+        <div data-hf-id="hf-j83o" id="12-guardrails-proof" class="12-guardrails-proof">
+          <img data-hf-id="hf-zqlx" src="assets/product/01-workbench-overview.png" alt="AutoFlow 360 工作台界面截图">
+          <span data-hf-id="hf-1jwp" class="12-guardrails-proof-label">工作台证据</span>
+        </div>
+
+        <div data-hf-id="hf-z15y" class="12-guardrails-guardrail-main">
+          <div data-hf-id="hf-kbok" id="12-guardrails-guardrail-heading" class="12-guardrails-guardrail-heading">
+            <span data-hf-id="hf-5ik3" class="12-guardrails-shield"></span>
+            <span data-hf-id="hf-vh95">AI 安全护栏</span>
+          </div>
+          <div data-hf-id="hf-m57g" class="12-guardrails-chip-row">
+            <div data-hf-id="hf-e875" id="12-guardrails-chip-readonly" class="12-guardrails-chip">
+              <span data-hf-id="hf-anah" class="12-guardrails-chip-dot">✓</span>
+              <span data-hf-id="hf-mrt4">只读分析</span>
+            </div>
+            <div data-hf-id="hf-3lg2" id="12-guardrails-chip-off" class="12-guardrails-chip">
+              <span data-hf-id="hf-5mxp" class="12-guardrails-chip-dot">✓</span>
+              <span data-hf-id="hf-swph">默认关闭</span>
+            </div>
+            <div data-hf-id="hf-o6t8" id="12-guardrails-chip-safe" class="12-guardrails-chip">
+              <span data-hf-id="hf-6tus" class="12-guardrails-chip-dot">✓</span>
+              <span data-hf-id="hf-iehs">失败不改状态</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div data-hf-id="hf-930l" class="12-guardrails-progress" aria-hidden="true">
+        <span data-hf-id="hf-gnh9" class="12-guardrails-progress-fill"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="12-guardrails"]');
+      if (!root || !window.gsap) {
+        console.error("Frame 12 could not initialize: composition root or GSAP is missing.");
+        return;
+      }
+
+      const gsap = window.gsap;
+      const timeline = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["12-guardrails"] = timeline;
+
+      const header = document.getElementById("12-guardrails-header");
+      const gridStage = document.getElementById("12-guardrails-grid-stage");
+      const roleCard = document.getElementById("12-guardrails-role-card");
+      const roleSheet = document.getElementById("12-guardrails-role-sheet");
+      const roleFollow = document.getElementById("12-guardrails-role-follow");
+      const projectCard = document.getElementById("12-guardrails-project-card");
+      const companyCard = document.getElementById("12-guardrails-company-card");
+      const portalCard = document.getElementById("12-guardrails-portal-card");
+      const center = document.getElementById("12-guardrails-center");
+      const guardrail = document.getElementById("12-guardrails-guardrail");
+      const proof = document.getElementById("12-guardrails-proof");
+      const guardrailHeading = document.getElementById("12-guardrails-guardrail-heading");
+
+      const boundaryPaths = Array.from(root.querySelectorAll("[data-draw-path]"));
+      boundaryPaths.forEach((path) => {
+        const measuredLength = path.getTotalLength();
+        path.style.strokeDasharray = `${measuredLength}`;
+        path.style.strokeDashoffset = `${measuredLength}`;
+      });
+
+      const cardSequence = [
+        { element: roleCard, start: 0.12, fromX: -34, fromY: -24 },
+        { element: projectCard, start: 2.06, fromX: 36, fromY: -20 },
+        { element: companyCard, start: 4.16, fromX: -32, fromY: 24 },
+        { element: portalCard, start: 6.27, fromX: 34, fromY: 24 }
+      ];
+
+      timeline.fromTo(
+        header,
+        { opacity: 0, y: -14 },
+        { opacity: 1, y: 0, duration: 0.38, ease: "power2.out" },
+        0.04
+      );
+
+      cardSequence.forEach((entry) => {
+        timeline.fromTo(
+          entry.element,
+          { opacity: 0, x: entry.fromX, y: entry.fromY, scale: 0.97 },
+          { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.52, ease: "power3.out" },
+          entry.start
+        );
+      });
+
+      timeline.fromTo(
+        [roleSheet, roleFollow],
+        { y: -98 },
+        { y: 0, duration: 0.78, ease: "power3.out" },
+        0.4
+      );
+
+      timeline.to(
+        document.getElementById("12-guardrails-role-boundary"),
+        { strokeDashoffset: 0, duration: 0.82, ease: "power2.out" },
+        0.72
+      );
+
+      timeline.to(
+        document.getElementById("12-guardrails-project-access"),
+        { strokeDashoffset: 0, duration: 0.52, ease: "power2.out" },
+        2.62
+      );
+
+      timeline.to(
+        document.getElementById("12-guardrails-company-boundary"),
+        { strokeDashoffset: 0, duration: 0.92, ease: "power2.out" },
+        4.74
+      );
+
+      timeline.to(
+        document.getElementById("12-guardrails-portal-access"),
+        { strokeDashoffset: 0, duration: 0.48, ease: "power2.out" },
+        6.68
+      );
+
+      timeline.to(
+        document.getElementById("12-guardrails-outer-boundary"),
+        { strokeDashoffset: 0, duration: 1.1, ease: "power2.out" },
+        6.56
+      );
+
+      timeline.fromTo(
+        center,
+        { opacity: 0, scale: 0.86 },
+        { opacity: 1, scale: 1, duration: 0.48, ease: "power2.out" },
+        7.1
+      );
+
+      timeline.fromTo(
+        gridStage,
+        { scale: 1, y: 0 },
+        { scale: 0.82, y: -70, duration: 0.68, ease: "power2.inOut" },
+        8.2
+      );
+
+      timeline.fromTo(
+        guardrail,
+        { opacity: 0, y: 44 },
+        { opacity: 1, y: 0, duration: 0.62, ease: "power3.out" },
+        8.22
+      );
+
+      timeline.fromTo(
+        proof,
+        { opacity: 0, scale: 0.97 },
+        { opacity: 1, scale: 1, duration: 0.48, ease: "power2.out" },
+        8.55
+      );
+
+      timeline.fromTo(
+        guardrailHeading,
+        { opacity: 0, x: 18 },
+        { opacity: 1, x: 0, duration: 0.42, ease: "power2.out" },
+        8.66
+      );
+
+      [
+        { id: "12-guardrails-chip-readonly", start: 9.02 },
+        { id: "12-guardrails-chip-off", start: 9.72 },
+        { id: "12-guardrails-chip-safe", start: 10.46 }
+      ].forEach((entry) => {
+        timeline.fromTo(
+          document.getElementById(entry.id),
+          { opacity: 0, x: 24 },
+          { opacity: 1, x: 0, duration: 0.46, ease: "power2.out" },
+          entry.start
+        );
+      });
+    })();
+  </script>
+</template>

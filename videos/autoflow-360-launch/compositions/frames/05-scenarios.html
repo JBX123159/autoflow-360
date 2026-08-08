@@ -1,0 +1,672 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "NotoSansSC";
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "NotoSansSC";
+      color: #20242b;
+    }
+
+    #root,
+    #root * {
+      box-sizing: border-box;
+    }
+
+    [class~="05-scenarios-ground"] {
+      position: absolute;
+      inset: 0;
+      background: #f7f9fc;
+    }
+
+    [class~="05-scenarios-content"] {
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 896px;
+      overflow: hidden;
+    }
+
+    [class~="05-scenarios-proof-surface"] {
+      position: absolute;
+      left: 80px;
+      top: 112px;
+      width: 1760px;
+      height: 690px;
+      overflow: hidden;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(37, 99, 184, 0.05);
+    }
+
+    [class~="05-scenarios-proof-surface"] img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: 50% 68%;
+      opacity: 0.88;
+    }
+
+    [class~="05-scenarios-proof-dim"] {
+      position: absolute;
+      inset: 0;
+      background: rgba(247, 249, 252, 0.12);
+      pointer-events: none;
+    }
+
+    [class~="05-scenarios-label"] {
+      position: absolute;
+      left: 96px;
+      top: 46px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 42px;
+      padding: 0 20px;
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    [class~="05-scenarios-label-dot"] {
+      width: 10px;
+      height: 10px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #2563b8;
+    }
+
+    [class~="05-scenarios-final-lockup"] {
+      position: absolute;
+      left: 588px;
+      top: 39px;
+      width: 1240px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    [class~="05-scenarios-final-title"] {
+      color: #20242b;
+      font-size: 48px;
+      line-height: 1.08;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    [class~="05-scenarios-final-rule"] {
+      position: absolute;
+      right: 0;
+      bottom: -9px;
+      width: 430px;
+      height: 4px;
+      border-radius: 2px;
+      background: #2563b8;
+      transform-origin: 0% 50%;
+    }
+
+    [class~="05-scenarios-card-grid"] {
+      position: absolute;
+      left: 96px;
+      top: 506px;
+      width: 1728px;
+      height: 258px;
+      display: grid;
+      grid-template-columns: repeat(3, 500px);
+      justify-content: space-between;
+      align-items: start;
+    }
+
+    [class~="05-scenarios-card"] {
+      position: relative;
+      width: 500px;
+      height: 248px;
+      overflow: hidden;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background-color: rgba(236, 241, 249, 0.98);
+      transform-origin: 50% 50%;
+      will-change: transform, opacity, border-radius, background-color;
+    }
+
+    [class~="05-scenarios-source-chip"],
+    [class~="05-scenarios-card-detail"] {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    [class~="05-scenarios-source-chip"] {
+      color: #2563b8;
+      font-size: 25px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    [class~="05-scenarios-card-detail"] {
+      display: block;
+      padding: 24px 26px 22px;
+    }
+
+    [data-card="delay"] [class~="05-scenarios-card-detail"] {
+      padding: 0;
+    }
+
+    [class~="05-scenarios-card-kicker"] {
+      margin-bottom: 7px;
+      color: #2563b8;
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="05-scenarios-card-title"] {
+      color: #20242b;
+      font-size: 32px;
+      line-height: 1.24;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    [class~="05-scenarios-card-meta"] {
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      bottom: 22px;
+      display: grid;
+      grid-template-columns: 1.25fr 0.9fr 0.8fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    [class~="05-scenarios-meta-item"] {
+      min-width: 0;
+    }
+
+    [class~="05-scenarios-meta-label"] {
+      display: block;
+      margin-bottom: 5px;
+      color: #667085;
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 400;
+    }
+
+    [class~="05-scenarios-meta-value"] {
+      display: block;
+      color: #2563b8;
+      font-size: 25px;
+      line-height: 1.15;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    [class~="05-scenarios-risk-pill"] {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0 13px;
+      border: 1px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: rgba(37, 99, 184, 0.10);
+      color: #2563b8;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    [class~="05-scenarios-delay-head"] {
+      position: relative;
+      z-index: 2;
+      min-height: 78px;
+      padding: 24px 26px 10px;
+      background: rgba(236, 241, 249, 0.98);
+    }
+
+    [class~="05-scenarios-expand-mask"] {
+      position: relative;
+      height: 72px;
+      overflow: hidden;
+    }
+
+    [class~="05-scenarios-expand-sheet"] {
+      height: 72px;
+      padding: 6px 26px 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: center;
+      border-radius: 0 0 12px 12px;
+      will-change: transform;
+    }
+
+    [class~="05-scenarios-delay-below"] {
+      position: relative;
+      height: 58px;
+      padding: 8px 26px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      will-change: transform;
+    }
+
+    [class~="05-scenarios-expand-row"] {
+      min-width: 0;
+    }
+
+    [class~="05-scenarios-sequence-display"] {
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      bottom: 22px;
+      min-height: 96px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(37, 99, 184, 0.18);
+    }
+
+    [class~="05-scenarios-sequence-eyebrow"] {
+      color: #667085;
+      font-size: 16px;
+      line-height: 1.2;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    [class~="05-scenarios-sequence-row"] {
+      min-height: 45px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    [class~="05-scenarios-sequence-title"] {
+      color: #20242b;
+      font-size: 26px;
+      line-height: 1.2;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    [class~="05-scenarios-sequence-body"] {
+      min-height: 32px;
+      color: #2563b8;
+      font-size: 20px;
+      line-height: 1.3;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    [class~="05-scenarios-progress-track"] {
+      position: relative;
+      width: 100%;
+      height: 6px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: rgba(37, 99, 184, 0.10);
+    }
+
+    [class~="05-scenarios-progress-fill"] {
+      position: absolute;
+      inset: 0;
+      border-radius: 6px;
+      background: #2563b8;
+      transform-origin: 0% 50%;
+    }
+
+    [class~="05-scenarios-connectors"] {
+      position: absolute;
+      left: 80px;
+      top: 112px;
+      width: 1760px;
+      height: 690px;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    [class~="05-scenarios-connector"] {
+      fill: none;
+      stroke: rgba(37, 99, 184, 0.68);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+    }
+
+    [class~="05-scenarios-anchor-dot"] {
+      fill: #2563b8;
+    }
+  </style>
+
+  <div data-hf-id="hf-dswb" id="root" data-composition-id="05-scenarios" data-start="0" data-duration="11.522" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-s0mg" class="clip 05-scenarios-ground" data-start="0" data-duration="11.522" data-track-index="0"></div>
+
+    <div data-hf-id="hf-6nrz" class="clip 05-scenarios-content" data-start="0" data-duration="11.522" data-track-index="1">
+      <div data-hf-id="hf-h8ko" class="05-scenarios-proof-surface">
+        <img data-hf-id="hf-sb4q" src="assets/product/07-project-portfolio.png" alt="项目组合表截图">
+        <div data-hf-id="hf-3a07" class="05-scenarios-proof-dim"></div>
+      </div>
+
+      <div data-hf-id="hf-e5y2" class="05-scenarios-label">
+        <span data-hf-id="hf-5cc5" class="05-scenarios-label-dot"></span>
+        <span data-hf-id="hf-3q7p">人民币合成数据</span>
+      </div>
+
+      <div data-hf-id="hf-lkuv" class="05-scenarios-final-lockup">
+        <div data-hf-id="hf-9brr" class="05-scenarios-final-title">可播种 · 可下钻 · 可复现</div>
+        <div data-hf-id="hf-ohzn" class="05-scenarios-final-rule"></div>
+      </div>
+
+      <svg data-hf-id="hf-z2u2" class="05-scenarios-connectors" viewBox="0 0 1760 690" aria-hidden="true">
+        <path data-hf-id="hf-zfj8" class="05-scenarios-connector" d="M 890 365 C 720 430, 420 440, 265 510" />
+        <path data-hf-id="hf-dbuy" class="05-scenarios-connector" d="M 890 425 C 890 462, 880 474, 864 510" />
+        <path data-hf-id="hf-uchy" class="05-scenarios-connector" d="M 890 485 C 1080 495, 1335 490, 1463 510" />
+        <circle data-hf-id="hf-fbvk" class="05-scenarios-anchor-dot" cx="890" cy="365" r="7" />
+        <circle data-hf-id="hf-6fgv" class="05-scenarios-anchor-dot" cx="890" cy="425" r="7" />
+        <circle data-hf-id="hf-cm6t" class="05-scenarios-anchor-dot" cx="890" cy="485" r="7" />
+      </svg>
+
+      <div data-hf-id="hf-bgiv" class="05-scenarios-card-grid">
+        <article data-hf-id="hf-p9pq" class="05-scenarios-card" data-card="normal">
+          <div data-hf-id="hf-11g0" class="05-scenarios-source-chip">AF-2026-00001</div>
+          <div data-hf-id="hf-ogug" class="05-scenarios-card-detail">
+            <div data-hf-id="hf-blmj" class="05-scenarios-card-kicker">DEMO-NORMAL-001</div>
+            <div data-hf-id="hf-r6ug" class="05-scenarios-card-title">正常交付</div>
+            <div data-hf-id="hf-54l8" class="05-scenarios-card-meta">
+              <div data-hf-id="hf-126y" class="05-scenarios-meta-item" data-normal-item="amount">
+                <span data-hf-id="hf-liao" class="05-scenarios-meta-label">预计金额</span>
+                <span data-hf-id="hf-ht6j" class="05-scenarios-meta-value">¥680,000</span>
+              </div>
+              <div data-hf-id="hf-w5mk" class="05-scenarios-meta-item" data-normal-item="stage">
+                <span data-hf-id="hf-c43g" class="05-scenarios-meta-label">阶段</span>
+                <span data-hf-id="hf-zjfq" class="05-scenarios-meta-value">已结项</span>
+              </div>
+              <div data-hf-id="hf-79kr" class="05-scenarios-meta-item" data-normal-item="risk">
+                <span data-hf-id="hf-ptm8" class="05-scenarios-meta-label">风险</span>
+                <span data-hf-id="hf-bhft" class="05-scenarios-risk-pill">低风险</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article data-hf-id="hf-tf34" class="05-scenarios-card" data-card="delay">
+          <div data-hf-id="hf-zuix" class="05-scenarios-source-chip">AF-2026-00002</div>
+          <div data-hf-id="hf-96tc" class="05-scenarios-card-detail">
+            <div data-hf-id="hf-zqm0" class="05-scenarios-delay-head">
+              <div data-hf-id="hf-5u3r" class="05-scenarios-card-kicker">DEMO-DELAY-001</div>
+              <div data-hf-id="hf-nwep" class="05-scenarios-card-title">供应商延期</div>
+            </div>
+            <div data-hf-id="hf-u7cv" class="05-scenarios-expand-mask" id="05-scenarios-expand-mask" data-layout-allow-overflow="">
+              <div data-hf-id="hf-ozw2" class="05-scenarios-expand-sheet" id="05-scenarios-expand-sheet">
+                <div data-hf-id="hf-105z" class="05-scenarios-expand-row">
+                  <span data-hf-id="hf-wl3s" class="05-scenarios-meta-label">预计金额</span>
+                  <span data-hf-id="hf-3va3" class="05-scenarios-meta-value">¥420,000</span>
+                </div>
+                <div data-hf-id="hf-ypsn" class="05-scenarios-expand-row">
+                  <span data-hf-id="hf-lbn8" class="05-scenarios-meta-label">阶段</span>
+                  <span data-hf-id="hf-5zez" class="05-scenarios-meta-value">已定点</span>
+                </div>
+              </div>
+            </div>
+            <div data-hf-id="hf-wz4u" class="05-scenarios-delay-below" id="05-scenarios-delay-below">
+              <span data-hf-id="hf-fxad" class="05-scenarios-meta-label">整改关闭链路</span>
+              <span data-hf-id="hf-jyt8" class="05-scenarios-risk-pill" id="05-scenarios-delay-risk">高风险</span>
+            </div>
+          </div>
+        </article>
+
+        <article data-hf-id="hf-oklq" class="05-scenarios-card" data-card="resample">
+          <div data-hf-id="hf-08ty" class="05-scenarios-source-chip">AF-2026-00003</div>
+          <div data-hf-id="hf-7zw9" class="05-scenarios-card-detail">
+            <div data-hf-id="hf-vexr" class="05-scenarios-card-kicker">DEMO-RESAMPLE-001</div>
+            <div data-hf-id="hf-v8c1" class="05-scenarios-card-title">客户退样重打</div>
+            <div data-hf-id="hf-7cka" class="05-scenarios-sequence-display">
+              <div data-hf-id="hf-chyf" class="05-scenarios-sequence-eyebrow" id="05-scenarios-sequence-eyebrow">样品链路</div>
+              <div data-hf-id="hf-4dd8" class="05-scenarios-sequence-row">
+                <div data-hf-id="hf-zf1e" class="05-scenarios-sequence-title" id="05-scenarios-sequence-title"></div>
+                <div data-hf-id="hf-uv8i" class="05-scenarios-sequence-body" id="05-scenarios-sequence-body"></div>
+              </div>
+              <div data-hf-id="hf-z16z" class="05-scenarios-progress-track">
+                <div data-hf-id="hf-t5xu" class="05-scenarios-progress-fill" id="05-scenarios-progress-fill"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (() => {
+      const compositionId = "05-scenarios";
+      const root = document.querySelector('[data-composition-id="05-scenarios"]');
+      if (!root || !window.gsap) return;
+
+      const pick = (selector) => root.querySelector(selector);
+      const pickAll = (selector) => Array.from(root.querySelectorAll(selector));
+      const normalCard = pick('[data-card="normal"]');
+      const delayCard = pick('[data-card="delay"]');
+      const resampleCard = pick('[data-card="resample"]');
+      const cards = [normalCard, delayCard, resampleCard];
+      const sourceChips = cards.map((card) => card.querySelector('[class~="05-scenarios-source-chip"]'));
+      const cardDetails = cards.map((card) => card.querySelector('[class~="05-scenarios-card-detail"]'));
+
+      const sequenceContent = [
+        { eyebrow: "样品链路", title: "退样", body: "第 1 轮", hold: 0.08 },
+        { eyebrow: "样品链路", title: "复核", body: "问题定位", hold: 0.08 },
+        { eyebrow: "样品链路", title: "重打", body: "第 2 轮", hold: 0.18 }
+      ];
+      const baseDuration = 0.40;
+      const secondsPerCharacter = 0.02;
+      let cumulative = 0;
+      const sequenceTimeline = sequenceContent.map((entry) => {
+        const entryDuration = baseDuration + entry.body.length * secondsPerCharacter + entry.hold;
+        const start = cumulative;
+        cumulative += entryDuration;
+        return { ...entry, start, end: cumulative };
+      });
+      const sequenceTotal = cumulative;
+      const sequenceDriver = { time: 0 };
+      const sequenceEyebrow = pick('[id="05-scenarios-sequence-eyebrow"]');
+      const sequenceTitle = pick('[id="05-scenarios-sequence-title"]');
+      const sequenceBody = pick('[id="05-scenarios-sequence-body"]');
+      const sequenceProgress = pick('[id="05-scenarios-progress-fill"]');
+      let lastSequenceTitle = "";
+
+      function entryAt(time) {
+        for (let index = sequenceTimeline.length - 1; index >= 0; index -= 1) {
+          if (time >= sequenceTimeline[index].start) return sequenceTimeline[index];
+        }
+        return sequenceTimeline[0];
+      }
+
+      function renderSequence(time) {
+        const entry = entryAt(time);
+        if (entry.title !== lastSequenceTitle) {
+          sequenceEyebrow.textContent = entry.eyebrow;
+          sequenceTitle.textContent = entry.title;
+          sequenceBody.textContent = entry.body;
+          lastSequenceTitle = entry.title;
+        }
+        gsap.set(sequenceProgress, { scaleX: Math.max(0, Math.min(1, time / sequenceTotal)) });
+      }
+
+      renderSequence(0);
+
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+    window.__timelines["05-scenarios"] = tl;
+
+      tl.fromTo(
+        pick('[class~="05-scenarios-proof-surface"]'),
+        { opacity: 0, scale: 0.985 },
+        { opacity: 1, scale: 1, duration: 0.48, ease: "power2.out" },
+        0
+      );
+      tl.fromTo(
+        pick('[class~="05-scenarios-label"]'),
+        { opacity: 0, x: -28 },
+        { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" },
+        0.18
+      );
+
+      tl.fromTo(
+        normalCard,
+        {
+          opacity: 0.94,
+          x: 624,
+          y: -34,
+          scale: 0.12,
+          borderRadius: 110,
+          backgroundColor: "rgba(37, 99, 184, 0.10)"
+        },
+        {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          scale: 1,
+          borderRadius: 14,
+          backgroundColor: "rgba(236, 241, 249, 0.98)",
+          duration: 0.88,
+          ease: "power2.inOut"
+        },
+        1.72
+      );
+      tl.to(sourceChips[0], { opacity: 0, duration: 0.35, ease: "power1.in" }, 1.72);
+      tl.fromTo(cardDetails[0], { opacity: 0 }, { opacity: 1, duration: 0.36, ease: "power1.out" }, 2.24);
+      tl.fromTo(
+        pickAll('[data-normal-item]'),
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.38, stagger: 0.48, ease: "power2.out" },
+        2.72
+      );
+
+      tl.fromTo(
+        delayCard,
+        {
+          opacity: 0.94,
+          x: 98,
+          y: -8,
+          scale: 0.12,
+          borderRadius: 110,
+          backgroundColor: "rgba(37, 99, 184, 0.10)"
+        },
+        {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          scale: 1,
+          borderRadius: 14,
+          backgroundColor: "rgba(236, 241, 249, 0.98)",
+          duration: 0.82,
+          ease: "power2.inOut"
+        },
+        4.65
+      );
+      tl.to(sourceChips[1], { opacity: 0, duration: 0.34, ease: "power1.in" }, 4.65);
+      tl.fromTo(cardDetails[1], { opacity: 0 }, { opacity: 1, duration: 0.36, ease: "power1.out" }, 5.12);
+      tl.fromTo(
+        ['[id="05-scenarios-expand-sheet"]', '[id="05-scenarios-delay-below"]'],
+        { y: -72 },
+        { y: 0, duration: 0.55, ease: "power3.out" },
+        5.55
+      );
+      tl.fromTo(
+        pickAll('[class~="05-scenarios-expand-row"]'),
+        { opacity: 0 },
+        { opacity: 1, duration: 0.28, stagger: 0.08, ease: "power2.out" },
+        5.69
+      );
+      tl.fromTo(
+        pick('[id="05-scenarios-delay-risk"]'),
+        { opacity: 0, scale: 0.78 },
+        { opacity: 1, scale: 1, duration: 0.34, ease: "power2.out" },
+        7.20
+      );
+
+      tl.fromTo(
+        resampleCard,
+        {
+          opacity: 0.94,
+          x: -474,
+          y: 28,
+          scale: 0.12,
+          borderRadius: 110,
+          backgroundColor: "rgba(37, 99, 184, 0.10)"
+        },
+        {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          scale: 1,
+          borderRadius: 14,
+          backgroundColor: "rgba(236, 241, 249, 0.98)",
+          duration: 0.82,
+          ease: "power2.inOut"
+        },
+        7.75
+      );
+      tl.to(sourceChips[2], { opacity: 0, duration: 0.34, ease: "power1.in" }, 7.75);
+      tl.fromTo(cardDetails[2], { opacity: 0 }, { opacity: 1, duration: 0.34, ease: "power1.out" }, 8.22);
+      tl.to(
+        sequenceDriver,
+        {
+          time: sequenceTotal,
+          duration: sequenceTotal,
+          ease: "none",
+          onUpdate: () => renderSequence(sequenceDriver.time)
+        },
+        8.30
+      );
+
+      tl.to(
+        pickAll('[class~="05-scenarios-connector"]'),
+        { strokeDashoffset: 0, duration: 0.82, stagger: 0.08, ease: "power2.out" },
+        9.965
+      );
+      tl.fromTo(
+        pickAll('[class~="05-scenarios-anchor-dot"]'),
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.30, stagger: 0.08, ease: "power2.out" },
+        10.10
+      );
+      tl.fromTo(
+        pick('[class~="05-scenarios-final-lockup"]'),
+        { opacity: 0, x: 34 },
+        { opacity: 1, x: 0, duration: 0.44, ease: "power2.out" },
+        9.965
+      );
+      tl.fromTo(
+        pick('[class~="05-scenarios-final-rule"]'),
+        { scaleX: 0 },
+        { scaleX: 1, duration: 1.107, ease: "none" },
+        9.965
+      );
+    })();
+  </script>
+</template>

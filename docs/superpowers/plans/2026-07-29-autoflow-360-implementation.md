@@ -160,7 +160,7 @@ Task 5 创建 `autoflow_360/tests/factories.py`，后续任务在同一文件中
 - Consumes: 已批准的 `Product-Spec.md` 与技术设计说明。
 - Produces: `scripts/check-environment.ps1`，后续所有任务在启动环境前调用；明确的上游与个人贡献边界。
 
-- [ ] **Step 1: 写仓库契约失败测试**
+- [x] **Step 1: 写仓库契约失败测试**
 
 ```python
 # tests/static/test_repository_contract.py
@@ -224,7 +224,7 @@ if __name__ == "__main__":
 12. 多发行版中存在至少一个 Ubuntu WSL2 时通过。
 13. WSL 输出含 NUL 字符时由 `ConvertTo-CleanLines` 清洗后正确解析。
 
-- [ ] **Step 2: 运行仓库与环境行为测试并确认失败原因**
+- [x] **Step 2: 运行仓库与环境行为测试并确认失败原因**
 
 Run:
 
@@ -235,7 +235,7 @@ python -m unittest tests.static.test_environment_check -v
 
 Expected: 仓库测试因 `README.md`、`NOTICE.md` 或 `LICENSE` 缺失而失败；环境行为测试因 `scripts/check-environment.ps1` 尚未实现而失败。完成 Step 3 和 Step 4 后重新运行，两组测试必须全部通过。
 
-- [ ] **Step 3: 创建许可证、来源说明和项目首页**
+- [x] **Step 3: 创建许可证、来源说明和项目首页**
 
 Run:
 
@@ -266,7 +266,7 @@ AutoFlow 360 是独立自定义应用，不是 Frappe、ERPNext 或 Frappe CRM �
 
 `README.md` 首屏必须包含项目一句话介绍、业务闭环图、三条演示路径、快速开始、测试命令、上游边界、合成数据声明和许可证；尚未完成的范围必须使用“规划中的自主新增范围”和“计划自主实现，当前状态以实际代码和测试为准”，不得写成完成态。
 
-- [ ] **Step 4: 编写可直接执行的环境体检脚本**
+- [x] **Step 4: 编写可直接执行的环境体检脚本**
 
 ```powershell
 # scripts/check-environment.ps1
@@ -421,7 +421,7 @@ playwright-report/
 test-results/
 ```
 
-- [ ] **Step 5: 运行静态测试和格式检查**
+- [x] **Step 5: 运行静态测试和格式检查**
 
 Run:
 
@@ -432,7 +432,7 @@ git diff --check
 
 Expected: 全部测试显示 `OK`，`git diff --check` 无输出。
 
-- [ ] **Step 6: 提交仓库契约**
+- [x] **Step 6: 提交仓库契约**
 
 ```powershell
 git add README.md NOTICE.md LICENSE docs/research/upstream-baseline.md scripts/check-environment.ps1 tests/__init__.py tests/static/__init__.py tests/static/test_repository_contract.py tests/static/test_environment_check.py .gitignore
@@ -495,7 +495,7 @@ Expected: 公开仓库存在，默认分支为 `main`，开发分支为 `codex/a
 - Consumes: Python 3.14.x 与 Frappe v16 应用目录约定。
 - Produces: 可被 Bench 安装的包 `autoflow_360`；后续任务依赖 `hooks.py`，安装钩子在 Task 4 增加。
 
-- [ ] **Step 1: 写元数据失败测试**
+- [x] **Step 1: 写元数据失败测试**
 
 ```python
 # tests/static/test_app_metadata.py
@@ -563,7 +563,7 @@ if __name__ == "__main__":
 
 `tests/build/test_wheel_metadata.py` 必须与离线静态测试分离，使用标准库 `subprocess` 在自动清理的临时目录中执行 `python -m pip wheel . --no-deps`。测试打开真实 wheel，确认包含 `autoflow_360/hooks.py`、`autoflow_360/public/images/autoflow-360-logo.svg` 和 `LICENSE`，并精确校验 METADATA 中的 `Name`、`Version`、`Requires-Python`、`License-Expression` 与 `License-File`；构建失败信息同时输出 stdout 和 stderr。超时诊断必须包含 timeout 值、stdout 和 stderr，兼容进程输出为 `None`、字节串或字符串，并通过异常链保留原始 `TimeoutExpired` 上下文。
 
-- [ ] **Step 2: 运行测试并确认包尚未存在**
+- [x] **Step 2: 运行测试并确认包尚未存在**
 
 Run:
 
@@ -573,7 +573,7 @@ python -m unittest tests.static.test_app_metadata -v
 
 Expected: `pyproject.toml` 或应用目录缺失。
 
-- [ ] **Step 3: 创建最小可安装包**
+- [x] **Step 3: 创建最小可安装包**
 
 ```toml
 # pyproject.toml
@@ -655,7 +655,7 @@ AutoFlow 360
 [post_model_sync]
 ```
 
-- [ ] **Step 4: 创建 Frappe v16 应用入口和兼容桌面元数据**
+- [x] **Step 4: 创建 Frappe v16 应用入口和兼容桌面元数据**
 
 `add_to_apps_screen` 是 Frappe v16 应用页入口，当前指向真实可访问的 `/desk`；Task 17 创建专属工作台后再切换路由。Logo 使用仓库内原创 SVG，不加载字体、图片或其他外部资源。`config/desktop.py` 只保留为兼容元数据，不能作为 v16 唯一入口。
 
@@ -676,7 +676,7 @@ def get_data() -> list[dict]:
 	]
 ```
 
-- [ ] **Step 5: 运行静态测试**
+- [x] **Step 5: 运行静态测试**
 
 Run:
 
@@ -690,7 +690,7 @@ git diff --check
 
 Expected: 静态测试与独立构建测试全部通过且无 Python 语法错误；真实 wheel 包含 `hooks.py`、应用 Logo 与 `LICENSE`，METADATA 中的名称、版本、Python 范围、许可证表达式和许可证文件均与 `pyproject.toml` 一致。构建测试使用临时目录并自动清理，不加入离线静态测试发现目录。
 
-- [ ] **Step 6: 提交应用骨架**
+- [x] **Step 6: 提交应用骨架**
 
 ```powershell
 git add pyproject.toml autoflow_360 tests/static/test_app_metadata.py tests/build docs/superpowers/plans/2026-07-29-autoflow-360-implementation.md
@@ -763,7 +763,7 @@ class DeploymentContractTest(unittest.TestCase):
         content = (ROOT / "deploy" / "env.example").read_text(encoding="utf-8")
         self.assertIn("AUTOFLOW_SITE=autoflow.localhost", content)
         self.assertIn("AUTOFLOW_ADMIN_PASSWORD=change-me-locally", content)
-        self.assertNotIn("294367704", content)
+        self.assertNotIn("@qq.com", content)
 
     def test_upstream_baseline_has_four_immutable_revisions_and_date(self):
         content = (ROOT / "docs/research/upstream-baseline.md").read_text(encoding="utf-8")
@@ -3933,6 +3933,7 @@ git commit -m "feat: enforce project company and portal isolation"
 **Files:**
 
 - Create: `autoflow_360/autoflow_360/doctype/ai_source_reference/ai_source_reference.json`
+- Create: `autoflow_360/autoflow_360/doctype/ai_source_reference/ai_source_reference.py`
 - Create: `autoflow_360/autoflow_360/doctype/ai_analysis/ai_analysis.json`
 - Create: `autoflow_360/autoflow_360/doctype/ai_analysis/ai_analysis.py`
 - Create: `autoflow_360/ai/providers/base.py`
@@ -3944,15 +3945,17 @@ git commit -m "feat: enforce project company and portal isolation"
 - Create: `autoflow_360/ai/service.py`
 - Create: `autoflow_360/api/analytics.py`
 - Create: `autoflow_360/tests/test_ai_service.py`
+- Create: `tests/static/test_ai_service_contract.py`
 - Modify: `autoflow_360/tests/factories.py`
 - Modify: `autoflow_360/hooks.py`
+- Modify: `pyproject.toml`
 
 **Interfaces:**
 
 - Consumes: 当前用户有权限的项目、风险、异常、样品和业务单据。
 - Produces: `analyze_project(project_name, analysis_type) -> str`，返回 `AI Analysis` 记录名；模型失败时返回状态为 `降级` 的记录。
 
-- [ ] **Step 1: 写来源、越权、失败降级和无自动写入测试**
+- [x] **Step 1: 写来源、越权、失败降级和无自动写入测试**
 
 ```python
 from unittest.mock import patch
@@ -4013,7 +4016,7 @@ class TestAIService(FrappeTestCase):
 		self.assertRaises(frappe.PermissionError, analyze_project, project.name, "风险摘要")
 ```
 
-- [ ] **Step 2: 运行测试并确认 AI 模块缺失**
+- [x] **Step 2: 运行测试并确认 AI 模块缺失**
 
 Run:
 
@@ -4023,7 +4026,7 @@ Run:
 
 Expected: `autoflow_360.ai.service` 无法导入。
 
-- [ ] **Step 3: 创建 AI 记录和输出类型**
+- [x] **Step 3: 创建 AI 记录和输出类型**
 
 `AI Analysis` 字段：
 
@@ -4076,7 +4079,7 @@ class AIResult:
 	uncertainties: tuple[str, ...]
 ```
 
-- [ ] **Step 4: 实现模型接口与兼容提供方**
+- [x] **Step 4: 实现模型接口与兼容提供方**
 
 ```python
 # autoflow_360/ai/providers/base.py
@@ -4133,7 +4136,7 @@ class OpenAICompatibleProvider:
 
 实现时对响应缺字段、非 JSON、HTTP 错误、超时和限流分别映射安全错误码。
 
-- [ ] **Step 5: 实现权限上下文、引用校验和审计**
+- [x] **Step 5: 实现权限上下文、引用校验和审计**
 
 ```python
 # autoflow_360/ai/context_builder.py
@@ -4287,7 +4290,7 @@ def generate_weekly_drafts() -> None:
 		)
 ```
 
-- [ ] **Step 6: 注册周报后台任务并运行 AI 测试**
+- [x] **Step 6: 注册周报后台任务并运行 AI 测试**
 
 `hooks.py` 的 `scheduler_events` 增加：
 
@@ -4304,12 +4307,14 @@ Run:
 
 Expected: 有效结果带来源；虚构来源和超时进入降级；项目状态不变。
 
-- [ ] **Step 7: 提交 AI 助手**
+- [ ] **Step 7: 待授权提交 AI 助手**
 
 ```powershell
-git add autoflow_360/autoflow_360/doctype/ai_source_reference autoflow_360/autoflow_360/doctype/ai_analysis autoflow_360/ai autoflow_360/api/analytics.py autoflow_360/tests/test_ai_service.py autoflow_360/tests/factories.py autoflow_360/hooks.py
+git add autoflow_360/autoflow_360/doctype/ai_source_reference autoflow_360/autoflow_360/doctype/ai_analysis autoflow_360/ai autoflow_360/api/analytics.py autoflow_360/tests/test_ai_service.py autoflow_360/tests/factories.py autoflow_360/hooks.py tests/static/test_ai_service_contract.py pyproject.toml README.md docs/superpowers/plans/2026-07-29-autoflow-360-implementation.md
 git commit -m "feat: add traceable and fail-safe AI assistant"
 ```
+
+**实现记录（2026-08-01）：** AI 默认关闭，启用时支持 OpenAI 兼容接口与免费本地 Ollama；所有输出先经过严格结构、长度、枚举和真实来源校验，再写入不可直接篡改的 `AI Analysis` 审计记录。调用者只能分析本人可读项目，客户/供应商门户不能调用内部 AI，跨项目上下文不会泄露；模型超时、限流、连接失败、返回非 JSON、缺字段或虚构来源都会安全降级，并保留受控错误码，不修改项目、待办、库存、付款、审批或异常状态。周报任务默认不执行，只有显式启用后才按项目排队且避免重复。新增 13 项 AI 集成测试和 8 项静态契约测试；全量回归为 127 项集成测试和 141 项静态契约测试，全部通过。测试商机币种跟随当前 CRM 系统币种，避免依赖公网汇率服务；正式业务和演示默认币种已确定为人民币（CNY），在演示数据任务中统一落地。功能已完成，因 Git 暂存审批服务中断，独立提交仍待用户重新授权后执行。
 
 ---
 
@@ -4325,16 +4330,18 @@ git commit -m "feat: add traceable and fail-safe AI assistant"
 - Create: `autoflow_360/autoflow_360/page/autoflow_cockpit/autoflow_cockpit.py`
 - Create: `autoflow_360/public/css/autoflow.css`
 - Create: `autoflow_360/tests/test_analytics_api.py`
+- Create: `tests/static/test_dashboard_contract.py`
 - Modify: `autoflow_360/tests/factories.py`
 - Modify: `autoflow_360/api/analytics.py`
 - Modify: `autoflow_360/hooks.py`
+- Modify: `autoflow_360/public/js/customer_project.js`
 
 **Interfaces:**
 
 - Consumes: 当前用户角色、待办、项目、风险、异常、销售采购和财务汇总。
-- Produces: `get_workbench_data() -> dict`、`get_management_cockpit(filters=None) -> dict`。
+- Produces: `get_workbench_data() -> dict`、`get_management_cockpit(filters=None) -> dict`、`get_project_panorama(project_name) -> dict`。
 
-- [ ] **Step 1: 写工作台响应结构和下钻来源测试**
+- [x] **Step 1: 写工作台响应结构和下钻来源测试**
 
 ```python
 import frappe
@@ -4371,7 +4378,7 @@ class TestAnalyticsAPI(FrappeTestCase):
 		self.assertNotIn(hidden_project.name, {row["name"] for row in data["projects"]})
 ```
 
-- [ ] **Step 2: 运行测试并确认接口结构未实现**
+- [x] **Step 2: 运行测试并确认接口结构未实现**
 
 Run:
 
@@ -4381,7 +4388,7 @@ Run:
 
 Expected: 接口缺失或返回字段不完整。
 
-- [ ] **Step 3: 实现工作台接口**
+- [x] **Step 3: 实现工作台接口**
 
 ```python
 # autoflow_360/api/analytics.py
@@ -4528,7 +4535,7 @@ def get_management_cockpit(filters: dict | str | None = None) -> dict:
 
 所有查询使用 `frappe.get_list()`；管理驾驶舱只有 `AutoFlow Executive` 或被授权角色可调用。
 
-- [ ] **Step 4: 实现页面骨架和项目详情标签**
+- [x] **Step 4: 实现页面骨架和项目详情标签**
 
 页面布局必须固定：
 
@@ -4541,7 +4548,7 @@ def get_management_cockpit(filters: dict | str | None = None) -> dict:
 
 项目表单通过 `customer_project.js` 增加“概览、流程、关联单据、风险异常、AI 分析、操作记录”入口，并保持标准表单键盘和移动端可用性。
 
-- [ ] **Step 5: 运行接口测试和页面构建**
+- [x] **Step 5: 运行接口测试和页面构建**
 
 Run:
 
@@ -4552,12 +4559,14 @@ Run:
 
 Expected: 接口测试通过，前端构建无错误。
 
-- [ ] **Step 6: 提交角色工作台**
+- [ ] **Step 6: 待授权提交角色工作台**
 
 ```powershell
 git add autoflow_360/autoflow_360/page autoflow_360/public/css/autoflow.css autoflow_360/api/analytics.py autoflow_360/tests/test_analytics_api.py autoflow_360/tests/factories.py autoflow_360/public/js/customer_project.js autoflow_360/hooks.py
 git commit -m "feat: add role workbench and management cockpit"
 ```
+
+**实现记录（2026-08-01）：** 工作台、项目全景页和管理驾驶舱均使用当前用户权限下的 `frappe.get_list()` 查询，不使用 `get_all`、原始 SQL 或忽略权限参数。待办只显示本人有权处理的审批；项目、风险、异常、销售、采购、交付、财务和审计来源均可下钻。管理指标带固定定义、单位和来源，不同币种保持原币种分列，不伪造汇率换算。页面保留 Frappe 原生交互与主题变量，具备加载、空数据、错误、键盘焦点、减少动效和响应式状态。真实迁移与前端构建通过，桌面端和 390px 手机端页面无横向溢出；全量回归为 140 项集成测试和 149 项静态契约测试，全部通过。功能已完成，独立 Git 提交待用户重新授权。
 
 ---
 
@@ -4582,7 +4591,7 @@ git commit -m "feat: add role workbench and management cockpit"
 - Consumes: 全部已实现业务服务。
 - Produces: `seed_demo_data(reset=False) -> dict`、三条稳定演示项目、可重复性能数据和浏览器验收报告。
 
-- [ ] **Step 1: 写合成数据幂等和真实性边界测试**
+- [x] **Step 1: 写合成数据幂等和真实性边界测试**
 
 ```python
 import frappe
@@ -4610,7 +4619,7 @@ class TestDemoSeed(FrappeTestCase):
 			self.assertIn("合成", project.data_classification)
 ```
 
-- [ ] **Step 2: 运行测试并确认演示模块缺失**
+- [x] **Step 2: 运行测试并确认演示模块缺失**
 
 Run:
 
@@ -4620,7 +4629,7 @@ Run:
 
 Expected: `autoflow_360.demo.seed` 无法导入。
 
-- [ ] **Step 3: 实现固定业务键和三条场景**
+- [x] **Step 3: 实现固定业务键和三条场景**
 
 ```python
 # autoflow_360/demo/seed.py
@@ -4653,7 +4662,7 @@ def seed_demo_data(reset: bool = False) -> dict[str, str]:
 
 三个内部函数必须调用正式服务创建单据，不得直接把最终状态写入数据库。`reset=True` 只允许删除 `is_demo=1` 且 `demo_key` 属于固定集合的记录，删除前打印精确目标并要求交互确认；自动测试通过事务回滚，不执行真实删除。
 
-- [ ] **Step 4: 创建三条浏览器验收脚本**
+- [x] **Step 4: 创建三条浏览器验收脚本**
 
 ```javascript
 // tests/e2e/normal-project.spec.js
@@ -4676,7 +4685,7 @@ test("normal project closes after delivery invoice and payment", async ({ page }
 
 `supplier-delay.spec.js` 断言采购延期风险、异常、整改证据和关闭状态；`resample.spec.js` 断言第一轮拒绝、第二轮关联和最终认可。
 
-- [ ] **Step 5: 建立性能数据与测量输出**
+- [x] **Step 5: 建立性能数据与测量输出**
 
 `generate_scale.py` 创建：
 
@@ -4700,7 +4709,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 ```
 
-- [ ] **Step 6: 运行演示、端到端和性能验证**
+- [x] **Step 6: 运行演示、端到端和性能验证**
 
 Run:
 
@@ -4711,18 +4720,20 @@ npm.cmd install
 npx.cmd playwright install chromium
 npx.cmd playwright test
 Set-Location ..\..
-.\scripts\bench.ps1 --site autoflow.localhost execute tests.performance.generate_scale.run
-.\scripts\bench.ps1 --site autoflow.localhost execute tests.performance.measure.run
+.\scripts\bench.ps1 --site autoflow.localhost execute autoflow_360.performance.generate_scale.run
+.\scripts\bench.ps1 --site autoflow.localhost execute autoflow_360.performance.measure.run
 ```
 
 Expected: 三条端到端测试通过；性能报告包含真实环境和实际测量值。
 
-- [ ] **Step 7: 提交演示和质量基线**
+- [ ] **Step 7: 待授权提交演示和质量基线**
 
 ```powershell
 git add autoflow_360/demo autoflow_360/tests/test_demo_seed.py tests/e2e tests/performance scripts/seed-demo.ps1 docs/test-report/performance.json
 git commit -m "test: add end-to-end demo scenarios and performance baseline"
 ```
+
+**实现记录（2026-08-01）：** 三条 CNY 合成业务场景均通过正式服务幂等生成；性能数据达到 200 项目、1000 样品、1000 反馈、500 销售订单、500 采购订单和 5000 条风险/异常/版本记录。一次预热加十次正式测量的原始结果已写入 `performance.json`。Playwright 首次最终复测发现 200 个性能项目把演示场景挤出最近 50 条列表；新增失败测试后修复为重复生成时只刷新三条合成演示项目的可见顺序，定向测试 7/7、浏览器流程 3/3、当前完整业务回归 148/148。功能和验证已完成，Git 提交待公开发布授权。
 
 ---
 
@@ -4751,7 +4762,7 @@ git commit -m "test: add end-to-end demo scenarios and performance baseline"
 - Consumes: 已推送的 AutoFlow 360 GitHub 仓库 URL、官方 frappe_docker 构建流程。
 - Produces: 多架构自定义镜像、可复现生产 Compose、备份恢复证据和零月租演示路径。
 
-- [ ] **Step 1: 写密钥卫生和生产应用锁定测试**
+- [x] **Step 1: 写密钥卫生和生产应用锁定测试**
 
 ```python
 from pathlib import Path
@@ -4785,7 +4796,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: 运行静态测试并确认生产配置缺失**
+- [x] **Step 2: 运行静态测试并确认生产配置缺失**
 
 Run:
 
@@ -4795,7 +4806,7 @@ python -m unittest tests.static.test_secret_hygiene -v
 
 Expected: `deploy/apps.production.json` 缺失。
 
-- [ ] **Step 3: 固定生产应用并安全构建镜像**
+- [x] **Step 3: 固定生产应用并安全构建镜像**
 
 `deploy/apps.production.json` 使用正式仓库 URL：
 
@@ -4836,7 +4847,7 @@ Expected: `deploy/apps.production.json` 缺失。
 
 禁止把 `apps.json` 作为普通 build argument 传入镜像历史。
 
-- [ ] **Step 4: 建立静态和集成持续集成**
+- [x] **Step 4: 建立静态和集成持续集成**
 
 `static.yml` 执行：
 
@@ -4855,7 +4866,7 @@ Expected: `deploy/apps.production.json` 缺失。
 5. 启动 Web 服务并运行 Playwright 三条流程。
 6. 上传 JUnit、Playwright 和性能结果，失败时上传安全日志。
 
-- [ ] **Step 5: 创建 Oracle ARM64 免费部署脚本**
+- [x] **Step 5: 创建 Oracle ARM64 免费部署脚本**
 
 ```bash
 #!/usr/bin/env bash
@@ -4890,7 +4901,7 @@ docker compose \
 
 脚本使用官方 Compose 与覆盖文件，不复制或修改上游核心文件。`compose.env` 不提交。
 
-- [ ] **Step 6: 实现 Cloudflare Tunnel 免费临时公网演示入口**
+- [x] **Step 6: 实现 Cloudflare Tunnel 免费临时公网演示入口**
 
 ```powershell
 # scripts/start-tunnel.ps1
@@ -4917,7 +4928,7 @@ exit $LASTEXITCODE
 
 `cloudflare-tunnel.md` 同时说明：Quick Tunnel 没有服务等级保证；长期在线需使用命名 Tunnel 和自有域名，但不作为免费验收前提。
 
-- [ ] **Step 7: 实现备份和恢复演练**
+- [x] **Step 7: 实现备份和恢复演练**
 
 `backup.sh` 执行 `bench --site "$SITE_NAME" backup --with-files --compress` 并输出 SHA-256；`restore-check.sh` 在独立临时站点恢复最近备份，运行 `migrate`、`list-apps` 和最小读取测试，成功后删除仅由脚本创建的临时站点。
 
@@ -4929,7 +4940,7 @@ Run:
 
 Expected: 输出备份文件哈希、临时恢复站点和 `RESTORE_CHECK_PASSED`。
 
-- [ ] **Step 8: 完成威胁模型和密钥检查**
+- [x] **Step 8: 完成威胁模型和密钥检查**
 
 威胁模型必须覆盖：
 
@@ -4951,12 +4962,14 @@ git grep -n -E "sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|BEGIN PRIVATE KEY"
 
 Expected: 单元测试通过；`git grep` 无结果。
 
-- [ ] **Step 9: 提交交付与安全能力**
+- [ ] **Step 9: 待授权提交交付与安全能力**
 
 ```powershell
 git add .github/workflows deploy scripts/start-tunnel.ps1 scripts/verify-backup.ps1 docs/deployment docs/security tests/static/test_secret_hygiene.py
 git commit -m "build: add CI secure images free deployment and restore checks"
 ```
+
+**实现记录（2026-08-01）：** 三套 GitHub Actions、BuildKit secret 多架构镜像、Oracle ARM64 Compose、Quick Tunnel、备份恢复与威胁模型均已实现。170 项静态契约、5 个 YAML、5 个 Bash 脚本、2 个 PowerShell 脚本和 CI Compose 展开检查通过；真实备份包含数据库、公有附件、私有附件和站点配置，SHA-256 校验后成功恢复到一次性站点，完成迁移、应用列表与 `Customer Project` 读取并输出 `RESTORE_CHECK_PASSED`。远端 CI、镜像与云部署需在公开推送后验证，Git 提交待公开发布授权。
 
 ---
 
@@ -4989,7 +5002,7 @@ git commit -m "build: add CI secure images free deployment and restore checks"
 - Consumes: 实际测试结果、部署地址、截图、提交历史和完成功能。
 - Produces: 招聘方可验证的完整证据链、`v1.0.0` 发布候选和公开 GitHub 项目。
 
-- [ ] **Step 1: 写交付物完整性测试**
+- [x] **Step 1: 写交付物完整性测试**
 
 ```python
 from pathlib import Path
@@ -5028,7 +5041,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: 运行测试并确认交付文档缺失**
+- [x] **Step 2: 运行测试并确认交付文档缺失**
 
 Run:
 
@@ -5038,7 +5051,7 @@ python -m unittest tests.static.test_delivery_artifacts -v
 
 Expected: 尚未创建的用户指南或求职文档导致失败。
 
-- [ ] **Step 3: 写基于证据的架构、用户和验收文档**
+- [x] **Step 3: 写基于证据的架构、用户和验收文档**
 
 文档必须遵守：
 
@@ -5057,7 +5070,7 @@ Expected: 尚未创建的用户指南或求职文档导致失败。
 | 商机到项目幂等转换 | `services/deal_conversion.py` | `test_deal_conversion.py` | 通过/失败 | 实际结果 |
 ```
 
-- [ ] **Step 4: 写真实可面试的个人项目叙事**
+- [x] **Step 4: 写真实可面试的个人项目叙事**
 
 `resume-project.md` 必须包含一版 70 到 100 字简历描述和三条贡献点，禁止写未实测用户数、营收或企业采用结果。
 
@@ -5071,7 +5084,7 @@ Expected: 尚未创建的用户指南或求职文档导致失败。
 
 `personal-contribution.md` 按“上游已有、本人设计、本人实现、工具辅助、尚未完成”五栏记录。
 
-- [ ] **Step 5: 执行全量验收**
+- [x] **Step 5: 执行全量验收**
 
 Run:
 
@@ -5095,7 +5108,7 @@ Expected:
 - `git diff --check` 无输出。
 - 仅存在本任务准备提交的文件。
 
-- [ ] **Step 6: 完成 README、演示视频和截图索引**
+- [ ] **Step 6: README 与截图索引已完成，演示视频和在线地址待补齐**
 
 README 必须提供：
 
@@ -5109,7 +5122,9 @@ README 必须提供：
 
 演示视频按 `docs/demo-script.md` 录制，依次展示正常项目、供应商延期和重新打样。
 
-- [ ] **Step 7: 切换生产应用引用并提交交付材料**
+当前进度：9 张本机真实站点截图及 README 索引已完成；165 秒分镜与中文旁白脚本已完成，须经用户确认后再离线配音和渲染。在线地址只在公开发布与外网验收后补充。
+
+- [ ] **Step 7: 待发布时切换生产应用引用并提交交付材料**
 
 将 `deploy/apps.production.json` 中 AutoFlow 360 的分支从 `codex/autoflow-360` 精确改为 `main`，然后运行：
 
@@ -5118,7 +5133,7 @@ git add README.md CHANGELOG.md docs tests/static/test_delivery_artifacts.py depl
 git commit -m "docs: complete AutoFlow 360 delivery and interview evidence"
 ```
 
-- [ ] **Step 8: 推送、创建拉取请求、合并并标记发布候选**
+- [ ] **Step 8: 待公开发布授权后推送、创建拉取请求、合并并标记发布候选**
 
 Run:
 

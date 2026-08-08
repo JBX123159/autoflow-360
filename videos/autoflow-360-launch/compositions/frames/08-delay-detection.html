@@ -1,0 +1,709 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "NotoSansSC";
+      src: url("assets/fonts/NotoSansSC-VF.ttf") format("truetype");
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #20242b;
+      font-family: "NotoSansSC";
+    }
+
+    [class~="08-delay-detection-stage"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #f7f9fc;
+    }
+
+    [class~="08-delay-detection-viewport"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 896px;
+      overflow: hidden;
+    }
+
+    [class~="08-delay-detection-camera-outer"],
+    [class~="08-delay-detection-camera-inner"] {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    [class~="08-delay-detection-surface"] {
+      position: absolute;
+      left: 40px;
+      top: 36px;
+      width: 1840px;
+      height: 824px;
+      overflow: hidden;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(37, 99, 184, 0.05);
+    }
+
+    [class~="08-delay-detection-screenshot"] {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      opacity: 0.9;
+      will-change: opacity, transform;
+    }
+
+    [class~="08-delay-detection-soft-wash"] {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(247, 249, 252, 0.1), rgba(247, 249, 252, 0.03) 55%, rgba(247, 249, 252, 0.14));
+      pointer-events: none;
+    }
+
+    [class~="08-delay-detection-header"] {
+      position: absolute;
+      left: 92px;
+      top: 68px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 12px 20px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 100px;
+      background: rgba(247, 249, 252, 0.94);
+      color: #2563b8;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="08-delay-detection-header-dot"] {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2563b8;
+    }
+
+    [class~="08-delay-detection-anchor"] {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    [id="08-delay-detection-date-a"] {
+      left: 360px;
+      top: 294px;
+      width: 292px;
+      height: 78px;
+    }
+
+    [id="08-delay-detection-date-b"] {
+      left: 1038px;
+      top: 294px;
+      width: 318px;
+      height: 78px;
+    }
+
+    [id="08-delay-detection-node-target"] {
+      left: 1190px;
+      top: 672px;
+      width: 390px;
+      height: 92px;
+    }
+
+    [class~="08-delay-detection-focus-box"] {
+      position: absolute;
+      left: 344px;
+      top: 278px;
+      width: 324px;
+      height: 110px;
+      border: 4px solid #2563b8;
+      border-radius: 12px;
+      pointer-events: none;
+      will-change: opacity, transform;
+    }
+
+    [class~="08-delay-detection-focus-label"] {
+      position: absolute;
+      left: 344px;
+      top: 402px;
+      padding: 10px 16px;
+      border-radius: 100px;
+      background: #2563b8;
+      color: #f7f9fc;
+      font-size: 20px;
+      font-weight: 600;
+      white-space: nowrap;
+      will-change: opacity, transform;
+    }
+
+    [class~="08-delay-detection-track-box"] {
+      position: absolute;
+      pointer-events: none;
+      will-change: opacity, transform, width, height;
+    }
+
+    [class~="08-delay-detection-corner"] {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      border-color: #facc15;
+      border-style: solid;
+      border-width: 0;
+    }
+
+    [class~="08-delay-detection-corner-tl"] {
+      left: -6px;
+      top: -6px;
+      border-left-width: 5px;
+      border-top-width: 5px;
+    }
+
+    [class~="08-delay-detection-corner-tr"] {
+      right: -6px;
+      top: -6px;
+      border-right-width: 5px;
+      border-top-width: 5px;
+    }
+
+    [class~="08-delay-detection-corner-bl"] {
+      left: -6px;
+      bottom: -6px;
+      border-left-width: 5px;
+      border-bottom-width: 5px;
+    }
+
+    [class~="08-delay-detection-corner-br"] {
+      right: -6px;
+      bottom: -6px;
+      border-right-width: 5px;
+      border-bottom-width: 5px;
+    }
+
+    [class~="08-delay-detection-track-label"] {
+      position: absolute;
+      left: -6px;
+      top: -40px;
+      padding: 7px 11px;
+      border-radius: 10px;
+      background: #facc15;
+      color: #20242b;
+      font-family: "NotoSansSC";
+      font-size: 15px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    [class~="08-delay-detection-compare"] {
+      position: absolute;
+      left: 594px;
+      top: 152px;
+      width: 732px;
+      padding: 24px 30px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(247, 249, 252, 0.96);
+      will-change: opacity, transform;
+    }
+
+    [class~="08-delay-detection-compare-kicker"] {
+      color: #2563b8;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="08-delay-detection-compare-line"] {
+      display: grid;
+      grid-template-columns: 1fr 120px 1fr;
+      align-items: center;
+      gap: 18px;
+      margin-top: 14px;
+    }
+
+    [class~="08-delay-detection-date-chip"] {
+      padding: 14px 18px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 12px;
+      background: rgba(37, 99, 184, 0.05);
+      color: #20242b;
+      font-size: 23px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    [class~="08-delay-detection-compare-operator"] {
+      color: #2563b8;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    [class~="08-delay-detection-risk-panel"] {
+      position: absolute;
+      left: 176px;
+      top: 150px;
+      width: 688px;
+      padding: 32px 34px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-left: 6px solid #2563b8;
+      border-radius: 14px;
+      background: rgba(247, 249, 252, 0.97);
+      will-change: opacity, transform;
+    }
+
+    [class~="08-delay-detection-risk-rule"] {
+      color: #2563b8;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="08-delay-detection-risk-copy"] {
+      margin-top: 14px;
+      color: #20242b;
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+
+    [class~="08-delay-detection-risk-tag"] {
+      position: absolute;
+      right: 168px;
+      top: 202px;
+      padding: 18px 30px;
+      border-radius: 100px;
+      background: #2563b8;
+      color: #f7f9fc;
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      will-change: opacity, transform;
+    }
+
+    [class~="08-delay-detection-stop-panel"] {
+      position: absolute;
+      left: 934px;
+      top: 586px;
+      width: 706px;
+      height: 212px;
+      padding: 28px 32px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(247, 249, 252, 0.97);
+      will-change: opacity, transform;
+    }
+
+    [class~="08-delay-detection-stop-heading"] {
+      color: #2563b8;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="08-delay-detection-node-row"] {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 34px;
+    }
+
+    [class~="08-delay-detection-node"] {
+      position: relative;
+      z-index: 1;
+      padding: 18px 14px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 12px;
+      background: #f7f9fc;
+      color: #667085;
+      font-size: 22px;
+      font-weight: 500;
+      text-align: center;
+      will-change: opacity, transform;
+    }
+
+    [class~="08-delay-detection-stop-line"] {
+      position: absolute;
+      z-index: 2;
+      left: 18px;
+      right: 18px;
+      top: 118px;
+      height: 6px;
+      border-radius: 6px;
+      background: #2563b8;
+      transform-origin: 0 50%;
+      will-change: transform;
+    }
+
+    [class~="08-delay-detection-stop-label"] {
+      position: absolute;
+      z-index: 3;
+      right: 26px;
+      top: 90px;
+      padding: 8px 14px;
+      border-radius: 100px;
+      background: #2563b8;
+      color: #f7f9fc;
+      font-size: 16px;
+      font-weight: 600;
+      will-change: opacity, transform;
+    }
+
+    [class~="08-delay-detection-evidence"] {
+      position: absolute;
+      left: 176px;
+      top: 620px;
+      width: 630px;
+      display: grid;
+      gap: 14px;
+      will-change: opacity, transform;
+    }
+
+    [class~="08-delay-detection-evidence-row"] {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 18px;
+      border: 1.5px solid rgba(37, 99, 184, 0.24);
+      border-radius: 12px;
+      background: rgba(247, 249, 252, 0.97);
+      color: #667085;
+      font-size: 19px;
+    }
+
+    [class~="08-delay-detection-evidence-value"] {
+      color: #2563b8;
+      font-weight: 700;
+    }
+
+    [class~="08-delay-detection-progress"] {
+      position: absolute;
+      left: 96px;
+      top: 890px;
+      width: 1728px;
+      height: 3px;
+      background: rgba(37, 99, 184, 0.1);
+    }
+
+    [class~="08-delay-detection-progress-fill"] {
+      display: block;
+      width: 66.6667%;
+      height: 100%;
+      background: #2563b8;
+      transform-origin: 0 50%;
+    }
+  </style>
+
+  <div data-hf-id="hf-6tm6" id="root" data-composition-id="08-delay-detection" data-start="0" data-duration="12.837" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-sioo" class="clip 08-delay-detection-stage" data-start="0" data-duration="12.837" data-track-index="0">
+      <div data-hf-id="hf-7bs7" class="08-delay-detection-viewport">
+        <div data-hf-id="hf-2buy" id="08-delay-detection-camera-outer" class="08-delay-detection-camera-outer">
+          <div data-hf-id="hf-52yw" id="08-delay-detection-camera-inner" class="08-delay-detection-camera-inner">
+            <div data-hf-id="hf-phuu" class="08-delay-detection-surface">
+              <img data-hf-id="hf-7jup" id="08-delay-detection-screenshot" class="08-delay-detection-screenshot" src="assets/product/03-supplier-delay.png" alt="供应商延期高风险项目全景">
+              <div data-hf-id="hf-2g9n" class="08-delay-detection-soft-wash"></div>
+            </div>
+
+            <div data-hf-id="hf-8bkq" class="08-delay-detection-header">
+              <span data-hf-id="hf-5q2f" class="08-delay-detection-header-dot"></span>
+              <span data-hf-id="hf-qvqr">延期校验</span>
+            </div>
+
+            <div data-hf-id="hf-7per" id="08-delay-detection-date-a" class="08-delay-detection-anchor"></div>
+            <div data-hf-id="hf-wtx4" id="08-delay-detection-date-b" class="08-delay-detection-anchor"></div>
+            <div data-hf-id="hf-rfqt" id="08-delay-detection-node-target" class="08-delay-detection-anchor"></div>
+
+            <div data-hf-id="hf-7y16" id="08-delay-detection-focus-box" class="08-delay-detection-focus-box"></div>
+            <div data-hf-id="hf-94q4" id="08-delay-detection-focus-label" class="08-delay-detection-focus-label">客户交期 · 日期 A</div>
+
+            <div data-hf-id="hf-0cyw" id="08-delay-detection-track-a" class="08-delay-detection-track-box">
+              <span data-hf-id="hf-ivf0" class="08-delay-detection-corner 08-delay-detection-corner-tl"></span>
+              <span data-hf-id="hf-tue2" class="08-delay-detection-corner 08-delay-detection-corner-tr"></span>
+              <span data-hf-id="hf-7vpq" class="08-delay-detection-corner 08-delay-detection-corner-bl"></span>
+              <span data-hf-id="hf-sac8" class="08-delay-detection-corner 08-delay-detection-corner-br"></span>
+              <span data-hf-id="hf-82q7" id="08-delay-detection-track-label-a" class="08-delay-detection-track-label" data-layout-allow-overlap="" data-layout-allow-occlusion="">SCAN A · 97%</span>
+            </div>
+
+            <div data-hf-id="hf-90ur" id="08-delay-detection-track-b" class="08-delay-detection-track-box">
+              <span data-hf-id="hf-haxw" class="08-delay-detection-corner 08-delay-detection-corner-tl"></span>
+              <span data-hf-id="hf-ic72" class="08-delay-detection-corner 08-delay-detection-corner-tr"></span>
+              <span data-hf-id="hf-rvpu" class="08-delay-detection-corner 08-delay-detection-corner-bl"></span>
+              <span data-hf-id="hf-3jcg" class="08-delay-detection-corner 08-delay-detection-corner-br"></span>
+              <span data-hf-id="hf-mnpp" id="08-delay-detection-track-label-b" class="08-delay-detection-track-label" data-layout-allow-overlap="" data-layout-allow-occlusion="">SCAN B · 97%</span>
+            </div>
+
+            <div data-hf-id="hf-hvvi" id="08-delay-detection-compare" class="08-delay-detection-compare" data-layout-allow-occlusion="">
+              <div data-hf-id="hf-d1ut" class="08-delay-detection-compare-kicker">日期比较尺</div>
+              <div data-hf-id="hf-d7q1" class="08-delay-detection-compare-line">
+                <div data-hf-id="hf-qijq" class="08-delay-detection-date-chip">客户交期</div>
+                <div data-hf-id="hf-l45k" class="08-delay-detection-compare-operator">早于</div>
+                <div data-hf-id="hf-ikct" class="08-delay-detection-date-chip">供应商到货日</div>
+              </div>
+            </div>
+
+            <div data-hf-id="hf-ci0k" id="08-delay-detection-risk-panel" class="08-delay-detection-risk-panel">
+              <div data-hf-id="hf-vb21" class="08-delay-detection-risk-rule">确定性规则命中</div>
+              <div data-hf-id="hf-a2n0" class="08-delay-detection-risk-copy">到货日晚于客户交期</div>
+            </div>
+            <div data-hf-id="hf-8bt9" id="08-delay-detection-risk-tag" class="08-delay-detection-risk-tag">高风险</div>
+
+            <div data-hf-id="hf-xe7m" id="08-delay-detection-evidence" class="08-delay-detection-evidence">
+              <div data-hf-id="hf-1529" class="08-delay-detection-evidence-row">
+                <span data-hf-id="hf-kyam">日期 A</span>
+                <span data-hf-id="hf-fjob" class="08-delay-detection-evidence-value">客户交期</span>
+              </div>
+              <div data-hf-id="hf-0c8l" class="08-delay-detection-evidence-row">
+                <span data-hf-id="hf-lcln">日期 B</span>
+                <span data-hf-id="hf-hyt8" class="08-delay-detection-evidence-value">供应商到货日</span>
+              </div>
+              <div data-hf-id="hf-1j5o" class="08-delay-detection-evidence-row">
+                <span data-hf-id="hf-icbh">规则结果</span>
+                <span data-hf-id="hf-pbyu" class="08-delay-detection-evidence-value">高风险</span>
+              </div>
+            </div>
+
+            <div data-hf-id="hf-p3pi" id="08-delay-detection-stop-panel" class="08-delay-detection-stop-panel" data-layout-allow-occlusion="">
+              <div data-hf-id="hf-wn5w" class="08-delay-detection-stop-heading">后续节点</div>
+              <div data-hf-id="hf-vpby" class="08-delay-detection-node-row">
+                <div data-hf-id="hf-wios" class="08-delay-detection-node">未开始</div>
+                <div data-hf-id="hf-fs7o" class="08-delay-detection-node">未开始</div>
+                <div data-hf-id="hf-elal" class="08-delay-detection-node">未开始</div>
+              </div>
+              <div data-hf-id="hf-mzi6" id="08-delay-detection-stop-line" class="08-delay-detection-stop-line"></div>
+              <div data-hf-id="hf-ljdd" id="08-delay-detection-stop-label" class="08-delay-detection-stop-label">停止推进</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-17sg" class="08-delay-detection-progress">
+        <span data-hf-id="hf-desj" id="08-delay-detection-progress-fill" class="08-delay-detection-progress-fill"></span>
+      </div>
+    </div>
+
+    <script src="assets/vendor/gsap.min.js"></script>
+    <script>
+      (() => {
+        const frameRoot = document.querySelector('[data-composition-id="08-delay-detection"]');
+        const byId = (id) => document.getElementById(id);
+        const byClass = (className) => frameRoot.getElementsByClassName(className)[0];
+        const allByClass = (className) => Array.from(frameRoot.getElementsByClassName(className));
+        const outer = byId('08-delay-detection-camera-outer');
+        const inner = byId('08-delay-detection-camera-inner');
+        const screenshot = byId('08-delay-detection-screenshot');
+        const dateA = byId('08-delay-detection-date-a');
+        const dateB = byId('08-delay-detection-date-b');
+        const nodeTarget = byId('08-delay-detection-node-target');
+        const trackA = byId('08-delay-detection-track-a');
+        const trackB = byId('08-delay-detection-track-b');
+        const trackLabelA = byId('08-delay-detection-track-label-a');
+        const trackLabelB = byId('08-delay-detection-track-label-b');
+        const header = byClass('08-delay-detection-header');
+        const focusBox = byId('08-delay-detection-focus-box');
+        const focusLabel = byId('08-delay-detection-focus-label');
+        const comparePanel = byId('08-delay-detection-compare');
+        const riskPanel = byId('08-delay-detection-risk-panel');
+        const riskTag = byId('08-delay-detection-risk-tag');
+        const evidence = byId('08-delay-detection-evidence');
+        const stopPanel = byId('08-delay-detection-stop-panel');
+        const nodes = allByClass('08-delay-detection-node');
+        const stopLine = byId('08-delay-detection-stop-line');
+        const stopLabel = byId('08-delay-detection-stop-label');
+
+        const stageWidth = 1920;
+        const stageHeight = 896;
+        const targetCenter = (element) => ({
+          x: element.offsetLeft + element.offsetWidth / 2,
+          y: element.offsetTop + element.offsetHeight / 2,
+        });
+        const pointA = targetCenter(dateA);
+        const pointB = targetCenter(dateB);
+        const pointNode = targetCenter(nodeTarget);
+
+        const phase = { scale: 1 };
+        const pan = { x: 0, y: 0 };
+        const drift = { p: 0, amp: 1 };
+        const tracking = { p: 0 };
+
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines["08-delay-detection"] = tl;
+
+        tl.fromTo(
+          screenshot,
+          { opacity: 0.78, scale: 1.012 },
+          { opacity: 0.9, scale: 1, duration: 0.72, ease: "power2.out" },
+          0,
+        );
+        tl.fromTo(
+          header,
+          { opacity: 0, y: -18 },
+          { opacity: 1, y: 0, duration: 0.62, ease: "power2.out" },
+          0.18,
+        );
+
+        tl.fromTo(
+          focusBox,
+          { opacity: 0, scale: 0.78 },
+          { opacity: 1, scale: 1, duration: 0.52, ease: "back.out(1.45)" },
+          1.99,
+        );
+        tl.fromTo(
+          focusLabel,
+          { opacity: 0, x: -22 },
+          { opacity: 1, x: 0, duration: 0.48, ease: "power2.out" },
+          2.3,
+        );
+        tl.to(phase, { scale: 1.13, duration: 1.35, ease: "power3.inOut" }, 1.99);
+        tl.to(
+          pan,
+          {
+            x: -(pointA.x - stageWidth / 2),
+            y: -(pointA.y - stageHeight / 2),
+            duration: 1.35,
+            ease: "power3.inOut",
+          },
+          1.99,
+        );
+
+        tl.to(phase, { scale: 1.1, duration: 1.45, ease: "power3.inOut" }, 4.477);
+        tl.to(
+          pan,
+          {
+            x: -(pointB.x - stageWidth / 2),
+            y: -(pointB.y - stageHeight / 2),
+            duration: 1.45,
+            ease: "power3.inOut",
+          },
+          4.477,
+        );
+        tl.fromTo(
+          [trackA, trackB],
+          { opacity: 0, scale: 0.76 },
+          { opacity: 1, scale: 1, duration: 0.55, ease: "back.out(1.4)", stagger: 0.14 },
+          4.477,
+        );
+        tl.fromTo(
+          comparePanel,
+          { opacity: 0, y: -24 },
+          { opacity: 1, y: 0, duration: 0.66, ease: "power2.out" },
+          5.62,
+        );
+
+        tl.to(phase, { scale: 1.035, duration: 1.28, ease: "power2.inOut" }, 6.965);
+        tl.to(pan, { x: 0, y: 0, duration: 1.28, ease: "power2.inOut" }, 6.965);
+        tl.fromTo(
+          riskPanel,
+          { opacity: 0, y: -30 },
+          { opacity: 1, y: 0, duration: 0.76, ease: "power3.out" },
+          7.18,
+        );
+        tl.fromTo(
+          riskTag,
+          { opacity: 0, scale: 0.7 },
+          { opacity: 1, scale: 1, duration: 0.62, ease: "back.out(1.5)" },
+          8.14,
+        );
+
+        tl.to(phase, { scale: 1.055, duration: 1.22, ease: "power2.inOut" }, 9.784);
+        tl.to(
+          pan,
+          {
+            x: -(pointNode.x - stageWidth / 2) * 0.24,
+            y: -(pointNode.y - stageHeight / 2) * 0.24,
+            duration: 1.22,
+            ease: "power2.inOut",
+          },
+          9.784,
+        );
+        tl.fromTo(
+          evidence,
+          { opacity: 0, x: -28 },
+          { opacity: 1, x: 0, duration: 0.72, ease: "power2.out" },
+          9.9,
+        );
+        tl.fromTo(
+          stopPanel,
+          { opacity: 0, y: 28 },
+          { opacity: 1, y: 0, duration: 0.72, ease: "power2.out" },
+          10.08,
+        );
+        tl.fromTo(
+          nodes,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.48, ease: "power2.out", stagger: 0.16 },
+          10.5,
+        );
+        tl.fromTo(
+          stopLine,
+          { scaleX: 0 },
+          { scaleX: 1, duration: 0.64, ease: "power3.out" },
+          10.94,
+        );
+        tl.fromTo(
+          stopLabel,
+          { opacity: 0, scale: 0.76 },
+          { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(1.35)" },
+          11.36,
+        );
+
+        tl.to(
+          tracking,
+          {
+            p: Math.PI * 2 * 1.15,
+            duration: 5.307,
+            ease: "none",
+            onUpdate: () => {
+              const placeBox = (box, anchor, phaseOffset, label, prefix) => {
+                const targetX = anchor.x + Math.cos(tracking.p + phaseOffset) * 4;
+                const targetY = anchor.y + Math.sin(tracking.p * 1.31 + phaseOffset) * 3;
+                const boxWidth = 332 + Math.sin(tracking.p * 1.7 + phaseOffset) * 10;
+                const boxHeight = 112 + Math.sin(tracking.p * 1.7 + phaseOffset + Math.PI / 2) * 5;
+                box.style.width = `${boxWidth}px`;
+                box.style.height = `${boxHeight}px`;
+                box.style.left = `${targetX - boxWidth / 2}px`;
+                box.style.top = `${targetY - boxHeight / 2}px`;
+                const confidence = Math.round(97 + Math.sin(tracking.p * 3.6 + phaseOffset));
+                label.textContent = `${prefix} · ${confidence}%`;
+              };
+              placeBox(trackA, pointA, 0, trackLabelA, "SCAN A");
+              placeBox(trackB, pointB, Math.PI / 2, trackLabelB, "SCAN B");
+            },
+          },
+          4.477,
+        );
+
+        tl.to(drift, { amp: 0, duration: 0.7, ease: "power2.out" }, 10.72);
+        tl.to(
+          drift,
+          {
+            p: Math.PI * 2 * 1.35,
+            duration: 12.437,
+            ease: "none",
+            onUpdate: () => {
+              const dx = Math.sin(drift.p) * 3.5 * drift.amp;
+              const dy = Math.sin(drift.p * 1.31) * 2.2 * drift.amp;
+              outer.style.transform = `scale(${phase.scale})`;
+              inner.style.transform = `translate(${pan.x + dx}px, ${pan.y + dy}px)`;
+            },
+          },
+          0,
+        );
+      })();
+    </script>
+  </div>
+</template>
