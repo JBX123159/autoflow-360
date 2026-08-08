@@ -239,9 +239,21 @@ class DeploymentContractTest(unittest.TestCase):
             'tail -c 1 "${APPS_TXT}" | wc -l',
             'grep -qx autoflow_360 "${APPS_TXT}"',
             "printf '%s\\n' autoflow_360",
+            'bench --site "${SITE}" execute frappe.cache_manager.clear_global_cache',
             'set-config allow_tests true',
         ):
             self.assertIn(required_text, container_script)
+        pip_install_index = container_script.index(
+            "./env/bin/pip install -e apps/autoflow_360"
+        )
+        cache_refresh_index = container_script.index(
+            'bench --site "${SITE}" execute frappe.cache_manager.clear_global_cache'
+        )
+        app_install_index = container_script.index(
+            'bench --site "${SITE}" install-app autoflow_360'
+        )
+        self.assertLess(pip_install_index, cache_refresh_index)
+        self.assertLess(cache_refresh_index, app_install_index)
         self.assertNotIn("\r", container_script)
         self.assertNotIn('set-admin-password "${AUTOFLOW_ADMIN_PASSWORD}"', container_script)
 

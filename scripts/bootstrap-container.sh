@@ -373,6 +373,7 @@ if ! grep -qx autoflow_360 "${APPS_TXT}"; then
 fi
 
 ./env/bin/pip install -e apps/autoflow_360
+bench --site "${SITE}" execute frappe.cache_manager.clear_global_cache
 if ! bench --site "${SITE}" list-apps | awk '{print $1}' | grep -qx autoflow_360; then
   bench --site "${SITE}" install-app autoflow_360
 fi
