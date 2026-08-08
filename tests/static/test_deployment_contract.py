@@ -42,7 +42,9 @@ class DeploymentContractTest(unittest.TestCase):
             "http://autoflow.localhost:8000/api/method/ping",
             "AUTOFLOW_E2E_BASE_URL: http://autoflow.localhost:8000",
             "bench --site autoflow.localhost execute "
-            "autoflow_360.performance.measure.measure",
+            "autoflow_360.performance.generate_scale.run",
+            "bench --site autoflow.localhost execute "
+            "autoflow_360.performance.measure.run",
         ):
             self.assertIn(text, workflow)
         self.assertNotIn("autoflow.test", workflow)

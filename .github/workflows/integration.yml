@@ -142,8 +142,8 @@ jobs:
             -f deploy/ci/compose.autoflow.yaml \
             exec -T frappe bash -lc '
               cd /workspace/development/frappe-bench
-              bench --site autoflow.localhost execute autoflow_360.performance.generate_scale.generate
-              bench --site autoflow.localhost execute autoflow_360.performance.measure.measure
+              bench --site autoflow.localhost execute autoflow_360.performance.generate_scale.run
+              bench --site autoflow.localhost execute autoflow_360.performance.measure.run
             '
 
       - name: Copy safe process log on failure
