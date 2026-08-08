@@ -37,6 +37,8 @@ class DeploymentContractTest(unittest.TestCase):
         for text in (
             "AUTOFLOW_SITE: autoflow.localhost",
             "bench --site autoflow.localhost run-tests --app autoflow_360",
+            "bench --site autoflow.localhost execute "
+            "autoflow_360.development.complete_local_demo_setup",
             "http://autoflow.localhost:8000/api/method/ping",
             "AUTOFLOW_E2E_BASE_URL: http://autoflow.localhost:8000",
             "bench --site autoflow.localhost execute "
@@ -48,6 +50,13 @@ class DeploymentContractTest(unittest.TestCase):
         prepare_index = workflow.index("Prepare writable development workspace")
         bootstrap_index = workflow.index("Bootstrap the locked application stack")
         self.assertLess(prepare_index, bootstrap_index)
+        seed_index = workflow.index("autoflow_360.demo.seed.seed_demo_data")
+        setup_index = workflow.index(
+            "autoflow_360.development.complete_local_demo_setup"
+        )
+        web_index = workflow.index("Start the Frappe web process")
+        self.assertLess(seed_index, setup_index)
+        self.assertLess(setup_index, web_index)
         self.assertIn(
             "${GITHUB_WORKSPACE:?GITHUB_WORKSPACE is required}"
             "/.runtime/frappe_docker:/workspace/frappe_docker",
@@ -288,6 +297,10 @@ class DeploymentContractTest(unittest.TestCase):
             "frappe.conf.developer_mode",
             'os.environ.get("AUTOFLOW_ADMIN_PASSWORD", "")',
             "logout_all_sessions=True",
+            'frappe.db.get_value("Company", {}, "name")',
+            '"user_type": "System User"',
+            'frappe.get_single("Installed Applications").update_versions()',
+            "frappe.is_setup_complete()",
         ):
             self.assertIn(required_text, development_module)
 

@@ -99,6 +99,7 @@ jobs:
             exec -T frappe bash -lc '
               cd /workspace/development/frappe-bench
               bench --site autoflow.localhost execute autoflow_360.demo.seed.seed_demo_data
+              bench --site autoflow.localhost execute autoflow_360.development.complete_local_demo_setup
             '
 
       - name: Start the Frappe web process
