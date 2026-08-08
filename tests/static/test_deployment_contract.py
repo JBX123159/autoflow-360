@@ -29,7 +29,9 @@ class DeploymentContractTest(unittest.TestCase):
         required_text = (
             "exec -T --user root frappe sh -ceu",
             "mkdir -p /workspace/development",
+            "mkdir -p /workspace/autoflow_360/docs/test-report",
             "chown -R frappe:frappe /workspace/development",
+            "chown -R frappe:frappe /workspace/autoflow_360/docs/test-report",
         )
         for text in required_text:
             self.assertIn(text, workflow)
