@@ -34,6 +34,17 @@ class DeploymentContractTest(unittest.TestCase):
         for text in required_text:
             self.assertIn(text, workflow)
 
+        for text in (
+            "AUTOFLOW_SITE: autoflow.localhost",
+            "bench --site autoflow.localhost run-tests --app autoflow_360",
+            "http://autoflow.localhost:8000/api/method/ping",
+            "AUTOFLOW_E2E_BASE_URL: http://autoflow.localhost:8000",
+            "bench --site autoflow.localhost execute "
+            "autoflow_360.performance.measure.measure",
+        ):
+            self.assertIn(text, workflow)
+        self.assertNotIn("autoflow.test", workflow)
+
         prepare_index = workflow.index("Prepare writable development workspace")
         bootstrap_index = workflow.index("Bootstrap the locked application stack")
         self.assertLess(prepare_index, bootstrap_index)

@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     env:
-      AUTOFLOW_SITE: autoflow.test
+      AUTOFLOW_SITE: autoflow.localhost
       AUTOFLOW_RUNTIME: .runtime/frappe_docker
       GITHUB_WORKSPACE: ${{ github.workspace }}
     steps:
@@ -86,8 +86,8 @@ jobs:
             exec -T frappe bash -lc '
               set -euo pipefail
               cd /workspace/development/frappe-bench
-              bench --site autoflow.test set-config allow_tests true
-              bench --site autoflow.test run-tests --app autoflow_360
+              bench --site autoflow.localhost set-config allow_tests true
+              bench --site autoflow.localhost run-tests --app autoflow_360
             '
 
       - name: Seed the three synthetic demo scenarios
@@ -98,13 +98,13 @@ jobs:
             -f deploy/ci/compose.autoflow.yaml \
             exec -T frappe bash -lc '
               cd /workspace/development/frappe-bench
-              bench --site autoflow.test execute autoflow_360.demo.seed.seed_demo_data
+              bench --site autoflow.localhost execute autoflow_360.demo.seed.seed_demo_data
             '
 
       - name: Start the Frappe web process
         shell: bash
         run: |
-          sudo sh -c 'printf "127.0.0.1 autoflow.test\n" >> /etc/hosts'
+          sudo sh -c 'printf "127.0.0.1 autoflow.localhost\n" >> /etc/hosts'
           docker compose \
             -f .runtime/frappe_docker/devcontainer-example/docker-compose.yml \
             -f deploy/ci/compose.autoflow.yaml \
@@ -113,7 +113,7 @@ jobs:
               exec bench start > /tmp/autoflow-bench.log 2>&1
             '
           for attempt in $(seq 1 90); do
-            if curl --fail --silent --show-error http://autoflow.test:8000/api/method/ping >/dev/null; then
+            if curl --fail --silent --show-error http://autoflow.localhost:8000/api/method/ping >/dev/null; then
               exit 0
             fi
             sleep 2
@@ -130,7 +130,7 @@ jobs:
       - name: Run three browser workflows
         working-directory: tests/e2e
         env:
-          AUTOFLOW_E2E_BASE_URL: http://autoflow.test:8000
+          AUTOFLOW_E2E_BASE_URL: http://autoflow.localhost:8000
         run: npx playwright test
 
       - name: Run reproducible scale and performance checks
@@ -141,8 +141,8 @@ jobs:
             -f deploy/ci/compose.autoflow.yaml \
             exec -T frappe bash -lc '
               cd /workspace/development/frappe-bench
-              bench --site autoflow.test execute autoflow_360.performance.generate_scale.generate
-              bench --site autoflow.test execute autoflow_360.performance.measure.measure
+              bench --site autoflow.localhost execute autoflow_360.performance.generate_scale.generate
+              bench --site autoflow.localhost execute autoflow_360.performance.measure.measure
             '
 
       - name: Copy safe process log on failure
