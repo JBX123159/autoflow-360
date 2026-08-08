@@ -104,6 +104,10 @@ function Read-UpstreamLock {
             Repository = "https://github.com/frappe/frappe"
             Branch = "version-16"
         }
+        payments = @{
+            Repository = "https://github.com/frappe/payments"
+            Branch = "version-16"
+        }
         erpnext = @{
             Repository = "https://github.com/frappe/erpnext"
             Branch = "version-16"

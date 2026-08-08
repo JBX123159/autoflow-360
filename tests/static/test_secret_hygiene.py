@@ -39,6 +39,7 @@ class SecretHygieneTest(unittest.TestCase):
 	def test_production_apps_include_all_required_apps(self):
 		apps = json.loads(APPS_FILE.read_text(encoding="utf-8"))
 		by_url = {item["url"]: item for item in apps}
+		self.assertEqual(by_url["https://github.com/frappe/payments"]["branch"], "version-16")
 		self.assertEqual(by_url["https://github.com/frappe/erpnext"]["branch"], "version-16")
 		self.assertEqual(by_url["https://github.com/frappe/crm"]["branch"], "main")
 		self.assertEqual(

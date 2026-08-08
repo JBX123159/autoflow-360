@@ -78,6 +78,10 @@ class DeploymentContractTest(unittest.TestCase):
             apps,
             [
                 {
+                    "url": "https://github.com/frappe/payments",
+                    "branch": "version-16",
+                },
+                {
                     "url": "https://github.com/frappe/erpnext",
                     "branch": "version-16",
                 },
@@ -104,6 +108,11 @@ class DeploymentContractTest(unittest.TestCase):
                     "repository": "https://github.com/frappe/frappe",
                     "branch": "version-16",
                     "commit": "06613fc60b44d5736007ae3107cdab029b2ae045",
+                },
+                "payments": {
+                    "repository": "https://github.com/frappe/payments",
+                    "branch": "version-16",
+                    "commit": "cca07d9f9392e2ea0e521c5975151db9e4b6c321",
                 },
                 "erpnext": {
                     "repository": "https://github.com/frappe/erpnext",
@@ -229,16 +238,19 @@ class DeploymentContractTest(unittest.TestCase):
             "--py-version 3.14",
             "--node-version 24",
             'prepare_locked_source frappe',
+            'prepare_locked_source payments',
             'prepare_locked_source erpnext',
             'prepare_locked_source crm',
             '--apps-json "${LOCKED_APPS_JSON}"',
             '--frappe-repo "${CACHE_ROOT}/frappe"',
             "--frappe-branch autoflow-lock",
             "adopt_official_origin frappe",
+            "adopt_official_origin payments",
             "adopt_official_origin erpnext",
             "adopt_official_origin crm",
             "ln -s /workspace/autoflow_360 apps/autoflow_360",
             "pin_upstream_app frappe",
+            "pin_upstream_app payments",
             "pin_upstream_app erpnext",
             "pin_upstream_app crm",
             'git -C "${app_path}" checkout --detach "${locked_commit}"',
@@ -320,6 +332,7 @@ class DeploymentContractTest(unittest.TestCase):
         )
         expected_projects = {
             "Frappe Framework",
+            "Frappe Payments",
             "ERPNext",
             "Frappe CRM",
             "frappe_docker",
@@ -341,13 +354,13 @@ class DeploymentContractTest(unittest.TestCase):
             self.assertLessEqual(len(revisions), 1, project)
             revision_counts.append(len(revisions))
 
-        self.assertIn(sum(revision_counts), (0, 4))
+        self.assertIn(sum(revision_counts), (0, 5))
         if sum(revision_counts) == 0:
             self.assertIn("首次成功拉取并安装后回填", content)
         else:
             dates = re.findall(r"获取日期：(\d{4}-\d{2}-\d{2})", content)
-            self.assertGreaterEqual(len(dates), 1)
-            self.assertEqual(len(set(dates)), 1)
+            self.assertEqual(len(dates), 5)
+            self.assertGreaterEqual(len(set(dates)), 1)
 
     def test_task_three_matches_current_frappe_docker_contract(self):
         plan = (

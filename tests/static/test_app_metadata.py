@@ -74,7 +74,7 @@ class AppMetadataTest(unittest.TestCase):
         }
 
         self.assertEqual(assignments["app_license"], "AGPL-3.0-only")
-        self.assertEqual(assignments["required_apps"], ["erpnext", "crm"])
+        self.assertEqual(assignments["required_apps"], ["payments", "erpnext", "crm"])
 
     def test_v16_apps_screen_entry_uses_an_existing_svg(self):
         hooks_path = ROOT / "autoflow_360" / "hooks.py"

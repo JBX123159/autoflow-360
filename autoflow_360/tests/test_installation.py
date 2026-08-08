@@ -8,7 +8,7 @@ class TestInstallation(IntegrationTestCase):
 	def test_required_apps_are_installed(self):
 		installed_apps = set(frappe.get_installed_apps())
 
-		for app_name in ("frappe", "erpnext", "crm", "autoflow_360"):
+		for app_name in ("frappe", "payments", "erpnext", "crm", "autoflow_360"):
 			self.assertIn(app_name, installed_apps)
 
 	def test_app_metadata_matches_runtime(self):

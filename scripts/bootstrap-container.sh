@@ -253,6 +253,7 @@ if [ -e "${BENCH_PATH}" ] && [ ! -d "${BENCH_PATH}/apps/frappe" ]; then
 fi
 if [ ! -d "${BENCH_PATH}/apps/frappe" ]; then
   prepare_locked_source frappe "https://github.com/frappe/frappe" "version-16"
+  prepare_locked_source payments "https://github.com/frappe/payments" "version-16"
   prepare_locked_source erpnext "https://github.com/frappe/erpnext" "version-16"
   prepare_locked_source crm "https://github.com/frappe/crm" "main"
   python - "${LOCKED_APPS_JSON}" "${CACHE_ROOT}" <<'PY'
@@ -263,6 +264,7 @@ import sys
 output_path = pathlib.Path(sys.argv[1])
 cache_root = pathlib.Path(sys.argv[2])
 apps = [
+    {"url": str(cache_root / "payments"), "branch": "autoflow-lock"},
     {"url": str(cache_root / "erpnext"), "branch": "autoflow-lock"},
     {"url": str(cache_root / "crm"), "branch": "autoflow-lock"},
 ]
@@ -293,9 +295,9 @@ fi
 
 cd "${BENCH_PATH}"
 UPSTREAM_DEPENDENCIES_CHANGED=0
-for required_app in erpnext crm; do
+for required_app in payments erpnext crm; do
   if [ ! -d "${BENCH_PATH}/apps/${required_app}" ]; then
-    if [ "${required_app}" = "erpnext" ]; then
+    if [ "${required_app}" = "erpnext" ] || [ "${required_app}" = "payments" ]; then
       required_branch="version-16"
     else
       required_branch="main"
@@ -313,9 +315,11 @@ for required_app in erpnext crm; do
 done
 
 adopt_official_origin frappe "https://github.com/frappe/frappe"
+adopt_official_origin payments "https://github.com/frappe/payments"
 adopt_official_origin erpnext "https://github.com/frappe/erpnext"
 adopt_official_origin crm "https://github.com/frappe/crm"
 pin_upstream_app frappe "https://github.com/frappe/frappe" "version-16"
+pin_upstream_app payments "https://github.com/frappe/payments" "version-16"
 pin_upstream_app erpnext "https://github.com/frappe/erpnext" "version-16"
 pin_upstream_app crm "https://github.com/frappe/crm" "main"
 if [ "${UPSTREAM_DEPENDENCIES_CHANGED}" -eq 1 ]; then
@@ -339,13 +343,18 @@ if [ ! -d "${BENCH_PATH}/sites/${SITE}" ]; then
     --mariadb-user-host-login-scope '%' \
     --db-root-password 123 \
     --admin-password "${INITIAL_ADMIN_PASSWORD}" \
+    --install-app payments \
     --install-app erpnext \
     --install-app crm \
     "${SITE}"
 fi
 
 installed_apps="$(bench --site "${SITE}" list-apps)"
-for required_app in erpnext crm; do
+for required_app in payments erpnext crm; do
+  if ! printf '%s\n' "${installed_apps}" | awk '{print $1}' | grep -qx "${required_app}"; then
+    bench --site "${SITE}" install-app "${required_app}"
+    installed_apps="$(bench --site "${SITE}" list-apps)"
+  fi
   if ! printf '%s\n' "${installed_apps}" | awk '{print $1}' | grep -qx "${required_app}"; then
     echo "站点缺少上游应用：${required_app}" >&2
     exit 21

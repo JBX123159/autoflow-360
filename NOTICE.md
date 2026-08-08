@@ -5,6 +5,7 @@ AutoFlow 360 是独立自定义应用，不是 Frappe、ERPNext 或 Frappe CRM �
 | 项目 | 用途 | 来源 | 许可证 |
 | --- | --- | --- | --- |
 | Frappe Framework | 应用框架 | https://github.com/frappe/frappe | MIT |
+| Frappe Payments | 支付网关基础数据类型 | https://github.com/frappe/payments | MIT |
 | ERPNext | 销售、采购、库存、财务 | https://github.com/frappe/erpnext | GPL-3.0 |
 | Frappe CRM | 线索、组织、联系人、商机 | https://github.com/frappe/crm | AGPL-3.0 |
 | frappe_docker | 容器构建与部署参考 | https://github.com/frappe/frappe_docker | MIT |

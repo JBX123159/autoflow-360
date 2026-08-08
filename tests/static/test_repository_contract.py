@@ -42,6 +42,7 @@ class RepositoryContractTest(unittest.TestCase):
         content = (ROOT / "NOTICE.md").read_text(encoding="utf-8")
         for required_text in (
             "https://github.com/frappe/frappe | MIT",
+            "https://github.com/frappe/payments | MIT",
             "https://github.com/frappe/erpnext | GPL-3.0",
             "https://github.com/frappe/crm | AGPL-3.0",
             "https://github.com/frappe/frappe_docker | MIT",
@@ -83,6 +84,7 @@ class RepositoryContractTest(unittest.TestCase):
         content = (ROOT / "docs/research/upstream-baseline.md").read_text(encoding="utf-8")
         for required_text in (
             "Frappe Framework",
+            "Frappe Payments",
             "version-16",
             "ERPNext",
             "Frappe CRM",

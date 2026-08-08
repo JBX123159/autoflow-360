@@ -7,7 +7,7 @@ app_publisher = "JBX123159"
 app_description = "汽车零部件客户项目与供应链协同智能平台"
 app_email = "294367704+JBX123159@users.noreply.github.com"
 app_license = "AGPL-3.0-only"
-required_apps = ["erpnext", "crm"]
+required_apps = ["payments", "erpnext", "crm"]
 
 add_to_apps_screen = [
 	{

@@ -9,6 +9,11 @@
     "branch": "version-16",
     "commit": "06613fc60b44d5736007ae3107cdab029b2ae045"
   },
+  "payments": {
+    "repository": "https://github.com/frappe/payments",
+    "branch": "version-16",
+    "commit": "cca07d9f9392e2ea0e521c5975151db9e4b6c321"
+  },
   "erpnext": {
     "repository": "https://github.com/frappe/erpnext",
     "branch": "version-16",

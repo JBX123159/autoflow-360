@@ -9,16 +9,17 @@ AutoFlow 360 以独立 Frappe 自定义应用的方式集成上游项目，不�
 | 上游项目 | 当前采用线 | 官方来源 | 许可证 | 精确提交哈希 |
 | --- | --- | --- | --- | --- |
 | Frappe Framework | `version-16` | https://github.com/frappe/frappe | MIT | `06613fc60b44d5736007ae3107cdab029b2ae045`（获取日期：2026-07-30） |
+| Frappe Payments | `version-16` | https://github.com/frappe/payments | MIT | `cca07d9f9392e2ea0e521c5975151db9e4b6c321`（获取日期：2026-08-08） |
 | ERPNext | `version-16` | https://github.com/frappe/erpnext | GPL-3.0 | `8378b6e203841c056925420cc44e6d631c915cf1`（获取日期：2026-07-30） |
 | Frappe CRM | `main` | https://github.com/frappe/crm | AGPL-3.0 | `966705a95dbc6e66a8c3342bec6e78a3b397b402`（获取日期：2026-07-30） |
 | frappe_docker | `main` | https://github.com/frappe/frappe_docker | MIT | `f137f05d799a6a00d203b4c0d316a8f475e51778`（获取日期：2026-07-30） |
 
 ## 固定策略
 
-- Frappe Framework 与 ERPNext 只跟随 `version-16` 稳定线，禁止在未评估兼容性的情况下切换主版本。
+- Frappe Framework、Frappe Payments 与 ERPNext 只跟随 `version-16` 稳定线，禁止在未评估兼容性的情况下切换主版本。
 - Frappe CRM 当前使用 `main`，因为项目确认的 v1 兼容矩阵以该线为准；它属于可移动分支，实际构建必须检出锁定提交，不能直接使用分支的新 HEAD。
 - `frappe_docker` 仅作为容器构建、开发和部署来源，不复制或私自修改其核心文件；启动脚本同样检出锁定提交。
-- 分支名不能替代不可变版本证据。四个精确提交同时记录在本表和机器可读的 `deploy/upstream-lock.json` 中；本地启动脚本会逐项检出并验证，二者变更必须同步。
+- 分支名不能替代不可变版本证据。五个精确提交同时记录在本表和机器可读的 `deploy/upstream-lock.json` 中；本地启动脚本会逐项检出并验证，二者变更必须同步。
 - 上游升级必须先验证应用安装、迁移、静态测试、Frappe 业务测试和浏览器主流程，不在未验证时声明兼容。
 
 ## 已核验的本地开发契约
