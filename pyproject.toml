@@ -1,5 +1,5 @@
 [project]
-name = "autoflow-360"
+name = "autoflow_360"
 authors = [
     { name = "JBX123159", email = "294367704+JBX123159@users.noreply.github.com" }
 ]

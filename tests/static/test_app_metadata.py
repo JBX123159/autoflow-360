@@ -13,7 +13,7 @@ class AppMetadataTest(unittest.TestCase):
         data = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
         project = data["project"]
 
-        self.assertEqual(project["name"], "autoflow-360")
+        self.assertEqual(project["name"], "autoflow_360")
         self.assertEqual(project["requires-python"], ">=3.14,<3.15")
         self.assertEqual(project["license"], "AGPL-3.0-only")
         self.assertEqual(project["dynamic"], ["version"])
@@ -21,6 +21,10 @@ class AppMetadataTest(unittest.TestCase):
         self.assertEqual(data["build-system"]["build-backend"], "flit_core.buildapi")
         self.assertIn("flit_core >=3.11,<4", data["build-system"]["requires"])
         self.assertEqual(data["tool"]["flit"]["module"]["name"], "autoflow_360")
+        self.assertEqual(
+            project["name"],
+            data["tool"]["flit"]["module"]["name"],
+        )
         self.assertEqual(
             data["tool"]["bench"]["frappe-dependencies"]["frappe"],
             ">=16.0.0,<17.0.0",
