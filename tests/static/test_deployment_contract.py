@@ -23,6 +23,9 @@ class DeploymentContractTest(unittest.TestCase):
         workflow = (
             ROOT / ".github" / "workflows" / "integration.yml"
         ).read_text(encoding="utf-8")
+        compose_override = (
+            ROOT / "deploy" / "ci" / "compose.autoflow.yaml"
+        ).read_text(encoding="utf-8")
         required_text = (
             "exec -T --user root frappe sh -ceu",
             "mkdir -p /workspace/development",
@@ -34,6 +37,11 @@ class DeploymentContractTest(unittest.TestCase):
         prepare_index = workflow.index("Prepare writable development workspace")
         bootstrap_index = workflow.index("Bootstrap the locked application stack")
         self.assertLess(prepare_index, bootstrap_index)
+        self.assertIn(
+            "${GITHUB_WORKSPACE:?GITHUB_WORKSPACE is required}"
+            "/.runtime/frappe_docker:/workspace/frappe_docker",
+            compose_override,
+        )
 
     def test_required_development_files_exist(self):
         for relative_path in (

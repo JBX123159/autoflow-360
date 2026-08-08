@@ -2,3 +2,4 @@ services:
   frappe:
     volumes:
       - ${GITHUB_WORKSPACE:?GITHUB_WORKSPACE is required}:/workspace/autoflow_360
+      - ${GITHUB_WORKSPACE:?GITHUB_WORKSPACE is required}/.runtime/frappe_docker:/workspace/frappe_docker
